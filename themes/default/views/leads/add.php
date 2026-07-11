@@ -177,12 +177,12 @@ label {
             <div class="form-group person">
                 <?= lang("Leads_Type", "Leads_Type") ?>
                 <select class="form-control" name="leads_type" required="true">
-                    <?php foreach ($leads_type as $lead) { ?>
+                    <?php if (!empty($leads_type)) { foreach ($leads_type as $lead) { ?>
                     <option value="<?= $lead->id . '~' . $lead->type ?>"
                         <?= ($lead->type == $leads->type ? 'Selected' : '') ?>>
                         <?= $lead->type ?>
                     </option>
-                    <?php } ?>
+                    <?php } } ?>
                 </select>
             </div>
         </div>

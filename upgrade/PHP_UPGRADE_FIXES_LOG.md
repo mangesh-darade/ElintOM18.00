@@ -1754,7 +1754,40 @@ foreach($barcode_field2 as $key2 => $barcodefield2){
 
 ---
 
-## Test scripts index (Modules 1–19)
+## Module 20 — Leads (CRM)
+
+**Tests:** `phase4_leads_test.php` (**4/4**), `phase4_leads_links_test.php` (**8/8**) PASS  
+**Status:** ✅ Module complete — fixes applied + retest 2026-07-12  
+**Controllers:** `Leads.php` — `Leads_model.php` — `themes/default/views/leads/*`
+
+| # | File | Old | New | Type |
+|---|------|-----|-----|------|
+| 20.1 | `Leads.php` | `add()` missing `$leads` object for add view | Init empty `(object)` defaults for form fields | guard |
+| 20.2 | `Leads.php` | `edit()` unguarded `HTTP_REFERER` redirect | `isset` + fallback `Leads/index` (P3) | guard |
+| 20.3 | `Leads.php` | `edit()` / modals load views when `getLeadsByID` false | Early guard/redirect or modal error | guard |
+| 20.4 | `Leads.php` | `add_deals()` called `getDealsNameByID($lead_id)` | `$deals = FALSE` for new-deal form | guard |
+| 20.5 | `Leads_model.php` | `getLeadTypes()` returns null when empty | `return array()` | guard |
+| 20.6 | `leads/add.php`, `edit.php` | `foreach ($leads_type)` on null | `!empty($leads_type)` guard | guard |
+| 20.7 | `leads/list_deals.php` | `$deals->name` / `$deals->Leadid` when no deals | Use `$leadDetails->full_name` + `$lead_id` | guard |
+| 20.8 | `leads/add_deals.php` | `$deals->CategoryId` when `$deals` false | `!empty($deals) && isset(...)` guard | guard |
+| 20.9 | `phase4_leads_*.php` | — | Screen + deep-link scripts | test |
+
+#### 20.1 `Leads.php` — empty leads object on add
+
+**Old code:**
+```php
+$this->data['leads_type'] =  $this->Leads_model->getLeadTypes();
+```
+
+**New code:**
+```php
+$this->data['leads'] = (object) array('full_name' => '', 'mobile' => '', ...);
+$this->data['leads_type'] =  $this->Leads_model->getLeadTypes();
+```
+
+---
+
+## Test scripts index (Modules 1–20)
 
 | Module | Scripts |
 |--------|---------|

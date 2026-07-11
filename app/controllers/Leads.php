@@ -116,6 +116,12 @@ class Leads extends MY_Controller
             redirect('Leads/index');
         } else {
 
+            $this->data['leads'] = (object) array(
+                'full_name' => '', 'mobile' => '', 'email' => '', 'address_line_1' => '', 'address_line_2' => '',
+                'city' => '', 'district' => '', 'state' => '', 'country' => '', 'postal_code' => '',
+                'business' => '', 'source' => '', 'campaign' => '', 'form' => '', 'brands' => '', 'type' => '',
+                'product_sel_1' => '', 'product_sel_2' => '', 'product_sel_3' => '', 'form_memo' => '', 'comments' => ''
+            );
             $this->data['leads_type'] =  $this->Leads_model->getLeadTypes();
             $this->data['modal_js'] = $this->site->modal_js();
             $cfields = $this->site->getCustomeFieldsLabel('employee') ;
@@ -172,14 +178,19 @@ class Leads extends MY_Controller
            
            } elseif ($this->input->post('edit_employee')){
                $this->session->set_flashdata('error', validation_errors());
-               redirect($_SERVER["HTTP_REFERER"]);
+               redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'Leads/index');
            }
     
          if ($this->form_validation->run() == true && $this->Leads_model->updateLeads($id, $data)) {
             $this->session->set_flashdata('message', $this->lang->line("Leads_Updated"));
             redirect('Leads/index');            
          } else {  
-            $this->data['leads'] = $this->Leads_model->getLeadsByID($id);
+            $leads = $this->Leads_model->getLeadsByID($id);
+            if (!$leads) {
+                $this->session->set_flashdata('error', 'Lead not found');
+                redirect('Leads/index');
+            }
+            $this->data['leads'] = $leads;
             $this->data['leads_type'] =  $this->Leads_model->getLeadTypes();
             $this->data['error'] = (validation_errors() ? validation_errors() : $this->session->flashdata('error'));
             $bc = [
@@ -215,7 +226,12 @@ class Leads extends MY_Controller
         $this->data['error'] = (validation_errors() ? validation_errors() : $this->session->flashdata('error'));
         $this->data['modal_js'] = $this->site->modal_js();
         $this->data['deals'] = $this->Leads_model->getCommentsHistory($id);
-        $this->data['leadDetails'] = $this->Leads_model->getLeadsByID($id);
+        $leadDetails = $this->Leads_model->getLeadsByID($id);
+        if (!$leadDetails) {
+            echo '<div class="alert alert-danger">Lead not found</div>';
+            return;
+        }
+        $this->data['leadDetails'] = $leadDetails;
         $this->data['lead_id'] = $id;
         $this->load->view($this->theme . 'leads/lead_history', $this->data);
     }
@@ -269,6 +285,12 @@ class Leads extends MY_Controller
         }
         $this->data['error'] = (validation_errors() ? validation_errors() : $this->session->flashdata('error'));
         $this->data['modal_js'] = $this->site->modal_js();
+        $leadDetails = $this->Leads_model->getLeadsByID($id);
+        if (!$leadDetails) {
+            echo '<div class="alert alert-danger">Lead not found</div>';
+            return;
+        }
+        $this->data['leadDetails'] = $leadDetails;
         $this->data['deals'] = $this->Leads_model->getDealsByID($id);
         $this->data['lead_id'] = $id;
         $this->load->view($this->theme . 'leads/list_deals', $this->data);
@@ -341,6 +363,10 @@ class Leads extends MY_Controller
             $this->session->set_flashdata('message', lang("Deals_updated"));
             redirect("leads");
         } else {
+            if (!$deals) {
+                $this->session->set_flashdata('error', 'Deal not found');
+                redirect('Leads/index');
+            }
             $this->data['error'] = (validation_errors() ? validation_errors() : $this->session->flashdata('error'));
             $this->data['modal_js'] = $this->site->modal_js();
             $this->data['categories'] =$this->Leads_model->get_all_categories();
@@ -354,7 +380,7 @@ class Leads extends MY_Controller
         if ($this->input->get('id')) {
             $id = $this->input->get('id');
         }
-        $deals = $this->Leads_model->getDealsNameByID($id);
+        $deals = FALSE;
 
         // $company = $this->companies_model->getCompanyByID($deposit->company_id);
 
@@ -399,7 +425,12 @@ class Leads extends MY_Controller
             $this->data['modal_js'] = $this->site->modal_js();
             $this->data['categories'] =$this->Leads_model->get_all_categories();
             $this->data['products'] =$this->Leads_model->get_all_products();
-            $this->data['leadDetails'] = $this->Leads_model->getLeadsByID($id); 
+            $leadDetails = $this->Leads_model->getLeadsByID($id);
+            if (!$leadDetails) {
+                echo '<div class="alert alert-danger">Lead not found</div>';
+                return;
+            }
+            $this->data['leadDetails'] = $leadDetails; 
             $this->data['deals'] = $deals;
             $this->data['lead_id'] = $id;
             $this->load->view($this->theme . 'leads/add_deals', $this->data);

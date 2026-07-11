@@ -201,7 +201,7 @@
                 <i class="fa fa-print"></i> <?= lang('print'); ?>
             </button>
             <h4 class="modal-title" id="myModalLabel">
-                <?= lang('Deals') . " (" . $deals->name . ")"; ?>
+                <?= lang('Deals') . " (" . $leadDetails->full_name . ")"; ?>
             </h4>
             <a class="btn btn-xs btn-primary pull-right open-modal"
                 href="<?= base_url('leads/add_deals/' . $lead_id); ?>" style="margin-right: 20px; margin-top: -19px;">
@@ -270,7 +270,7 @@
             "iDisplayLength": <?= $Settings->rows_per_page ?>,
             'bProcessing': true,
             'bServerSide': true,
-            'sAjaxSource': '<?= site_url('Leads/getDeals/'.$deals->Leadid) ?>',
+            'sAjaxSource': '<?= site_url('Leads/getDeals/'.$lead_id) ?>',
             'fnServerData': function(sSource, aoData, fnCallback) {
                 aoData.push({
                     "name": "<?= $this->security->get_csrf_token_name() ?>",

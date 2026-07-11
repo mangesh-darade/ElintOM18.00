@@ -153,7 +153,8 @@
 | **Module 17 — Shop** | **✅ Module complete** | Screen 10/10, deep-links 9/9 |
 | **Module 18 — System Settings** | **✅ Module complete** | Screen 15/15, deep-links 18/18 |
 | **Module 19 — Attendance** | **✅ Module complete** | Screen 4/4, deep-links 7/7 |
-| Remaining controllers (20–24) | Pending | Full module scan during Phase 4 |
+| **Module 20 — Leads** | **✅ Module complete** | Screen 4/4, deep-links 8/8 |
+| Remaining controllers (21–24) | Pending | Full module scan during Phase 4 |
 
 #### Phase 4 — Module Testing Log (last run 2026-07-07; status reset 2026-07-11 — pending retest)
 

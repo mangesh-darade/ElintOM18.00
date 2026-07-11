@@ -84,7 +84,7 @@ input.btn.btn-primary{
                 <select class="form-control" name="category" required="true">
                     <?php foreach ($categories as $lead) { ?>
                     <option value="<?= $lead->id . '~' . $lead->name ?>"
-                        <?= ($lead->id == $deals->CategoryId ? '' : '') ?>>
+                        <?= (!empty($deals) && isset($deals->CategoryId) && $lead->id == $deals->CategoryId ? '' : '') ?>>
                         <?= $lead->name ?>
                         <!-- Use $lead->type instead of $lead->description -->
                     </option>
@@ -96,7 +96,7 @@ input.btn.btn-primary{
                 <select class="form-control" name="Products" required="true">
                     <?php foreach ($products as $lead) { ?>
                     <option value="<?= $lead->id . '~' . $lead->name ?>"
-                        <?= ($lead->id == $deals->ProductsId ? '' : '') ?>>
+                        <?= (!empty($deals) && isset($deals->ProductsId) && $lead->id == $deals->ProductsId ? '' : '') ?>>
                         <?= $lead->name ?>
                         <!-- Use $lead->type instead of $lead->description -->
                     </option>

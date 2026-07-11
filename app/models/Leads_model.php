@@ -25,6 +25,7 @@ class Leads_model extends CI_Model {
             }
             return $data;
         }
+        return array();
     }
     public function deleteLeads($id)
     {
