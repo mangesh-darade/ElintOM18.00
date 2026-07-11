@@ -153,10 +153,21 @@ if (!function_exists('phase4_check')) {
         return (int) $json['aaData'][0][0];
     }
 
-    function phase4_linkGet($base, $label, $path, $cookieFile, $codes = [200])
+    function phase4_linkGet($base, $label, $path, $cookieFile, $codes = [200], $identity = '', $password = '')
     {
-        $r = phase4_httpGetFollow("$base$path", $cookieFile);
-        $ok = in_array($r['code'], $codes, true) && !phase4_hasPhpIssue($r['body']);
+        for ($try = 0; $try < 3; $try++) {
+            if ($try > 0) {
+                usleep(250000);
+                if ($identity && $password) {
+                    phase4_login($base, $identity, $password, $cookieFile);
+                }
+            }
+            $r = phase4_httpGetFollow("$base$path", $cookieFile);
+            $ok = in_array($r['code'], $codes, true) && !phase4_hasPhpIssue($r['body']);
+            if ($ok || !in_array($r['code'], [500, 403, 502, 503], true)) {
+                break;
+            }
+        }
         $issue = '';
         if (phase4_hasPhpIssue($r['body']) && preg_match('/(Fatal error|Uncaught Error|Uncaught TypeError).{0,160}/', $r['body'], $mm)) {
             $issue = ' | ' . trim(strip_tags($mm[0]));

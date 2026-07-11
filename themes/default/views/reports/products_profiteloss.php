@@ -361,7 +361,7 @@ $(document).ready(function () {
                             <div class="form-group">
                                 <label class="control-label" for="warehouse"><?= lang("warehouse"); ?></label>
                                 <?php
-                                $permisions_werehouse = explode(",", $user_warehouse);
+                                $permisions_werehouse = explode(",", $user_warehouse ? (string) $user_warehouse : '');
                                 $wh[""] = lang('select') . ' ' . lang('warehouse');
                                 foreach($warehouses as $warehouse)
                                 {

@@ -7157,11 +7157,14 @@ window.MyHandler.setPrintRequest('<?php echo json_encode($print); ?>');
         $this->data['end'] = urldecode($end_date);
 
         $warehouses = $this->site->getAllWarehouses();
-        foreach ($warehouses as $warehouse) {
-            $total_purchases = $this->reports_model->getTotalPurchases($start, $end, $warehouse->id);
-            $total_sales = $this->reports_model->getTotalSales($start, $end, $warehouse->id);
-            $total_expenses = $this->reports_model->getTotalExpenses($start, $end, $warehouse->id);
-            $warehouses_report[] = array('warehouse' => $warehouse, 'total_purchases' => $total_purchases, 'total_sales' => $total_sales, 'total_expenses' => $total_expenses,);
+        $warehouses_report = array();
+        if ($warehouses) {
+            foreach ($warehouses as $warehouse) {
+                $total_purchases = $this->reports_model->getTotalPurchases($start, $end, $warehouse->id);
+                $total_sales = $this->reports_model->getTotalSales($start, $end, $warehouse->id);
+                $total_expenses = $this->reports_model->getTotalExpenses($start, $end, $warehouse->id);
+                $warehouses_report[] = array('warehouse' => $warehouse, 'total_purchases' => $total_purchases, 'total_sales' => $total_sales, 'total_expenses' => $total_expenses,);
+            }
         }
         $this->data['warehouses_report'] = $warehouses_report;
 
@@ -7216,10 +7219,13 @@ window.MyHandler.setPrintRequest('<?php echo json_encode($print); ?>');
         $this->data['taxReportPurchases'] = $this->reports_model->purchaseTaxReport($param);
 
         $warehouses = $this->site->getAllWarehouses();
-        foreach ($warehouses as $warehouse) {
-            $total_purchases = $this->reports_model->getTotalPurchases($start, $end, $warehouse->id);
-            $total_sales = $this->reports_model->getTotalSales($start, $end, $warehouse->id);
-            $warehouses_report[] = array('warehouse' => $warehouse, 'total_purchases' => $total_purchases, 'total_sales' => $total_sales,);
+        $warehouses_report = array();
+        if ($warehouses) {
+            foreach ($warehouses as $warehouse) {
+                $total_purchases = $this->reports_model->getTotalPurchases($start, $end, $warehouse->id);
+                $total_sales = $this->reports_model->getTotalSales($start, $end, $warehouse->id);
+                $warehouses_report[] = array('warehouse' => $warehouse, 'total_purchases' => $total_purchases, 'total_sales' => $total_sales,);
+            }
         }
         $this->data['warehouses_report'] = $warehouses_report;
 
@@ -9210,7 +9216,7 @@ window.MyHandler.setPrintRequest('<?php echo json_encode($print); ?>');
             sma_sales.reference_no as reference_no,            
             biller,
             customer,
-            state,
+            comp.state,
             IF(comp.gstn_no IS NULL or comp.gstn_no = '', '-', comp.gstn_no) as gstn_no,
             (SELECT (GROUP_CONCAT(DISTINCT hsn_code)) as hsn FROM `sma_sale_items` WHERE sma_sale_items.sale_id = `sma_sales`.`id`) as hsn,
             (SELECT format( sum(sma_sale_items.quantity),2)  as qty FROM `sma_sale_items` WHERE  sma_sale_items.sale_id = `sma_sales`.`id`) as qty,
@@ -13437,7 +13443,7 @@ window.MyHandler.setPrintRequest('<?php echo json_encode($print); ?>');
 
             $this->load->library('datatables');
             $this->datatables->select("DATE_FORMAT(sma_sales.date, '%Y-%m-%d %T') as date,sma_sales.invoice_no,
-            sma_sales.reference_no as reference_no,biller,customer,state,
+            sma_sales.reference_no as reference_no,biller,customer,comp.state,
             IF(comp.gstn_no IS NULL or comp.gstn_no = '', '-', comp.gstn_no) as gstn_no,
             grand_total + rounding, (grand_total - total_tax ) as tax_able_amount,paid,
             (grand_total + rounding - paid) as balance, sma_payments.paid_by, payment_status,
@@ -15643,10 +15649,14 @@ window.MyHandler.setPrintRequest('<?php echo json_encode($print); ?>');
     function products_profitloss() {
         $this->sma->checkPermissions('product-profit-loss-report');
         $this->data['error'] = (validation_errors() ? validation_errors() : $this->session->flashdata('error'));
-        $this->data['categories'] = $this->site->getAllCategories();
-        $this->data['brands'] = $this->site->getAllBrands();
-        $this->data['warehouses'] = $this->site->getAllWarehouses();
-        $this->data['billers'] = $this->site->getAllCompanies('biller');
+        $categories = $this->site->getAllCategories();
+        $brands = $this->site->getAllBrands();
+        $warehouses = $this->site->getAllWarehouses();
+        $billers = $this->site->getAllCompanies('biller');
+        $this->data['categories'] = $categories ? $categories : array();
+        $this->data['brands'] = $brands ? $brands : array();
+        $this->data['warehouses'] = $warehouses ? $warehouses : array();
+        $this->data['billers'] = $billers ? $billers : array();
         if ($this->input->post('start_date')) {
             $dt = "From " . $this->input->post('start_date') . " to " . $this->input->post('end_date');
         } else {
@@ -16756,11 +16766,11 @@ window.MyHandler.setPrintRequest('<?php echo json_encode($print); ?>');
         $warehouse_id = $this->uri->segment(3);
         $this->data['warehouses'] = $this->site->getAllWarehouses();
         $this->data['warehouse'] = $warehouse_id ? $this->site->getWarehouseByID($warehouse_id) : NULL;
-        $monthly_records = $this->reports_model->sale_categories_chart_details($warehouse_id, 'Monthly');
+        $monthly_records = $this->reports_model->categories_chart_details($warehouse_id, 'Monthly');
         //echo '<pre>';
         //echo print_r($monthly_records);
         //exit;
-        $daily_records = $this->reports_model->sale_categories_chart_details($warehouse_id, 'Daily');
+        $daily_records = $this->reports_model->categories_chart_details($warehouse_id, 'Daily');
         for ($i = 0; $i < 6; $i++) {
             $months[] = date("Y-m", strtotime(date('Y-m-01') . " -$i months"));
         }
@@ -19681,25 +19691,25 @@ window.MyHandler.setPrintRequest('<?php echo json_encode($print); ?>');
         $postData = $_POST;
         switch ($_POST['action']) {
             case "ProductsTransactionsReport":
-                $this->getProductsTransactionsReport($postData);
+                $this->getProductsTransactionsReport();
 
                 break;
 
             case "ProductsLedgers":
-                $this->getProductsLedgers($postData);
+                $this->getProductsLedgers();
 
                 break;
 
             case "CustomerLedgers":
-                $this->getCustomerLedger($postData);
+                $this->getCustomerLedger();
 
                 break;
             case "CustomerLedgersV1":
-                $this->getCustomerLedgerV1($postData);
+                $this->getCustomerLedgerV1();
 
                 break;
             case "CustomerDepositLadger":
-                $this->getCustomerDepositLedger($postData);
+                $this->getCustomerDepositLedger();
                 break;
             default:
                 break;
@@ -20294,9 +20304,16 @@ window.MyHandler.setPrintRequest('<?php echo json_encode($print); ?>');
         $customer_id = isset($_REQUEST['customer']) ? $_REQUEST['customer'] : NULL;
         $start_date = isset($_REQUEST['start_date']) ? $_REQUEST['start_date'] : NULL;
         $end_date = isset($_REQUEST['end_date']) ? $_REQUEST['end_date'] : NULL;
+        $startDate = NULL;
+        $enddate = NULL;
         if ($start_date) {
-            $startDate = trim($this->sma->fld($start_date));
-            $enddate = trim($end_date ? $this->sma->fld($end_date) : date('Y-m-d'));
+            if (preg_match('/^\d{4}-\d{2}-\d{2}/', $start_date)) {
+                $startDate = substr($start_date, 0, 10);
+                $enddate = ($end_date && preg_match('/^\d{4}-\d{2}-\d{2}/', $end_date)) ? substr($end_date, 0, 10) : date('Y-m-d');
+            } else {
+                $startDate = trim($this->sma->fld($start_date));
+                $enddate = trim($end_date ? $this->sma->fld($end_date) : date('Y-m-d'));
+            }
         }
 
         $transactionData = $this->reports_model->getCustomerLedger($customer_id, $startDate, $enddate);
@@ -20512,7 +20529,8 @@ window.MyHandler.setPrintRequest('<?php echo json_encode($print); ?>');
             $this->session->set_flashdata('error', lang('nothing_found'));
             redirect($_SERVER["HTTP_REFERER"]);
         } else {
-            $countData = count($getData);
+            $page = $this->input->post('page') ? $this->input->post('page') : 1;
+            $countData = is_array($transactionData) ? count($transactionData) : 0;
 
             $totalRows = $countData;    
             $per_page_rows = 10;
@@ -20539,6 +20557,7 @@ window.MyHandler.setPrintRequest('<?php echo json_encode($print); ?>');
             $TotalDabit = $TotalCredit = $Totalbalance = 0;
             $LastRowBalance = 0;
 
+            if (!empty($transactionData)) {
             foreach ($transactionData as $rowdata) {
             
                 if ($rowdata['paid_by']) {
@@ -20616,6 +20635,7 @@ window.MyHandler.setPrintRequest('<?php echo json_encode($print); ?>');
                 }
                 
             }//end foreach.
+            }
 
             $tableFooter = '</tbody>
                                 <tfoot class="dtFilter">
@@ -24411,8 +24431,13 @@ window.MyHandler.setPrintRequest('<?php echo json_encode($print); ?>');
         $enddate   = NULL;
 
         if ($start_date) {
-            $startDate = trim($this->sma->fld($start_date));
-            $enddate   = trim($end_date ? $this->sma->fld($end_date) : date('Y-m-d'));
+            if (preg_match('/^\d{4}-\d{2}-\d{2}/', $start_date)) {
+                $startDate = substr($start_date, 0, 10);
+                $enddate = ($end_date && preg_match('/^\d{4}-\d{2}-\d{2}/', $end_date)) ? substr($end_date, 0, 10) : date('Y-m-d');
+            } else {
+                $startDate = trim($this->sma->fld($start_date));
+                $enddate   = trim($end_date ? $this->sma->fld($end_date) : date('Y-m-d'));
+            }
         }
        
 

@@ -121,6 +121,8 @@ $v .=($user_warehouse=='0' ||$user_warehouse==NULL)?'':"&warehouse=" . str_repla
                         <div class="controls">
                             <div class="input-group">	
                                 <?php
+                                $_1 = '';
+                                $_2 = '';
                                 if($report_type){
                                     $selected = '_'.$report_type;
                                     $$selected = ' selected="selected" ';

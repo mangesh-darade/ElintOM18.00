@@ -21,7 +21,7 @@ Test **only modules already started** in this upgrade (fixes + `upgrade/phase4_*
 | 4 Sales | **✅ Module complete** | `upgrade/phase4_sales_links_test.php` |
 | 5 Products | **✅ Module complete** | `upgrade/phase4_products_links_test.php` |
 | 6 Purchases | **✅ Module complete** | `upgrade/phase4_purchases_links_test.php` + `upgrade/phase4_purchases_return_deep_test.php` |
-| 7 Reports | **Not done** — retest required | `upgrade/phase4_reports_links_test.php` + `upgrade/phase4_reports_deep_test.php` |
+| 7 Reports | **✅ Module complete** | `upgrade/phase4_reports_links_test.php` + `upgrade/phase4_reports_deep_test.php` |
 | 8 Customers | **Not done** — retest required | `upgrade/phase4_customers_links_test.php` |
 | 9 Suppliers & Billers | **Not done** — retest required | `upgrade/phase4_suppliers_billers_links_test.php` |
 | 10 Quotes | **Not done** — retest required | `upgrade/phase4_quotes_links_test.php` |

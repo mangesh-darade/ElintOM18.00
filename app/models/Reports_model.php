@@ -682,7 +682,7 @@ public function getWarehouseStockValue($id)
             $this->db->join('sales', 'sales.id=costing.sale_id')
                     ->where('sales.warehouse_id', $warehouse_id);
         }
-        $this->db->where('sale_id IS NOT NULL');
+        $this->db->where($this->db->dbprefix('costing') . '.sale_id IS NOT NULL');
         $q = $this->db->get('costing');
         if ($q->num_rows() > 0) {
             return $q->row();
@@ -2047,14 +2047,50 @@ public function getWarehouseStockValue($id)
      */
     public function payment_option() {
 
-        $getpayment_option = $this->db->select('authorize,instamojo,ccavenue,credit_card as CC,debit_card as DC,gift_card,neft as NEFT,paytm_opt as Paytm,UPI_QRCODE,google_pay as Googlepay,swiggy,zomato,ubereats,magicpin,complimentary as complimentry,paynear as paynear,payumoney,stripe,Stripe_PM,cabby as tabby,tamara,pos')
-        ->get('sma_pos_settings')
-        ->row_array();
+        $wanted = array(
+            'authorize' => 'authorize',
+            'instamojo' => 'instamojo',
+            'ccavenue' => 'ccavenue',
+            'credit_card' => 'CC',
+            'debit_card' => 'DC',
+            'gift_card' => 'gift_card',
+            'neft' => 'NEFT',
+            'paytm_opt' => 'Paytm',
+            'UPI_QRCODE' => 'UPI_QRCODE',
+            'google_pay' => 'Googlepay',
+            'swiggy' => 'swiggy',
+            'zomato' => 'zomato',
+            'ubereats' => 'ubereats',
+            'magicpin' => 'magicpin',
+            'complimentary' => 'complimentry',
+            'paynear' => 'paynear',
+            'payumoney' => 'payumoney',
+            'stripe' => 'stripe',
+            'Stripe_PM' => 'Stripe_PM',
+            'cabby' => 'tabby',
+            'tamara' => 'tamara',
+            'pos' => 'pos',
+        );
+        $existing = $this->db->list_fields('pos_settings');
+        $parts = array();
+        foreach ($wanted as $col => $alias) {
+            if (in_array($col, $existing, true)) {
+                $parts[] = ($col === $alias) ? $col : "{$col} as {$alias}";
+            }
+        }
+        $getpayment_option = array();
+        if ($parts) {
+            $getpayment_option = $this->db->select(implode(',', $parts))
+                ->get('sma_pos_settings')
+                ->row_array();
+        }
         $optionvalue = 'cash,Cheque,deposit,other,credit_note,award_point,';
-        foreach ($getpayment_option as $key => $option) {
+        if ($getpayment_option) {
+            foreach ($getpayment_option as $key => $option) {
 
-            if ($option) {
-                $optionvalue .= $key . ',';
+                if ($option) {
+                    $optionvalue .= $key . ',';
+                }
             }
         }
 
@@ -2903,6 +2939,50 @@ public function getWarehouseStockValue($id)
         return FALSE;
     }
 
+    public function brand_chart_details($WarehouseId = 0, $Type = NULL) {
+        $data = array();
+        if ($Type == 'Monthly') {
+            for ($i = 0; $i < 6; $i++) {
+                $monthKey = date("Y-m", strtotime(date('Y-m-01') . " -$i months"));
+                $start = date('Y-m-01', strtotime($monthKey));
+                $end = date('Y-m-t', strtotime($monthKey));
+                $rows = $this->sale_brand_chart_details($WarehouseId, $start, $end);
+                $data[$monthKey] = $rows ? $rows : array();
+            }
+        } else {
+            for ($i = 0; $i < 7; $i++) {
+                $dailyKey = date('d-m-Y', strtotime("-$i days"));
+                $start = date('Y-m-d', strtotime("-$i days"));
+                $end = $start;
+                $rows = $this->sale_brand_chart_details($WarehouseId, $start, $end);
+                $data[$dailyKey] = $rows ? $rows : array();
+            }
+        }
+        return $data;
+    }
+
+    public function categories_chart_details($WarehouseId = 0, $Type = NULL) {
+        $data = array();
+        if ($Type == 'Monthly') {
+            for ($i = 0; $i < 6; $i++) {
+                $monthKey = date("Y-m", strtotime(date('Y-m-01') . " -$i months"));
+                $start = date('Y-m-01', strtotime($monthKey));
+                $end = date('Y-m-t', strtotime($monthKey));
+                $rows = $this->sale_categories_chart_details($WarehouseId, $start, $end);
+                $data[$monthKey] = $rows ? $rows : array();
+            }
+        } else {
+            for ($i = 0; $i < 7; $i++) {
+                $dailyKey = date('d-m-Y', strtotime("-$i days"));
+                $start = date('Y-m-d', strtotime("-$i days"));
+                $end = $start;
+                $rows = $this->sale_categories_chart_details($WarehouseId, $start, $end);
+                $data[$dailyKey] = $rows ? $rows : array();
+            }
+        }
+        return $data;
+    }
+
     public function sale_brand_chart_details($WarehouseId = 0, $StartDate, $EndDate, $Records = '') {
         $Whr = '';
         if ($WarehouseId != 0)
@@ -3279,14 +3359,16 @@ public function getWarehouseStockValue($id)
         $getDepositData = $this->db->get('sma_deposits')->result_array();
 
         $combpinData = array_merge($getSalesData, $getDepositData);
-        $getData = '';
+        $getData = array();
         foreach ($combpinData as $key => $items) {
 
             $getData[] = $items;
         }
 
-        $col = array_column($getData, "date");
-        array_multisort($col, SORT_ASC, $getData); //SORT_DESC //SORT_ASC
+        if (!empty($getData)) {
+            $col = array_column($getData, "date");
+            array_multisort($col, SORT_ASC, $getData); //SORT_DESC //SORT_ASC
+        }
         return $getData;
     }
 
@@ -4114,10 +4196,12 @@ public function getWarehouseStockValue($id)
 
         return $this->db->query($final_sql, $final_bindings)->result();
     }
-    public function get_currency($id) {
+    public function get_currency($id = null) {
         $this->db->select('*');
         $this->db->from('coinage');
-        $this->db->where_in('id', $id);
+        if ($id !== null) {
+            $this->db->where_in('id', $id);
+        }
         $query = $this->db->get();
         return $query->result();
     }

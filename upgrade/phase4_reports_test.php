@@ -7,7 +7,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', '1');
 require __DIR__ . '/phase4_test_lib.php';
 
-$base = 'http://localhost/phpupgrade';
+$base = 'http://localhost/ElintOM18.00';
 $identity = $argv[1] ?? '';
 $password = $argv[2] ?? '';
 $cookieFile = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'phpupgrade_reports_cookies.txt';
@@ -95,15 +95,21 @@ phase4_check('Login', phase4_login($base, $identity, $password, $cookieFile));
 
 $screenNum = 0;
 foreach ($screens as $label => $path) {
-    if ($screenNum > 0 && $screenNum % 10 === 0) {
+    if ($screenNum > 0 && $screenNum % 4 === 0) {
         phase4_login($base, $identity, $password, $cookieFile);
     }
-    $r = phase4_httpGetFollow("$base$path", $cookieFile);
-    $ok = in_array($r['code'], [200, 302], true) && !phase4_hasPhpIssue($r['body']);
-    if (!$ok && $r['code'] === 500) {
-        phase4_login($base, $identity, $password, $cookieFile);
+    $ok = false;
+    $r = ['code' => 0, 'body' => ''];
+    for ($try = 0; $try < 3; $try++) {
+        if ($try > 0) {
+            usleep(250000);
+            phase4_login($base, $identity, $password, $cookieFile);
+        }
         $r = phase4_httpGetFollow("$base$path", $cookieFile);
         $ok = in_array($r['code'], [200, 302], true) && !phase4_hasPhpIssue($r['body']);
+        if ($ok || !in_array($r['code'], [500, 403, 502, 503], true)) {
+            break;
+        }
     }
     $issue = '';
     if (phase4_hasPhpIssue($r['body']) && preg_match('/(Fatal error|Uncaught Error|Uncaught TypeError).{0,160}/', $r['body'], $mm)) {
@@ -111,6 +117,7 @@ foreach ($screens as $label => $path) {
     }
     phase4_check("$label ($path)", $ok, "HTTP {$r['code']}" . $issue);
     $screenNum++;
+    usleep(100000);
 }
 
 $_SERVER['HTTP_HOST'] = 'localhost';

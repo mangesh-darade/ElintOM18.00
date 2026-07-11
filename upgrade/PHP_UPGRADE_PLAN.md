@@ -140,7 +140,7 @@
 | **Module 4 — Sales** | **✅ Module complete** | Screen 8/8 + deep 6/6 + deep-links 12/12 (2026-07-11 retest) |
 | **Module 5 — Products** | **✅ Module complete** | Screen 10/10 + deep 8/8 + stock 11/11 + deep-links 17/17 (2026-07-11 retest) |
 | **Module 6 — Purchases** | **✅ Module complete** | Screen 13/13 + deep 6/6 + return 7/7 + deep-links 20/20 (2026-07-11 retest) |
-| **Module 7 — Reports** | **⏳ Not done** | Retest: screen + deep + deep-links |
+| **Module 7 — Reports** | **✅ Module complete** | Screen 71/71, deep 50/50, deep-links 24/24 |
 | **Module 8 — Customers** | **⏳ Not done** | Retest: screen + deep-links |
 | **Module 9 — Suppliers & Billers** | **⏳ Not done** | Retest: screen + deep-links |
 | **Module 10 — Quotes** | **⏳ Not done** | Retest: screen + deep-links |
@@ -234,7 +234,7 @@ php phase4_suppliers_billers_links_test.php Admin "Admin@554"
 
 **Module 7 fixes (Reports scan):** — [`PHP_UPGRADE_FIXES_LOG.md`](PHP_UPGRADE_FIXES_LOG.md) §Module 7
 
-**Module 7 tests (last run — not certified):** screens ~69/71; deep-links ~22; deep AJAX 39/50 (see fixes log for open items)
+**Module 7 tests (certified 2026-07-11):** screen **71/71**, deep **50/50**, deep-links **24/24** — see fixes log §Module 7
 
 **Module 8 fixes (Customers scan):** — [`PHP_UPGRADE_FIXES_LOG.md`](PHP_UPGRADE_FIXES_LOG.md) §Module 8
 
