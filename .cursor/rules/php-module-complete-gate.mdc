@@ -1,0 +1,80 @@
+---
+description: Module-wise deep-link tests required; only test modules already upgraded in this project
+alwaysApply: true
+---
+
+# Module Complete Gate — phpupgrade
+
+**Never mark a module ✅ complete** from list/index screens alone.
+
+## Scope — Which Modules to Test
+
+Test **only modules already started** in this upgrade (fixes + `upgrade/phase4_*` scripts exist). Do **not** run deep-link sweeps on untouched modules from `upgrade/PHP_UPGRADE_PLAN.md`.
+
+| Module | Status (2026-07-07) | Deep-link script |
+|--------|---------------------|------------------|
+| 1 Auth | Upgraded — deep-links PASS | `upgrade/phase4_auth_links_test.php` |
+| 2 Welcome | Upgraded — deep-links PASS | `upgrade/phase4_welcome_links_test.php` |
+| 3 POS | Upgraded — deep-links PASS | `upgrade/phase4_pos_links_test.php` |
+| 4 Sales | Upgraded — deep-links PASS | `upgrade/phase4_sales_links_test.php` |
+| 5 Products | Upgraded — deep-links PASS | `upgrade/phase4_products_links_test.php` |
+| 6 Purchases | Upgraded — module complete | `upgrade/phase4_purchases_links_test.php` + `upgrade/phase4_purchases_return_deep_test.php` |
+| 7 Reports | Upgraded — module complete | `upgrade/phase4_reports_links_test.php` + `upgrade/phase4_reports_deep_test.php` |
+| 8 Customers | Upgraded — module complete | `upgrade/phase4_customers_links_test.php` |
+| 9 Suppliers & Billers | Upgraded — module complete | `upgrade/phase4_suppliers_billers_links_test.php` |
+| 10 Quotes | Upgraded — module complete | `upgrade/phase4_quotes_links_test.php` |
+| 11 Transfers | Upgraded — module complete | `upgrade/phase4_transfers_links_test.php` |
+| 12+ | Not started | Test **after** module scan + fixes |
+
+When a **new module** is upgraded, add it to this table and create its `phase4_{name}_links_test.php` before claiming complete.
+
+## Required Per Module (in order)
+
+1. **Screen** — `phase4_{module}_test.php` (list, add, main AJAX).
+2. **Deep submit** — `phase4_{module}_deep_test.php` (save flow).
+3. **Deep links** — `phase4_{module}_links_test.php` (**mandatory**, module-wise):
+   - Every P1 URL with `{id}`, `?query`, or view→controller link from `themes/default/views/{module}/`
+   - Examples: `print_barcodes/{id}`, `view/{id}`, `edit/{id}`, `pdf/{id}`, `modal_view/{id}`
+   - Use **real IDs** from DataTables/AJAX (not only `id=1`)
+   - Assert HTTP 200 (or expected redirect), no fatal/TypeError
+4. **Stock/special** (if module has inventory): `phase4_{module}_stock_deep_test.php` when applicable.
+5. **Grep** — PHP 8.5 patterns below on that module's controller + views.
+6. **Plan** — update `upgrade/PHP_UPGRADE_PLAN.md` fix table + testing log.
+7. **Fixes log** — append **Old → New** rows to `upgrade/PHP_UPGRADE_FIXES_LOG.md` per `php-upgrade-fixes-log.mdc`.
+
+## When User Says "test" / "deep check"
+
+- Run **all existing** `phase4_*` scripts for **upgraded modules only** (1–7 today).
+- If deep-link script missing for an upgraded module, **create it first**, then run.
+- Report per module: screen / deep / deep-links pass counts.
+
+## PHP 8.5 — Grep Each Upgraded Module
+
+| Pattern | Risk | Minimal fix |
+|---------|------|-------------|
+| `array_values($this->...->get...()` | `false` → TypeError | `is_array($x) ? array_values($x) : []` |
+| `foreach ($rows` without guard | null → TypeError | `if (!empty($rows)) { foreach ...` |
+| `redirect($_SERVER["HTTP_REFERER"])` | missing header | `isset(...) ? ... : site_url('fallback')` |
+| `$obj->prop` after `getByID()` | false → fatal | early redirect |
+| `count($_POST['key'])` | missing key | `isset(...) ? sizeof(...) : 0` |
+| `strip_tags(post('x'))` when `x` + `x[]` posted | array → TypeError | `is_array($v) ? '' : (string)$v` |
+
+## Plan Wording
+
+- **✅ Screen PASS** — list/add/AJAX only.
+- **✅ Deep PASS** — submit flow OK.
+- **✅ Deep-links PASS** — `phase4_{module}_links_test.php` all green.
+- **✅ Module complete** — only when screen + deep + deep-links pass for that module.
+
+## Example — Products deep links (must not skip)
+
+```
+GET /products/print_barcodes/{id}
+GET /products/view/{id}
+GET /products/edit/{id}
+GET /products/modal_view/{id}
+GET /products/quantity_adjustments
+GET /products/add_adjustment
+```
+
+Missed deep link = not complete (e.g. `print_barcodes/238` was 500 until `array_values(false)` fix).

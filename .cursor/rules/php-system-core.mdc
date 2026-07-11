@@ -1,0 +1,30 @@
+---
+description: CodeIgniter system/ folder — CI 3.1.13 PHP 8.5 compat only
+globs: system/**/*.php
+alwaysApply: false
+---
+
+# System Core — PHP 8.5 Rules
+
+`system/` is CodeIgniter **3.1.13**. Already includes `PHP8SessionWrapper.php`.
+
+## Subagent First
+
+Use `explore` subagent to scan `system/` for PHP 8.5 issues before editing. Use `shell` subagent to run PHP and verify bootstrap/session after changes.
+
+## Allowed Changes
+
+- PHP 8.5 compat fixes in `system/core/`, `system/libraries/Session/`
+- Null coalescing, type hints, deprecated function replacements
+- `system/core/compat/` polyfills if needed
+
+## Not Allowed
+
+- Upgrading to CodeIgniter 4
+- Changing Router, URI, or bootstrap flow
+- Modifying database drivers unless mysqli errors on PHP 8.5
+- Refactoring unrelated system files
+
+## After Any system/ Change
+
+Test: login/session, database connect, form submit, file upload, one PDF export.

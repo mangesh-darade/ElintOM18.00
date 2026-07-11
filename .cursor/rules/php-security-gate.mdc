@@ -1,0 +1,55 @@
+---
+description: Security gate — run before any dev task; PM audit checklist
+alwaysApply: true
+---
+
+# Security Gate (Pre-Dev + PM Review)
+
+**Run this BEFORE writing or changing code.** PM uses same checklist on every PR/review.
+
+## Pre-Development Gate (Agent MUST do first)
+
+1. **Scope** — List files to touch; confirm no secrets in diff (`password`, `api_key`, `secret`, `.env`).
+2. **Scan** — Grep touched area for: `eval(`, `exec(`, `shell_exec(`, `unserialize(`, raw `$_GET`/`$_POST` in SQL, `mysql_*`, hardcoded keys.
+3. **Impact** — Auth, payments, file upload, or API? → apply `php-security-code.mdc` + `php-security-payments.mdc`.
+4. **Config change?** → apply `php-security-config.mdc`.
+5. **Do not weaken** — CSRF exclusions, `db_debug`, `display_errors`, SSL verify, or auth checks unless user explicitly requests.
+
+If P0/P1 issue found in scope → **fix or report before feature work**.
+
+## Severity
+
+| Level | Examples | Action |
+|-------|----------|--------|
+| **P0** | SQLi, auth bypass, exposed secrets, RCE (`eval`/unsafe `unserialize`) | Block merge; fix immediately |
+| **P1** | XSS (unescaped output), missing CSRF on state-changing forms, weak payment callback verify | Fix before release |
+| **P2** | `db_debug` on, verbose errors in prod, missing upload type check | Fix in same sprint |
+| **P3** | Deprecated crypto, info disclosure in logs | Track in backlog |
+
+## PM Review Checklist (every change)
+
+| # | Check | Pass |
+|---|-------|------|
+| 1 | No credentials/API keys committed or logged | ☐ |
+| 2 | User input not concatenated into SQL (use CI Query Builder / bindings) | ☐ |
+| 3 | View output escaped (`html_escape`, `xss_clean` where existing pattern) | ☐ |
+| 4 | POST forms use CSRF (not added to `csrf_exclude_uris` without approval) | ☐ |
+| 5 | Auth/permission checks on admin & payment actions (`ion_auth`, `in_group`) | ☐ |
+| 6 | File uploads: extension/MIME/size limits unchanged or tightened | ☐ |
+| 7 | Payment callbacks validate signature/amount/order server-side | ☐ |
+| 8 | No new `eval`, `extract($_POST)`, or `unserialize` on user data | ☐ |
+| 9 | External HTTP uses TLS; curl SSL verify not disabled | ☐ |
+| 10 | Production: `db_debug` FALSE, `display_errors` off, strong `encryption_key` | ☐ |
+
+## Subagent for Security Audit
+
+| Task | Subagent | When |
+|------|----------|------|
+| Security scan / vuln mapping | `explore` | New module, payment flow, auth change |
+| Verify grep + config | `shell` | Before commit on security-sensitive PR |
+
+## Non-Negotiable (this project)
+
+- **No security "improvements"** that change business logic during PHP upgrade unless user/PM approves.
+- **Report** P0/P1 in touched files even if out of scope — do not silently ignore.
+- **Secrets** — never commit; warn if `database.php`, `payment_gateways.php`, `google_config.php` contain real credentials.

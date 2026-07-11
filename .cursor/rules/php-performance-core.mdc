@@ -1,0 +1,91 @@
+---
+description: No over-engineering + sub-1s screen/AJAX performance for phpupgrade
+alwaysApply: true
+---
+
+# Performance & Minimal Code — phpupgrade
+
+ElintPOS on **CI 3.1.13 / PHP 8.5**. Every change must stay **small, fast, and behavior-identical**.
+
+## Performance Budget
+
+| Target | Limit |
+|--------|--------|
+| Screen load (logged-in) | **< 1s** TTFB on local WAMP |
+| AJAX / DataTables / product search | **< 1s** |
+| Sale submit / save | **< 2s** acceptable (DB write); avoid extra work in same request |
+| PDF generation | On-demand only — never on every page load |
+
+If a fix risks slowing hot paths (POS, Sales list, login), **choose the smaller fix** or report to user.
+
+## No Over-Engineering (Required)
+
+**Do NOT add during upgrade unless user explicitly asks:**
+
+- New service layers, repositories, DTOs, or base classes
+- Generic helpers used once
+- Caching (Redis, file cache, memo wrappers)
+- New Composer packages for “cleaner” code
+- Refactors “while we’re here” (rename, reorder, extract method)
+- Extra test scripts outside `upgrade/` directory (keep new `phase4_*` scripts in `upgrade/`)
+- `#[\AllowDynamicProperties]` on every class when parent already has it
+- Wrapping 1-line null guards in new functions
+
+**DO:**
+
+- Fix only the failing line/path (PHP 8.5 fatal, null, type)
+- Reuse existing CI patterns: `$this->db->where()`, `$this->data`, `form_open()`
+- One guard, one query pattern — match surrounding code
+
+```php
+// ❌ Over-engineered
+class SaleDepositLogHelper {
+    public static function isNonEmpty($log) { return is_array($log) && count($log) > 0; }
+}
+
+// ✅ Minimal (same behavior)
+$depositLog = array();
+// ...
+if (!empty($depositLog)) { ... }
+```
+
+## Before You Edit — Quick Check
+
+1. **Queries**: No new query inside loops; no duplicate `getSetting()` / `getUser()` per row.
+2. **Views**: No DB calls added to views; no `foreach` on unbounded result without limit.
+3. **Controllers**: No loading MPDF/Stripe/Google SDK unless that action needs it.
+4. **Autoload**: Don’t add libraries to global autoload for one screen.
+5. **Diff size**: Prefer < 20 lines per file unless scan proves more are required.
+
+## Hot Paths (extra care)
+
+| Path | Keep fast |
+|------|-----------|
+| `Pos.php` / `Pos_elite.php` | `index`, `getProductDataByCode`, sale submit |
+| `Sales.php` | list AJAX, add/edit save |
+| `Auth.php` | login |
+| `Welcome.php` | dashboard widgets |
+| `sales/suggestions` | product autocomplete |
+
+Avoid `sleep()`, remote HTTP, or heavy `file_get_contents` on these paths.
+
+## Performance Verify (when touching hot paths)
+
+After changes, run existing smoke tests — do not invent heavy suites:
+
+```bash
+c:\wamp64\bin\php\php8.5.0\php.exe upgrade\phase4_pos_test.php <user> <pass>
+c:\wamp64\bin\php\php8.5.0\php.exe upgrade\phase4_pos_deep_test.php <user> <pass>
+```
+
+If no test exists for the module, one **HTTP 200 + no fatal** check is enough — don’t build frameworks.
+
+## Conflicts with Upgrade Rules
+
+| php-upgrade-core | This rule |
+|------------------|-----------|
+| Fix PHP 8.5 errors | Yes — minimal line fix only |
+| No business logic change | Yes — performance fixes must not alter totals/workflows |
+| Use subagents for module scans | Yes — but **implement** with smallest diff, not broad refactors |
+
+When in doubt: **smallest correct fix that keeps the screen under 1 second.**

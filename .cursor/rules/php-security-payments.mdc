@@ -1,0 +1,58 @@
+---
+description: Payment & crypto security — gateways, callbacks, encryption
+globs: app/{controllers,models,libraries,helpers}/**/*
+alwaysApply: false
+---
+
+# Payments & Crypto — Security Rules
+
+Trigger: edits to `Pos.php`, `Sales.php`, `Shop.php`, `Payments.php`, `Stripe_payments.php`, `Paypal_*`, `Paytm.php`, `Ccavenue.php`, `crypto_helper.php`, `Encrypt.php`, `payment_gateways.php`.
+
+## Pre-Edit Gate
+
+1. Map callback URLs — must stay identical (upgrade rule).
+2. Confirm verify step exists: checksum (Paytm), signature (Stripe/Razorpay), IPN validate (PayPal).
+3. Never log full card numbers, CVV, or secret keys.
+
+## Payment Callbacks
+
+```php
+// ✅ Keep server-side verification — do not remove for "cleanup"
+// Paytm: verifychecksum_e / checksum
+// Stripe: webhook signature or charge retrieve
+// PayPal IPN: postback validation to paypal.com
+// CCAvenue: decrypt + parse; amount/order match DB before mark paid
+```
+
+- **Amount** — always compare gateway amount to DB order total server-side.
+- **Order ID** — idempotent: paid status set once; no double-credit on replay.
+- **Do not** trust client-only `paid=1` POST without gateway proof.
+
+## Secrets & Keys
+
+| File | Rule |
+|------|------|
+| `app/config/payment_gateways.php` | Keys from config/DB only; no new hardcoded secrets |
+| `Shop.php` / OAuth | Client secrets in `google_config.php` / `facebook.php` — not in controller |
+| `Apicrypter.php` | Hardcoded key is legacy — **do not rotate** without PM (breaks existing tokens) |
+
+## Encryption (OpenSSL migration)
+
+- Preserve cipher, IV, padding — **behavior identical** (already migrated from mcrypt).
+- Do not weaken `Encrypt.php` or remove `_add_cipher_noise` during compat fixes.
+- SMTP password decode must roundtrip — test after any `Encrypt.php` change.
+
+## PCI / Data Handling
+
+- Card data via gateway token (Stripe token) — never store PAN/CVV in `sma_*` tables.
+- Mask card numbers in logs and admin UI (last4 only).
+
+## PM Checklist (payment changes)
+
+| # | Check | Pass |
+|---|-------|------|
+| 1 | Callback URL unchanged | ☐ |
+| 2 | Signature/checksum verification intact | ☐ |
+| 3 | Amount + order ID validated server-side | ☐ |
+| 4 | No secrets in commit | ☐ |
+| 5 | Test mode vs live keys not swapped | ☐ |

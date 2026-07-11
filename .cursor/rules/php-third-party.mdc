@@ -1,0 +1,37 @@
+---
+description: Third-party library PHP 8.5 upgrade — replace libs, keep behavior
+globs: app/third_party/**/*
+alwaysApply: false
+---
+
+# Third Party — PHP 8.5 Upgrade Rules
+
+Libraries in `app/third_party/` and `app/libraries/razorpay/`.
+
+## Subagent First
+
+Use `explore` subagent to list all references to the library in `app/` before upgrading. Use `shell` subagent to run PHP lint/test after swap.
+
+## Upgrade Map (behavior must stay same)
+
+| Library | Action | Used By |
+|---------|--------|---------|
+| MPDF | Upgrade to 8.x | PDF bills, challans, reports |
+| PHPExcel | Migrate to PhpSpreadsheet | CSV/Excel import-export |
+| Stripe (old) | New Stripe SDK | POS, Webshop payments |
+| PayPal | Update SDK | Payment gateways |
+| phpqrcode | Compat check only | Barcodes, QR |
+| Google/Facebook SDK | Update or trim to OAuth only | Social login |
+
+## Rules
+
+- Replace library calls with equivalent API — **same file output, same data format**.
+- Do not vendor entire new ecosystems; trim unused Google API services if possible.
+- `(integer)`/`(boolean)` casts in PHPExcel/MPDF — fix during migration, not in app code.
+- Test PDF generation and Excel import/export after each lib upgrade.
+- Keep `app/third_party/` paths working — update autoload/includes, not consumer logic.
+
+## Do Not
+
+- Rewrite app controllers to use new patterns when a drop-in lib swap works.
+- Delete `third_party` folders without verifying zero references in `app/`.

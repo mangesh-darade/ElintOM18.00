@@ -1,0 +1,62 @@
+---
+description: Config & deployment security — secrets, debug, CSRF, production
+globs: app/config/**/*,index.php,.htaccess
+alwaysApply: false
+---
+
+# Config & Deployment — Security Rules
+
+Applies to `app/config/`, `index.php`, `.htaccess`.
+
+## Secrets — Never Commit
+
+| Item | Location | Rule |
+|------|----------|------|
+| DB password | `database.php` | Local dev only; warn if pushing real prod creds |
+| `encryption_key` | `config.php` | Must be long/random; never empty in prod |
+| Stripe/PayPal keys | `payment_gateways.php` | Test keys in dev; prod via secure deploy |
+| OAuth secrets | `google_config.php`, `facebook.php` | Empty in repo; fill per environment |
+
+**Agent:** If diff adds/changes secrets → warn user before commit.
+
+## Production Settings (verify before go-live)
+
+| Setting | File | Production |
+|---------|------|--------------|
+| `ENVIRONMENT` | `index.php` | `production` |
+| `db_debug` | `database.php` | `FALSE` |
+| `display_errors` | `index.php` | off |
+| `log_threshold` | `config.php` | log errors; no display to user |
+| `csrf_protection` | `config.php` | `TRUE` |
+
+## CSRF
+
+- `csrf_exclude_uris` — **minimal list only** (payment IPN, webhooks, external callbacks).
+- Do not add URIs to exclude without PM approval.
+- New forms/AJAX POSTs must include CSRF token per CI pattern.
+
+## Multi-Tenant (`database.php`)
+
+- Subdomain routing logic — **do not alter** (upgrade rule).
+- No SQL injection via `HTTP_HOST` — subdomain must be validated/sanitized if used in queries.
+
+## `.htaccess` / Entry
+
+- Do not expose `app/`, `system/`, `vendor/` directly.
+- `index.php` front controller only.
+
+## Session & Cookies
+
+- `cookie_secure` → TRUE when HTTPS in production.
+- `cookie_httponly` → TRUE.
+- Session path under `application/cache/` or configured path — not world-writable.
+
+## PM Config Audit
+
+| # | Check | Pass |
+|---|-------|------|
+| 1 | No real secrets in git history (this commit) | ☐ |
+| 2 | `db_debug` FALSE for prod target | ☐ |
+| 3 | CSRF on; exclusions documented | ☐ |
+| 4 | `encryption_key` set and not default | ☐ |
+| 5 | Error display off in production | ☐ |

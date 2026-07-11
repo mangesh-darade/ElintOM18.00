@@ -1,0 +1,41 @@
+---
+description: PHP 8.5 fixes for app controllers, models, libraries, helpers
+globs: app/**/*.php
+alwaysApply: false
+---
+
+# App Code — PHP 8.5 Upgrade Rules
+
+Applies to `app/controllers/`, `app/models/`, `app/libraries/`, `app/helpers/`, `app/core/`.
+
+## Fix Pattern
+
+```php
+// ❌ PHP 8.5 deprecated — syntax only, logic unchanged
+$value = (integer) $row->qty;
+$flag = (boolean) $settings->active;
+
+// ✅ Same result, compatible syntax
+$value = (int) $row->qty;
+$flag = (bool) $settings->active;
+```
+
+## Subagent First
+
+Before editing any `app/` file, launch an `explore` subagent to find all related controllers, models, views, and third-party usage for that module. Use `shell` subagent to run PHP and verify errors.
+
+## Rules
+
+- Match existing naming, structure, and CodeIgniter patterns (`MY_Controller`, `page_construct`, model methods).
+- Fix null/undefined index warnings with minimal guards — do not restructure conditionals.
+- Do not split or rewrite large files (`Sales.php`, `Reports.php`, `Sma.php`) — patch only failing lines.
+- Payment callbacks (Razorpay, Paytm, CCAvenue) — fix errors only; keep callback URLs and response handling identical.
+- `database.php` subdomain switch — do not change tenant routing logic.
+
+## Module Priority (when testing/fixing)
+
+P1: Auth, POS, Sales, Products, System_settings
+P2: Purchases, Reports, Webshop, Restaurant, APIs
+P3: Transfers, Quotes, CRM, Production, UrbanPiper
+
+Refer to `upgrade/PHP_UPGRADE_PLAN.md` for full module → screen list.

@@ -1,0 +1,71 @@
+---
+description: App security — SQLi, XSS, auth, uploads, dangerous functions
+globs: app/**/*.php
+alwaysApply: false
+---
+
+# App Code — Security Rules
+
+Applies to `app/controllers/`, `app/models/`, `app/libraries/`, `app/helpers/`, `app/core/`.
+
+## Pre-Edit Scan (required)
+
+```bash
+# Run on files you will change
+rg -n "eval\(|exec\(|shell_exec\(|passthru\(|system\(|unserialize\(|extract\(\s*\$_(GET|POST|REQUEST)" app/
+rg -n "\$_(GET|POST|REQUEST|COOKIE)\[.*\].*(\->query|\->where|SELECT |INSERT |UPDATE |DELETE )" app/
+```
+
+## SQL Injection
+
+```php
+// ❌ NEVER — user input in raw SQL
+$this->db->query("SELECT * FROM sma_users WHERE id = " . $_GET['id']);
+
+// ✅ CI Query Builder (preserve existing pattern)
+$this->db->where('id', (int) $id);
+$this->db->get('users');
+```
+
+- Prefer `$this->db->where()`, `insert()`, `update()` with bindings.
+- If raw SQL exists — **do not refactor logic**; only add casting/`escape_str` when fixing PHP 8.5 errors in same line.
+
+## XSS
+
+- Views: escape user/DB data — `html_escape()`, `xss_clean()` per existing CI pattern.
+- Controllers: do not `echo` `$_POST`/`$_GET` directly into responses.
+- JSON APIs: `json_encode` with correct content-type; no HTML in JSON error messages with user input.
+
+## Authentication & Authorization
+
+- Admin actions: verify `$this->ion_auth->logged_in()` + `in_group()` / permissions — **do not remove** during upgrade.
+- Session: use CI session + `PHP8SessionWrapper`; no custom session ID from user input.
+- Password: do not change `ion_auth` hash method unless PM approves (currently may be sha1 in config).
+
+## Dangerous Functions — Block
+
+| Function | Rule |
+|----------|------|
+| `eval()` | Never add; report if found |
+| `unserialize()` on request data | Never; report |
+| `extract($_POST)` | Never add |
+| `include`/`require` with user path | Never |
+
+## File Upload
+
+- Keep existing validation (extension, path under `assets/mdata/`).
+- Do not widen `allowed_types` or disable checks during upgrade.
+- Stored files must not execute as PHP (upload dir should not allow `.php`).
+
+## APIs & Webhooks
+
+- Validate API keys/tokens server-side (`Api.php`, `Webhook.php`, `Restapi5.php`).
+- Webhooks: verify signature/source IP if existing pattern does; do not remove checks.
+
+## Fix vs Report
+
+| During PHP 8.5 upgrade | Action |
+|------------------------|--------|
+| Same-line null fix next to SQL | Add minimal cast/escape only |
+| Obvious SQLi/XSS in untouched code | **Report to PM** in summary; fix only if user asks |
+| Removed auth check (accidental) | **Revert** — never ship |

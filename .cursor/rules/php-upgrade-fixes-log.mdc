@@ -1,0 +1,65 @@
+---
+description: Append every PHP 8.5 fix to PHP_UPGRADE_FIXES_LOG.md (Old code → New code)
+alwaysApply: true
+---
+
+# Fixes Log — Required After Every Module Work
+
+All PHP 8.5 compatibility fixes must be recorded in **`upgrade/PHP_UPGRADE_FIXES_LOG.md`**.
+
+`upgrade/PHP_UPGRADE_PLAN.md` = strategy, screens, test status.  
+`upgrade/PHP_UPGRADE_FIXES_LOG.md` = **Old code → New code** fix history (this file).
+
+## When to update
+
+After **any** session that changes app code for the upgrade:
+
+- Module screen/deep test fixes
+- Framework / third-party / shared lib fixes
+- Test harness changes (`phase4_*`, `phase4_test_lib.php`) that matter for verification
+
+Do **not** wait for module “complete” — append as fixes land.
+
+## Entry format (mandatory)
+
+Under the correct **Module N** section (create section if new module):
+
+1. **Summary table row** (quick index):
+
+| # | File | Old | New | Type |
+|---|------|-----|-----|------|
+| N.x | `path/to/file.php` | Symptom (fatal, TypeError, 500) | One-line fix summary | `guard` / `syntax` / `restore` / `lib` / `test` / `db-env` |
+
+2. **Code block** immediately below the row (or under a module **Code details** subsection):
+
+```markdown
+#### N.x `path/to/file.php` — short title
+
+**Old code:**
+```php
+// exact or representative snippet before fix
+```
+
+**New code:**
+```php
+// exact or representative snippet after fix
+```
+```
+
+**Rules for code blocks:**
+- Use **real** before/after snippets from the diff when possible.
+- For batch fixes (e.g. 64× same pattern), one representative **Old/New** pair + note “applied N× in `File.php`”.
+- **Old** = what was there or the broken pattern. **New** = minimal fix; behavior unchanged.
+- Type `restore` = missing view/method controller already called (not new feature).
+- Type `db-env` = MySQL definer / schema — log symptom only, no fake PHP fix.
+
+## Also update in same session
+
+1. **Module header** in fixes log — test script names + pass counts.
+2. **Changelog** table at bottom of `upgrade/PHP_UPGRADE_FIXES_LOG.md`.
+3. **`upgrade/PHP_UPGRADE_PLAN.md`** — brief module fix table (point to fixes log §Module N).
+4. **`php-module-complete-gate.mdc`** — add module row when deep-link script exists.
+
+## Common patterns
+
+Reuse **§Common patterns** in the fixes log for HTTP_REFERER, `foreach` on false, `getByID` guards, `#[\AllowDynamicProperties]` — reference pattern ID (P1, P2, …) in table **New** column instead of duplicating prose.

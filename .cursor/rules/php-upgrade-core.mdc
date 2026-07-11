@@ -1,0 +1,101 @@
+---
+description: PHP 8.5 upgrade core rules — no logic change, minimal fixes only
+alwaysApply: true
+---
+
+# PHP 8.5 Upgrade — Core Rules
+
+This is a **CodeIgniter 3.1.13** ElintPOS/SMA ERP upgrade (`phpupgrade`). Target: **PHP 8.5.x**.
+
+## Mindset (Vibe Coding — merged)
+
+> **Ultimate Master Rule:** Think like an Architect. Code like a Senior Engineer. Test like a QA. Secure like a Hacker. Maintain like the Next Developer is Your Future Self.
+
+**Golden Principle:** Understand First → Design Second → Code Third → Review Fourth → Test Fifth → Deploy Last.
+
+| Step | In this upgrade |
+|------|-----------------|
+| Understand | Read controller/model/view path; use `explore` subagent before multi-file edits |
+| Design | Pick the **smallest** PHP 8.5 fix; no refactor or new architecture |
+| Code | Minimal diff only — match surrounding CI patterns |
+| Review | **Review every AI-generated line** before accepting (see below) |
+| Test | Run relevant `upgrade/phase4_*` scripts; module not complete without deep-links |
+| Deploy | Do not commit unless user asks; fixes log updated same session |
+
+**AI is pair programmer, not architect** — AI generates fixes; you (PM/user) own business logic and architectural decisions. **No logic change** stands.
+
+### Fail safely (#11)
+
+- Add null/false/`isset` guards — never expose stack traces, DB errors, or secrets to users.
+- Preserve existing error paths: redirects, `show_error`, flash messages — do not replace with new handling.
+- Do not weaken auth, CSRF, or payment verification to “make it work”.
+- If a guard would change workflow (skip step, alter totals), **stop and ask** — compatibility fix only.
+
+### Review AI code like a senior engineer (#14)
+
+Before finishing any task, verify:
+
+1. **Behavior** — same inputs → same outputs; no new routes, queries, or calculations.
+2. **Scope** — only PHP 8.5 compatibility touched; no drive-by cleanup.
+3. **Security** — `php-security-gate.mdc` checklist on every touched file.
+4. **Tests** — run or note which `upgrade/phase4_*` script covers the change.
+5. **Log** — append Old → New row to `upgrade/PHP_UPGRADE_FIXES_LOG.md`.
+
+## Non-Negotiable
+
+- **Do NOT change business logic** — sales, POS, payments, calculations, DB queries, workflows stay identical.
+- **Minimal diff only** — fix PHP 8.5 compatibility; no refactor, no cleanup, no "improvements" unless asked.
+- **Missing view/asset** — if controller already calls `load->view('module/foo')` and `foo.php` is absent (500 fatal), restore a minimal view matching existing `$data` — **not** a new feature.
+- **No new routes, screens, or workflows** — do not add tables, APIs, or business paths that did not exist in controller/plan before upgrade.
+- **Performance** — see `php-performance-core.mdc`: hot screens/AJAX **< 1s**, no over-engineering.
+- **Module complete** — see `php-module-complete-gate.mdc`: per-module screen + deep submit + **deep-link** tests; only test modules already upgraded.
+- **Preserve behavior** — same inputs → same outputs, same screens, same API responses.
+- **Do not commit** unless the user explicitly asks.
+- **Always use subagents (Task tool)** for every upgrade task — do not work solo on multi-step or module-wide jobs.
+
+## Subagent Usage (Required)
+
+Use Cursor **Task** subagents on every PHP upgrade task:
+
+| Task Type | Subagent | When |
+|-----------|----------|------|
+| Codebase search / module mapping | `explore` | Finding files, controllers, views, error sources |
+| Shell commands / PHP version / WAMP | `shell` | Running php, tests, grep across dirs, CI checks |
+| Multi-module fix or investigation | `generalPurpose` | Cross-file PHP 8.5 fixes, lib upgrades |
+| CI failure on PR | `ci-investigator` | Diagnose failed checks |
+
+**Rules for subagents:**
+- Launch subagents **in parallel** when tasks are independent (e.g. explore POS + explore Sales simultaneously).
+- Give each subagent full context: module name, screen, PHP 8.5, **no logic change**.
+- Parent agent synthesizes subagent results — do not skip subagents for "quick" fixes across multiple files.
+- For any module from `upgrade/PHP_UPGRADE_PLAN.md`, use `explore` first to map affected files before editing.
+
+## What TO Fix
+
+- PHP 8.5 fatal errors, deprecations, type/null warnings
+- Deprecated syntax: `(integer)`→`(int)`, `(boolean)`→`(bool)`, `(double)`→`(float)`, backticks→`shell_exec()`
+- Third-party lib incompatibilities (MPDF, PHPExcel→PhpSpreadsheet, Stripe SDK)
+- CI 3.1.13 session/compat issues (`PHP8SessionWrapper.php`)
+
+## What NOT TO Touch
+
+- Controller/model business rules, `Sma.php` calculation logic
+- URL routes, permissions, multi-tenant subdomain flow
+- UI/screen flow, view layout (unless PHP error blocks render)
+- Backup/copy files (`*_backup*`, `* copy.php`) — delete only when user asks
+
+## Upgrade Order
+
+Follow `upgrade/PHP_UPGRADE_PLAN.md`: Framework → Third Party → App Code → Module screen testing (Auth, POS, Sales, Products first).
+
+**Fix history:** After every fix session, append **Old → New** rows to `upgrade/PHP_UPGRADE_FIXES_LOG.md` per `php-upgrade-fixes-log.mdc`.
+
+## Security Gate (before any task)
+
+Follow `.cursor/rules/php-security-gate.mdc` — pre-dev scan + PM checklist. Report P0/P1 vulns in touched files; do not weaken auth, CSRF, or payment verification during upgrade.
+
+## Architecture (do not alter)
+
+- Entry: `index.php` | App: `app/` | Views: `themes/default/views/`
+- DB: subdomain-based in `app/config/database.php`, prefix `sma_`
+- Autoload: session, database, parser, sma
