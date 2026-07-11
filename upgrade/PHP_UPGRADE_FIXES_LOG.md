@@ -1537,7 +1537,65 @@ WHEN `rank` IS NULL OR TRIM(`rank`) = '' THEN NULL
 
 ---
 
-## Test scripts index (Modules 1–14)
+## Module 15 — Webshop Settings
+
+**Tests:** `phase4_webshop_settings_test.php` (**7/7**), `phase4_webshop_settings_links_test.php` (**4/4**) PASS  
+**Status:** ✅ Module complete — fixes applied + retest 2026-07-12  
+**Controllers:** `Webshop_settings.php` — `Webshop_settings_model.php`
+
+| # | File | Old | New | Type |
+|---|------|-----|-----|------|
+| 15.1 | `Webshop_settings.php` | `getWebshopSettings()` false → `->home_page` fatal | Fallback object `home_page => theme_1` | guard |
+| 15.2 | `Webshop_settings.php` | `foreach ($sections)` when `getActiveSections()` false | Init arrays + `!empty`/`is_array` guard | guard |
+| 15.3 | `Webshop_settings.php` | `foreach ($sections)` on null POST `section_id` | `!empty` + `is_array` guard; `!empty($data)` before update | guard |
+| 15.4 | `Webshop_settings.php` | `custom_pages()` bc uses undefined `$pageData['page_title']` | Breadcrumb without undefined var | guard |
+| 15.5 | `Webshop_settings.php` | `edit_custom_pages` wrong `$pageData[$page_key]` key | Use `$page` slug key + empty array fallback | guard |
+| 15.6 | `Webshop_settings.php` | `section_data` missing key in elements switch | `isset()` fallback to `''` | guard |
+| 15.7 | `Webshop_settings_model.php` | Undefined `$parent_id` in `get_categories()` | Init `$parent_id = null` before `(bool)` check | guard |
+| 15.8 | `elements_*.php` views | `unserialize()` on empty/non-string section data | `is_string` guard + `$sectionData` default | guard |
+| 15.9 | `sliders.php` | `scandir()` false → foreach TypeError | `is_array($files)` fallback `array()` | guard |
+| 15.10 | `settings.php` | `$wh` unset when no warehouses | Init `$wh = array('' => '')` before foreach | guard |
+| 15.11 | `elements_sections/` | Missing `elements_section_full_width_banner_2.php` | Restored from banner_1 partial (controller include) | restore |
+| 15.12 | `phase4_webshop_settings_*.php` | — | Screen + deep-link scripts | test |
+
+#### 15.2 `Webshop_settings.php` — getActiveSections foreach
+
+**Old code:**
+```php
+$sections = $this->webshop_settings_model->getActiveSections($this->webshop_settings->home_page);
+
+foreach ($sections as $key => $section) {
+```
+
+**New code:**
+```php
+$this->data['active_sections'] = array();
+$this->data['sections'] = array();
+
+$sections = $this->webshop_settings_model->getActiveSections($this->webshop_settings->home_page);
+
+if (!empty($sections) && is_array($sections)) {
+foreach ($sections as $key => $section) {
+```
+
+#### 15.5 `Webshop_settings.php` — edit_custom_pages page_data key
+
+**Old code:**
+```php
+$bc = array(..., ucwords('Edit ' . $pageData[$page_key]['page_title']));
+$this->data['page_data'] = $pageData[$page];
+```
+
+**New code:**
+```php
+$pageTitle = (is_array($pageData) && $page && isset($pageData[$page]['page_title'])) ? $pageData[$page]['page_title'] : lang('Edit Custom Pages');
+$bc = array(..., ucwords('Edit ' . $pageTitle));
+$this->data['page_data'] = (is_array($pageData) && $page && isset($pageData[$page])) ? $pageData[$page] : array();
+```
+
+---
+
+## Test scripts index (Modules 1–15)
 
 | Module | Scripts |
 |--------|---------|
@@ -1552,6 +1610,7 @@ WHEN `rank` IS NULL OR TRIM(`rank`) = '' THEN NULL
 | 9 Suppliers & Billers | `phase4_suppliers_billers_test.php`, `phase4_suppliers_billers_links_test.php` |
 | 10 Quotes | `phase4_quotes_test.php`, `phase4_quotes_links_test.php` |
 | 14 Webshop | `phase4_webshop_test.php`, `phase4_webshop_links_test.php` |
+| 15 Webshop Settings | `phase4_webshop_settings_test.php`, `phase4_webshop_settings_links_test.php` |
 | Shared | `phase4_test_lib.php` |
 
 **Run:** `cd upgrade && php phase4_<module>_*.php Admin "Admin@554"`
@@ -1583,6 +1642,7 @@ WHEN `rank` IS NULL OR TRIM(`rank`) = '' THEN NULL
 | 2026-07-11 | 12 | Module 12 Restaurant **certified complete** — kitchen_view restore, invoice/guest guards, test DB bootstrap; screen **10/10**, links **10/10** |
 | 2026-07-11 | 13 | Module 13 Production Unit **certified complete** — productionUnit array, warehouse/KOT guards, HTTP_REFERER; screen **21/21**, links **8/8** |
 | 2026-07-11 | 14 | Module 14 Webshop **certified complete** — raw_settings, rank SQL, cart_items/custom_pages guards; screen **12/12**, links **9/9** |
+| 2026-07-12 | 15 | Module 15 Webshop Settings **certified complete** — getWebshopSettings/sections/custom_pages/elements guards; screen **7/7**, links **4/4** |
 
 ---
 

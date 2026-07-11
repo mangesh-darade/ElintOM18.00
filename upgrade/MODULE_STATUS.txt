@@ -1,7 +1,7 @@
 ================================================================================
 PHP 8.5 UPGRADE — MODULE STATUS (ElintOM18.00)
 ================================================================================
-Updated : 2026-07-11
+Updated : 2026-07-12
 Branch  : Dev
 Plan    : PHP_UPGRADE_PLAN.md
 Fix log : PHP_UPGRADE_FIXES_LOG.md
@@ -12,10 +12,10 @@ PHASE OVERVIEW
 Phase 1  Framework (system/)           DONE (ElintOM18.00 2026-07-11)
 Phase 2  Third party (MPDF, Stripe...) DONE (ElintOM18.00 2026-07-11)
 Phase 3  App core (Sma, crypto, etc.)   IN PROGRESS (base fixes done)
-Phase 4  Module screen + deep testing   IN PROGRESS (14 of 24 complete)
+Phase 4  Module screen + deep testing   IN PROGRESS (15 of 24 complete)
 
 ================================================================================
-MODULES 1–14 — COMPLETE
+MODULES 1–15 — COMPLETE
 ================================================================================
 
 #   Module              Controller(s)              Status
@@ -36,14 +36,14 @@ MODULES 1–14 — COMPLETE
 13  Production Unit     Production_Unit.php,         COMPLETE — screen 21/21 + links 8/8 (2026-07-11)
                         Bill_of_material.php
 14  Webshop             Webshop.php                  COMPLETE — screen 12/12 + links 9/9 (2026-07-11)
+15  Webshop Settings    Webshop_settings.php         COMPLETE — screen 7/7 + links 4/4 (2026-07-12)
 
 ================================================================================
-PENDING MODULES (15–24) — NOT STARTED
+PENDING MODULES (16–24) — NOT STARTED
 ================================================================================
 
 #   Module              Controller(s)              Screens  Priority
 --  ------------------  -------------------------  -------  --------
-15  Webshop Settings    Webshop_settings.php         36       P3
 16  Eshop (Mobile API)  Eshop, Eshop_admin,          10       P2
                         Eshop_api.php
 17  Shop                Shop.php                     88       P3
@@ -60,8 +60,8 @@ PENDING MODULES (15–24) — NOT STARTED
 ================================================================================
 SUMMARY
 ================================================================================
-Complete  : 14 modules (Auth through Webshop)
-Pending   : 10 modules (15–24)
-Progress  : 14 / 24 modules certified complete
+Complete  : 15 modules (Auth through Webshop Settings)
+Pending   : 9 modules (16–24)
+Progress  : 15 / 24 modules certified complete
 
 ================================================================================

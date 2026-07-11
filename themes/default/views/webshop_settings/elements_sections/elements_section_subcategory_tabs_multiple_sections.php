@@ -1,8 +1,10 @@
 <div class="row">
     <div class="col-lg-12">
             <?php
-            if (!empty($sections['section_subcategory_tabs_multiple_sections'])) {
+            if (!empty($sections['section_subcategory_tabs_multiple_sections']) && is_string($sections['section_subcategory_tabs_multiple_sections'])) {
                 $sectionData = json_decode(unserialize($sections['section_subcategory_tabs_multiple_sections']), TRUE);
+            } else {
+                $sectionData = array();
             }
             ?>
             <table class="table table-bordered" >

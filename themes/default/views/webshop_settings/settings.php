@@ -110,7 +110,8 @@
                                 <div class="form-group">
                                     <label class="control-label"  for="warehouse_id"><?= lang("default_warehouse"); ?></label>
                                     <div class="controls"> 
-                                        <?php                                        
+                                        <?php
+                                        $wh = array('' => '');
                                         foreach ($warehouses as $warehouse) {
                                             $wh[$warehouse->id] = $warehouse->name . ' (' . $warehouse->code . ')';
                                         }

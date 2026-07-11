@@ -2,9 +2,11 @@
     <div class="col-lg-12">
             <?php
             
-            if (!empty($sections[$section_name])) {
+            if (!empty($sections[$section_name]) && is_string($sections[$section_name])) {
                 $sectionData = json_decode(unserialize($sections[$section_name]), TRUE);
-            } 
+            } else {
+                $sectionData = array();
+            }
 //            echo '<pre>';
 //            print_r($sectionData);
 //            echo '</pre>';

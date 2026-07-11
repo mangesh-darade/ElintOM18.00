@@ -1,7 +1,7 @@
 <div class="row">
     <div class="col-lg-12">
             <?php
-            if (!empty($section_data)) {
+            if (!empty($section_data) && is_string($section_data)) {
                 $sectionData = json_decode(unserialize($section_data), TRUE);
             } else {
                 $sectionData = '';

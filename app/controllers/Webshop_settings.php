@@ -33,6 +33,9 @@ class webshop_settings extends MY_Controller {
         $this->load->model('webshop_settings_model');
 
         $this->webshop_settings = $this->webshop_settings_model->getWebshopSettings();
+        if (!$this->webshop_settings) {
+            $this->webshop_settings = (object) ['home_page' => 'theme_1'];
+        }
 
         $this->upload_path = 'assets/mdata/'.$this->Customer_assets.'/uploads/';
         $this->thumbs_path = 'assets/mdata/'.$this->Customer_assets.'/uploads/thumbs/';
@@ -260,6 +263,7 @@ class webshop_settings extends MY_Controller {
             $display_status = $this->input->post('display_status');
             $display_order = $this->input->post('display_order');
 
+            if (!empty($sections) && is_array($sections)) {
             foreach ($sections as $section_id) {
 
                 $status = ($display_status[$section_id] ? $display_status[$section_id] : 0);
@@ -271,8 +275,9 @@ class webshop_settings extends MY_Controller {
                     "display_order" => $display_order[$section_id],
                 );
             }//end foreach 
+            }
 
-            if ($this->webshop_settings_model->updateWebshopSections($data)) {
+            if (!empty($data) && $this->webshop_settings_model->updateWebshopSections($data)) {
                 $this->session->set_flashdata('message', lang('section_updated'));
                 redirect('webshop_settings/sections');
             } else {
@@ -302,11 +307,16 @@ class webshop_settings extends MY_Controller {
 
         $this->data['webshop_settings'] = $this->webshop_settings;
 
+        $this->data['active_sections'] = array();
+        $this->data['sections'] = array();
+
         $sections = $this->webshop_settings_model->getActiveSections($this->webshop_settings->home_page);
 
+        if (!empty($sections) && is_array($sections)) {
         foreach ($sections as $key => $section) {
             $this->data['active_sections'][] = $section->section_name;
             $this->data['sections'][$section->section_name] = $section->section_data;
+        }
         }
 
         $this->data['section_name'] = $element_name;
@@ -339,7 +349,7 @@ class webshop_settings extends MY_Controller {
 
             case "section_fullwidth_notice":
 
-                $this->data['section_data'] = $this->data['sections']['section_fullwidth_notice'];
+                $this->data['section_data'] = isset($this->data['sections']['section_fullwidth_notice']) ? $this->data['sections']['section_fullwidth_notice'] : '';
 
                 break;
 
@@ -347,7 +357,7 @@ class webshop_settings extends MY_Controller {
 
                 $this->data['categories'] = $this->webshop_settings_model->get_categories();
 
-                $this->data['section_data'] = $this->data['sections']['section_top_categories'];
+                $this->data['section_data'] = isset($this->data['sections']['section_top_categories']) ? $this->data['sections']['section_top_categories'] : '';
 
                 break;
 
@@ -557,7 +567,7 @@ class webshop_settings extends MY_Controller {
 
         $custom_pages = $this->webshop_settings_model->getCustomPages();
 
-        $bc = array(array('link' => base_url(), 'page' => lang('Home')), array('link' => base_url('webshop_settings/custom_pages'), 'page' => lang('Custom Pages')), array('link' => '#', 'page' => ucwords($pageData['page_title'])));
+        $bc = array(array('link' => base_url(), 'page' => lang('Home')), array('link' => '#', 'page' => lang('Custom Pages')));
 
         $meta = array('page_title' => lang('Ecommerce Custom Pages'), 'bc' => $bc);
 
@@ -608,11 +618,12 @@ class webshop_settings extends MY_Controller {
 
             $pageData = $this->webshop_settings_model->getCustomPages($page_key);
 
-            $bc = array(array('link' => base_url(), 'page' => lang('Home')), array('link' => base_url('webshop_settings/custom_pages/'), 'page' => lang('Edit Custom Pages')), array('link' => '#', 'page' => ucwords('Edit ' . $pageData[$page_key]['page_title'])));
+            $pageTitle = (is_array($pageData) && $page && isset($pageData[$page]['page_title'])) ? $pageData[$page]['page_title'] : lang('Edit Custom Pages');
+            $bc = array(array('link' => base_url(), 'page' => lang('Home')), array('link' => base_url('webshop_settings/custom_pages/'), 'page' => lang('Edit Custom Pages')), array('link' => '#', 'page' => ucwords('Edit ' . $pageTitle)));
 
             $meta = array('page_title' => lang('Edit Custom Pages'), 'bc' => $bc);
 
-            $this->data['page_data'] = $pageData[$page];
+            $this->data['page_data'] = (is_array($pageData) && $page && isset($pageData[$page])) ? $pageData[$page] : array();
 
             $this->page_construct('webshop_settings/page_edit', $meta, $this->data);
         }

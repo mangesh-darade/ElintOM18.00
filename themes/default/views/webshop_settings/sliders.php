@@ -105,6 +105,9 @@
                                     <?= lang("Slider Background", "slide_bg"); ?>
                                     <?php
                                     $files = scandir("assets/mdata/$Customer_assets/uploads/webshop/slider/bg/");
+                                    if (!is_array($files)) {
+                                        $files = array();
+                                    }
                                     $slide_bg1[''] = 'None';
                                     foreach ($files as $key => $name) {
 
@@ -120,6 +123,9 @@
                                     <?= lang("Slider Image", "Image"); ?>
                                     <?php
                                     $files = scandir("assets/mdata/$Customer_assets/uploads/webshop/slider/slide/");
+                                    if (!is_array($files)) {
+                                        $files = array();
+                                    }
                                     $slide_image1[''] = 'None';
                                     foreach ($files as $key => $name) {
 
@@ -203,6 +209,9 @@
                                     <?= lang("Slider Background", "slide_bg"); ?>
                                     <?php
                                     $files = scandir("assets/mdata/$Customer_assets/uploads/webshop/slider/bg/");
+                                    if (!is_array($files)) {
+                                        $files = array();
+                                    }
                                     $slide_bg2[''] = 'None';
                                     foreach ($files as $key => $name) {
 
@@ -218,6 +227,9 @@
                                     <?= lang("Slider Image 2", "Image"); ?>
                                     <?php
                                     $files = scandir("assets/mdata/$Customer_assets/uploads/webshop/slider/slide/");
+                                    if (!is_array($files)) {
+                                        $files = array();
+                                    }
                                     $slide_image2[''] = 'None';
                                     foreach ($files as $key => $name) {
                                         if ($name == '.' || $name == '..')

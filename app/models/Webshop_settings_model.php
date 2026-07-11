@@ -93,6 +93,7 @@ class Webshop_settings_model extends CI_Model {
             $where['in_eshop'] = 1;
         }
         
+        $parent_id = null;
         if((bool)$parent_id){
             $where['parent_id'] = $parent_id;
         }
