@@ -1286,7 +1286,7 @@ if (!$this->Settings->overselling) {
 ## Module 11 — Transfers
 
 **Tests:** `phase4_transfers_test.php` (**10/10**), `phase4_transfers_links_test.php` (**12/12**) PASS  
-**Status:** ⏳ Not done — retest required (PRIMARY `Transfers.php` only; `Transfersnew.php` deferred)  
+**Status:** ✅ Module complete — fixes applied + retest 2026-07-11  
 **Controllers:** `Transfers.php` — `Transfers_model.php`
 
 | # | File | Old | New | Type |
@@ -1422,6 +1422,7 @@ if($this->input->is_ajax_request()) {
 | 2026-07-11 | 8 | Module 8 Customers **certified complete** — `getGiftCard` DESC→desc, `getGiftBalance` guards, HTTP_REFERER; screen **10/10**, links **19/19** |
 | 2026-07-11 | 9 | Module 9 Suppliers & Billers **certified complete** — HTTP_REFERER, getCompanyByID guards, suggestions `return array()`; screen **10/10**, links **14/14** |
 | 2026-07-11 | 10 | Module 10 Quotes **certified complete** — HTTP_REFERER, getQuoteByID guards, suggestions; screen **6/6**, links **10/10** |
+| 2026-07-11 | 11 | Module 11 Transfers **certified complete** — HTTP_REFERER, getTransferByID/Request guards, suggestions; screen **10/10**, links **12/12** |
 
 ---
 

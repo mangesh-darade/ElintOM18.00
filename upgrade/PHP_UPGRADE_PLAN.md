@@ -144,7 +144,7 @@
 | **Module 8 — Customers** | **✅ Module complete** | Screen 10/10, deep-links 19/19 |
 | **Module 9 — Suppliers & Billers** | **✅ Module complete** | Screen 10/10, deep-links 14/14 |
 | **Module 10 — Quotes** | **✅ Module complete** | Screen 6/6, deep-links 10/10 |
-| **Module 11 — Transfers** | **⏳ Not done** | Retest: screen + deep-links |
+| **Module 11 — Transfers** | **✅ Module complete** | Screen 10/10, deep-links 12/12 |
 | Remaining controllers (12–24) | Pending | Full module scan during Phase 4 |
 
 #### Phase 4 — Module Testing Log (last run 2026-07-07; status reset 2026-07-11 — pending retest)
@@ -250,7 +250,7 @@ php phase4_suppliers_billers_links_test.php Admin "Admin@554"
 
 **Module 11 fixes (Transfers):** — [`PHP_UPGRADE_FIXES_LOG.md`](PHP_UPGRADE_FIXES_LOG.md) §Module 11
 
-**Module 11 tests (last run — not certified):** screen 10/10, deep-links 12/12 PASS (`Transfersnew.php` deferred)
+**Module 11 tests (certified 2026-07-11):** screen 10/10, deep-links 12/12 PASS (`Transfersnew.php` deferred)
 
 **Stock/timing note:** Adjustment screen uses `async:false` on `product_list` + `qa_suggestions` in JS (`adjustments.js`) — causes UI “stuck” feel on large warehouses; server paths OK under 1s locally.
 
@@ -713,7 +713,7 @@ php phase4_suppliers_billers_links_test.php Admin "Admin@554"
 
 ---
 
-## 20. MODULE 16 — Eshop (Mobile App API)
+<!-- ## 20. MODULE 16 — Eshop (Mobile App API)
 
 | # | Submodule Group | Submodule | Controller | Screen/API Path | Priority | Test After Upgrade |
 |---|-----------------|-----------|------------|-----------------|----------|-------------------|
@@ -737,7 +737,7 @@ php phase4_suppliers_billers_links_test.php Admin "Admin@554"
 |---|-----------------|-----------|------------|-------------|----------|-------------------|
 | 1 | Templates | Shop T1 | Shop | `shop/T1/*` | P3 | Template 1 |
 | 2 | Templates | Shop T2 | Shop | `shop/T2/*` | P3 | Template 2 |
-| 3 | Components | Shared Components | Shop | `shop/components/*` | P3 | Shared components |
+| 3 | Components | Shared Components | Shop | `shop/components/*` | P3 | Shared components | -->
 
 ---
 

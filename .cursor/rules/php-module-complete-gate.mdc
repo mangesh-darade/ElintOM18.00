@@ -25,7 +25,7 @@ Test **only modules already started** in this upgrade (fixes + `upgrade/phase4_*
 | 8 Customers | **✅ Module complete** | `upgrade/phase4_customers_links_test.php` |
 | 9 Suppliers & Billers | **✅ Module complete** | `upgrade/phase4_suppliers_billers_links_test.php` |
 | 10 Quotes | **✅ Module complete** | `upgrade/phase4_quotes_links_test.php` |
-| 11 Transfers | **Not done** — retest required | `upgrade/phase4_transfers_links_test.php` |
+| 11 Transfers | **✅ Module complete** | `upgrade/phase4_transfers_links_test.php` |
 | 12+ | Not started | Test **after** module scan + fixes |
 
 When a **new module** is upgraded, add it to this table and create its `phase4_{name}_links_test.php` before claiming complete.

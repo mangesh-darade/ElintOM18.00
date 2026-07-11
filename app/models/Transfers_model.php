@@ -862,6 +862,7 @@ class Transfers_model extends CI_Model {
             }
             return $data;
         }
+        return array();
     }
     
      public function getPurchasedItems($where_clause) {
@@ -934,6 +935,7 @@ class Transfers_model extends CI_Model {
             }
             return $data;
         }
+        return array();
     }
     
     public function addRequest($data = [], $items = []) {
@@ -1099,6 +1101,7 @@ class Transfers_model extends CI_Model {
              }
              return $data;
          }
+         return array();
      }
     public function getProductOptionsByGroupId($product_id, $warehouse_id, $zero_check = TRUE, $GroupId= '')
     {

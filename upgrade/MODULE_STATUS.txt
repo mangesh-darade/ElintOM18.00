@@ -12,7 +12,7 @@ PHASE OVERVIEW
 Phase 1  Framework (system/)           DONE (ElintOM18.00 2026-07-11)
 Phase 2  Third party (MPDF, Stripe...) DONE (ElintOM18.00 2026-07-11)
 Phase 3  App core (Sma, crypto, etc.)   IN PROGRESS (base fixes done)
-Phase 4  Module screen + deep testing   IN PROGRESS (10 of 24 complete)
+Phase 4  Module screen + deep testing   IN PROGRESS (11 of 24 complete)
 
 NOTE: Modules 1–11 status reset 2026-07-11 — fixes applied; completion
       requires fresh screen + deep + deep-links retest.
@@ -34,7 +34,7 @@ MODULES 1–11 — NOT DONE (retest required)
 8   Customers (CRM)     Customers.php              COMPLETE — screen 10/10 + links 19/19 (2026-07-11)
 9   Suppliers & Billers Suppliers.php, Billers.php COMPLETE — screen 10/10 + links 14/14 (2026-07-11)
 10  Quotes              Quotes.php                 COMPLETE — screen 6/6 + links 10/10 (2026-07-11)
-11  Transfers           Transfers.php              NOT DONE — retest required
+11  Transfers           Transfers.php              COMPLETE — screen 10/10 + links 12/12 (2026-07-11)
 
 Test scripts exist for all 11 modules (phase4_*). Run full retest before
 marking any module complete.
