@@ -33,7 +33,8 @@ Test **only modules already started** in this upgrade (fixes + `upgrade/phase4_*
 | 16 Eshop | **✅ Module complete** | `upgrade/phase4_eshop_links_test.php` |
 | 17 Shop | **✅ Module complete** | `upgrade/phase4_shop_links_test.php` |
 | 18 System Settings | **✅ Module complete** | `upgrade/phase4_system_settings_links_test.php` |
-| 19+ | Not started | Test **after** module scan + fixes |
+| 19 Attendance | **✅ Module complete** | `upgrade/phase4_attendance_links_test.php` |
+| 20+ | Not started | Test **after** module scan + fixes |
 
 When a **new module** is upgraded, add it to this table and create its `phase4_{name}_links_test.php` before claiming complete.
 

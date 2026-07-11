@@ -152,7 +152,8 @@
 | **Module 16 — Eshop** | **✅ Module complete** | Screen 14/14, deep-links 10/10 |
 | **Module 17 — Shop** | **✅ Module complete** | Screen 10/10, deep-links 9/9 |
 | **Module 18 — System Settings** | **✅ Module complete** | Screen 15/15, deep-links 18/18 |
-| Remaining controllers (19–24) | Pending | Full module scan during Phase 4 |
+| **Module 19 — Attendance** | **✅ Module complete** | Screen 4/4, deep-links 7/7 |
+| Remaining controllers (20–24) | Pending | Full module scan during Phase 4 |
 
 #### Phase 4 — Module Testing Log (last run 2026-07-07; status reset 2026-07-11 — pending retest)
 
@@ -287,6 +288,10 @@ php phase4_suppliers_billers_links_test.php Admin "Admin@554"
 
 **Module 18 tests (certified 2026-07-12):** screen **15/15**, deep-links **18/18** (Owner login; P1 settings screens + edit_* / permissions / group_product_prices)
 
+**Module 19 fixes (Attendance):** — [`PHP_UPGRADE_FIXES_LOG.md`](PHP_UPGRADE_FIXES_LOG.md) §Module 19
+
+**Module 19 tests (certified 2026-07-12):** screen **4/4**, deep-links **7/7** (Owner login + public kiosk capture; restored `edit_user` view)
+
 **Stock/timing note:** Adjustment screen uses `async:false` on `product_list` + `qa_suggestions` in JS (`adjustments.js`) — causes UI “stuck” feel on large warehouses; server paths OK under 1s locally.
 
 ---
@@ -313,7 +318,7 @@ php phase4_suppliers_billers_links_test.php Admin "Admin@554"
 | 16 | Eshop (Mobile API) | `Eshop.php`, `Eshop_admin.php`, `Eshop_api.php` | 10 | P2 | JSON API, mobile app | — |
 | 17 | Shop | `Shop.php` | 88 | P3 | T1/T2 templates | — |
 | 18 | System Settings | `System_settings.php` | 85 | P1 | Import, permissions | ✅ screen 15/15 + links 18/18 |
-| 19 | Attendance | `Attendance.php` | 6 | P3 | Kiosk, geolocation | — |
+| 19 | Attendance | `Attendance.php` | 6 | P3 | Kiosk, geolocation | ✅ screen 4/4 + links 7/7 |
 | 20 | Leads (CRM) | `Leads.php` | 7 | P3 | — | — |
 | 21 | Service Requests | `Service_requests.php` | 3 | P3 | MPDF PDF | — |
 | 22 | Urban Piper / Omnichannel | `Urban_piper.php`, `Omnichannel.php` | 30 | P3 | Webhooks, API callbacks | — |
@@ -824,6 +829,8 @@ php phase4_suppliers_billers_links_test.php Admin "Admin@554"
 ---
 
 ## 23. MODULE 19 — Attendance
+
+**Module status:** ✅ Module complete (screen 4/4 + deep-links 7/7 — 2026-07-12)
 
 | # | Submodule Group | Submodule | Controller | Screen Path | Priority | Test After Upgrade |
 |---|-----------------|-----------|------------|-------------|----------|-------------------|

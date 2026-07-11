@@ -114,10 +114,12 @@ class Attendance extends MY_Controller
 
         // Extra safety: enforce row-level view rights even if scope/filter is correct.
         $visibleRows = array();
+        if (!empty($rows)) {
         foreach ($rows as $row) {
             if ($this->attendanceCanViewRow((int) $row->user_id)) {
                 $visibleRows[] = $row;
             }
+        }
         }
         $rows = $visibleRows;
 
@@ -198,10 +200,12 @@ class Attendance extends MY_Controller
 
         $rows = $this->attendance_model->get_attendance_by_ids($selectedIds);
         $visibleRows = array();
+        if (!empty($rows)) {
         foreach ($rows as $row) {
             if ($this->attendanceCanViewRow((int) $row->user_id)) {
                 $visibleRows[] = $row;
             }
+        }
         }
 
         if (empty($visibleRows)) {

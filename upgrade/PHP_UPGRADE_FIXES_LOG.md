@@ -1725,7 +1725,36 @@ foreach($barcode_field2 as $key2 => $barcodefield2){
 
 ---
 
-## Test scripts index (Modules 1–18)
+## Module 19 — Attendance
+
+**Tests:** `phase4_attendance_test.php` (**4/4**), `phase4_attendance_links_test.php` (**7/7**) PASS  
+**Status:** ✅ Module complete — fixes applied + retest 2026-07-12  
+**Controllers:** `Attendance.php` — `attendance/edit_user.php` (restore)
+
+| # | File | Old | New | Type |
+|---|------|-----|-----|------|
+| 19.1 | `Attendance.php` | `report()` / `list_actions()` foreach on empty rows | `!empty($rows)` guard before foreach | guard |
+| 19.2 | `attendance/edit_user.php` | Missing view — `edit_user()` 500 fatal | Restored enrollment edit form matching `$user`/`$groups` | restore |
+| 19.3 | `phase4_attendance_*.php` | — | Screen + deep-link scripts | test |
+
+#### 19.2 `attendance/edit_user.php` — restore missing view
+
+**Old code:**
+```php
+// file absent — controller called page_construct('attendance/edit_user', ...)
+```
+
+**New code:**
+```php
+<?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
+<div class="box">
+    <?php echo form_open('attendance/update_user/' . (int) $user->id, ...); ?>
+    <!-- first_name, last_name, group_id, password, face_image fields -->
+```
+
+---
+
+## Test scripts index (Modules 1–19)
 
 | Module | Scripts |
 |--------|---------|
@@ -1744,6 +1773,7 @@ foreach($barcode_field2 as $key2 => $barcodefield2){
 | 16 Eshop | `phase4_eshop_test.php`, `phase4_eshop_links_test.php` |
 | 17 Shop | `phase4_shop_test.php`, `phase4_shop_links_test.php` |
 | 18 System Settings | `phase4_system_settings_test.php`, `phase4_system_settings_links_test.php` |
+| 19 Attendance | `phase4_attendance_test.php`, `phase4_attendance_links_test.php` |
 | Shared | `phase4_test_lib.php` |
 
 **Run:** `cd upgrade && php phase4_<module>_*.php Admin "Admin@554"`
@@ -1779,6 +1809,7 @@ foreach($barcode_field2 as $key2 => $barcodefield2){
 | 2026-07-12 | 16 | Module 16 Eshop **certified complete** — API foreach guards, getCategoryProducts arg, product_details/legacy API; screen **14/14**, links **10/10** |
 | 2026-07-12 | 17 | Module 17 Shop **certified complete** — constructor outlets/cart/tax/orderDetails guards; screen **10/10**, links **9/9** |
 | 2026-07-12 | 18 | Module 18 System Settings **certified complete** — HTTP_REFERER, manage_barcode/import guards, manage_barcode view; screen **15/15**, links **18/18** |
+| 2026-07-12 | 19 | Module 19 Attendance **certified complete** — report/list_actions foreach guards, restore `edit_user` view; screen **4/4**, links **7/7** |
 
 ---
 
