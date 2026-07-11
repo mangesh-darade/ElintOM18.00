@@ -42,7 +42,7 @@
                 <tr>
                     <td width="300px;"><h4 style="font-weight:bold;"><?= lang('total_sales'); ?>:</h4></td>
                     <td width="100px;" style="text-align:right;"><h4 style="font-weight:bold;">
-                        <?= $this->sma->formatMoney($totalsales->total ? $totalsales->total+ str_replace("-", '', $refunds->returned) : '0.00') ?></td>
+                        <?= $this->sma->formatMoney($totalsales->total ? $totalsales->total+ str_replace("-", '', ($refunds && $refunds->returned) ? $refunds->returned : 0) : '0.00') ?></td>
                     <!--<td width="100px;" style="text-align:right;"><h4 style="font-weight:bold;">
                         <?= $this->sma->formatMoney($totalsales->total ? $totalsales->total : '0.00'); ?>
                     </td>-->
@@ -52,7 +52,7 @@
                         <td style="border-bottom: 1px solid #DDD;"><h4 style="font-weight:bold;"><?= lang('Total Due'); ?>:</h4> </td>
                        
                         <td style="border-bottom: 1px solid #DDD;text-align:right;">
-                            <h4 style="font-weight:bold;"><?= $this->sma->formatMoney($duepayment->total  + $duepartial->partial_due); ?></h4>
+                            <h4 style="font-weight:bold;"><?= $this->sma->formatMoney(($duepayment ? $duepayment->total : 0) + ($duepartial ? $duepartial->partial_due : 0)); ?></h4>
                         </td>
                     </tr>
                 <?php// }?>      
@@ -61,7 +61,7 @@
                 <tr>
                     <td style="border-top: 1px solid #DDD;"><h4><?= lang('refunds'); ?>:</h4></td>
                     <td style="text-align:right;border-top: 1px solid #DDD;"><h4>
-                        <?= $this->sma->formatMoney($refunds->returned ? $refunds->returned : '0.00') ?></td>
+                        <?= $this->sma->formatMoney(($refunds && $refunds->returned) ? $refunds->returned : '0.00') ?></td>
                     <!--<td style="text-align:right;border-top: 1px solid #DDD;"><h4>
                             <?= $this->sma->formatMoney($refunds->total ? $refunds->total : '0.00'); ?>
                     </td>-->

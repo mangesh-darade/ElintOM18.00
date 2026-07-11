@@ -462,9 +462,12 @@ class Pos extends MY_Controller {
             $percentage = '%';
             $sale_cgst = $sale_sgst = $sale_igst = 0;
             $saleData = $this->pos_model->getPreviousPosSale();
-            $parts = explode("/", $saleData->reference_no);
-            $right_section = end($parts);
-            $RefNoForExchange = $this->sma->getExchangeSaleReferenceNo($right_section);
+            $RefNoForExchange = '';
+            if ($saleData) {
+                $parts = explode("/", $saleData->reference_no);
+                $right_section = end($parts);
+                $RefNoForExchange = $this->sma->getExchangeSaleReferenceNo($right_section);
+            }
             $i = isset($_POST['product_code']) ? sizeof($_POST['product_code']) : 0;
             for ($r = 0; $r < $i; $r++) {
                 $item_id = $_POST['product_id'][$r];
@@ -973,7 +976,7 @@ class Pos extends MY_Controller {
             if (!$suspend) {
                 $p = isset($_POST['amount']) ? sizeof($_POST['amount']) : 0;
                 $paid = 0;
-                $depositLog = null;
+                $depositLog = array();
                 $coinage_multi_payments = false;
                 if ($this->pos_settings->display_coinage == 1) {
                     $active_coinage_pay_rows = 0;
@@ -3037,6 +3040,8 @@ window.MyHandler.setPrintRequest('<?php echo json_encode($print); ?>');
         $this->data['Qrcode'] = $this->pos_model->getTodayUpiQrcodePayments($user_id);//Qrcode
         $this->data['today_bank_deposit'] = $this->pos_model->getTodayBankDeposit($user_id);
         $this->data['today_withdrawal']   = $this->pos_model->getTodayWithdrawal($user_id);
+        $register_open_time = $this->session->userdata('register_open_time');
+        $date = date('Y-m-d 00:00:00');
 
         /* 5-11-2019 */
         $this->data['depositsales'] = $this->pos_model->getTodayDepSales($register_open_time, $user_id);
@@ -3371,7 +3376,7 @@ window.MyHandler.setPrintRequest('<?php echo json_encode($print); ?>');
 
         $this->pagination->initialize($config);
         $data['r'] = true;
-        $bills = $this->pos_model->fetch_bills($config['per_page'], $per_page, 1);
+        $bills = $this->pos_model->fetch_bills($config['per_page'], $per_page, 1, null);
         if (!empty($bills)) {
             $html = $susdelIcon = "";
             $html .= '<ul class="ob">';

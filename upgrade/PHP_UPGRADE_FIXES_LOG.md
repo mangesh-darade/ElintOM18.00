@@ -375,8 +375,8 @@ public function getEvents() {
 
 ## Module 3 — POS
 
-**Tests:** `phase4_pos_test.php` **9/9** PASS; `phase4_pos_deep_test.php` **6/7** (view 500); `phase4_pos_links_test.php` **8/11** (view/modal 500)  
-**Status:** ⏳ Not done — `pos/view/{id}` HTTP 500 on ElintOM18.00 base URL (phpupgrade URL OK)
+**Tests:** `phase4_pos_test.php` **9/9**; `phase4_pos_deep_test.php` **7/7**; `phase4_pos_links_test.php` **11/11** PASS (2026-07-11 ElintOM18.00 retest)  
+**Status:** ✅ Module complete
 
 | # | File | Old | New | Type |
 |---|------|-----|-----|------|
@@ -394,7 +394,11 @@ public function getEvents() {
 | 3.12 | `MY_Controller.php`, `Sma.php`, `CI_Controller`, `CI_Model` | Dynamic properties deprecated | `#[\AllowDynamicProperties]` | lib |
 | 3.13 | `Pos.php` `view()` | `count($row_taxes_print)` / `foreach` on false | `!empty()` guards | guard |
 | 3.14 | `view.php` | Bare `$_SERVER['HTTP_REFERER']` in KOT block | `isset()` guard | guard |
-| 3.15 | `app/third_party/vendor` | Missing composer vendor tree | Copied from phpupgrade | restore |
+| 3.16 | `Pos.php` | `getPreviousPosSale()` false → `->reference_no` fatal | `if ($saleData)` guard | guard |
+| 3.17 | `Pos.php` | `$depositLog = null` → `count()` TypeError | `$depositLog = array()` | guard |
+| 3.18 | `Pos.php` `today_sale()` | Undefined `$date` / `$register_open_time` → SQL 1064 | Init before `getTodayDepSales` | guard |
+| 3.19 | `Pos.php` `opened_bills()` | `fetch_bills()` 3 args, needs 4 | Add `null` customerId arg | syntax |
+| 3.20 | `today_sale.php` | `$refunds`/`$duepayment` false → property fatal | `!empty()` / ternary guards | guard |
 
 #### 3.1 `Pos.php` — HTTP_REFERER (representative; many occurrences)
 
@@ -1205,7 +1209,7 @@ if($this->input->is_ajax_request()) {
 | 2026-07-07 | 10 | Module 10 Quotes — HTTP_REFERER, getQuoteByID guards, suggestions; tests 6/6 + 10/10 |
 | 2026-07-11 | P1+P2 | **ElintOM18.00** Phase 1 (AllowDynamicProperties, E_STRICT) + Phase 2 (Composer MPDF/Stripe/Google, PHPExcel/Zend/phpqrcode patches, mPDF shim) |
 | 2026-07-11 | P3 | `crypto_helper.php`, `Ccavenue.php` — mcrypt → OpenSSL AES-128-CBC; `phase3_smoke_test.php` 14/14 PASS |
-| 2026-07-11 | 2 | Welcome — ported phpupgrade fixes to ElintOM18.00; deep-links 4/4 PASS on PHP 8.5 |
+| 2026-07-11 | 3 | Module 3 POS — `Pos.php`/`today_sale.php` PHP 8.5 guards; screen 9/9 + deep 7/7 + deep-links 11/11 PASS |
 | 2026-07-11 | 1–11 | **Status reset** — all modules marked not done; fixes retained; retest required |
 | 2026-07-07 | 11 | Module 11 Transfers — HTTP_REFERER, getByID guards, model empty arrays; tests 10/10 + 12/12 |
 
