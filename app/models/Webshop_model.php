@@ -56,14 +56,14 @@ class Webshop_model extends CI_Model {
        $q = $this->db->query("
             SELECT id, code, name, image, parent_id, 
                 CASE 
-                    WHEN rank IS NULL OR TRIM(rank) = '' THEN NULL 
-                    ELSE CAST(rank AS SIGNED) 
+                    WHEN `rank` IS NULL OR TRIM(`rank`) = '' THEN NULL 
+                    ELSE CAST(`rank` AS SIGNED) 
                 END AS rank_new
             FROM sma_categories
             WHERE is_active = 1 AND in_eshop = 1
             ORDER BY 
-                rank_new IS NULL ASC,  -- Ranked first, unranked last
-                rank_new ASC           -- Then sort ranked by ascending rank
+                rank_new IS NULL ASC,
+                rank_new ASC
         ");
 
         if ($q->num_rows() > 0) {

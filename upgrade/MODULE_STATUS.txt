@@ -12,10 +12,10 @@ PHASE OVERVIEW
 Phase 1  Framework (system/)           DONE (ElintOM18.00 2026-07-11)
 Phase 2  Third party (MPDF, Stripe...) DONE (ElintOM18.00 2026-07-11)
 Phase 3  App core (Sma, crypto, etc.)   IN PROGRESS (base fixes done)
-Phase 4  Module screen + deep testing   IN PROGRESS (13 of 24 complete)
+Phase 4  Module screen + deep testing   IN PROGRESS (14 of 24 complete)
 
 ================================================================================
-MODULES 1–13 — COMPLETE
+MODULES 1–14 — COMPLETE
 ================================================================================
 
 #   Module              Controller(s)              Status
@@ -35,14 +35,14 @@ MODULES 1–13 — COMPLETE
 12  Restaurant          Restaurant_Order_Taking.php COMPLETE — screen 10/10 + links 10/10 (2026-07-11)
 13  Production Unit     Production_Unit.php,         COMPLETE — screen 21/21 + links 8/8 (2026-07-11)
                         Bill_of_material.php
+14  Webshop             Webshop.php                  COMPLETE — screen 12/12 + links 9/9 (2026-07-11)
 
 ================================================================================
-PENDING MODULES (14–24) — NOT STARTED
+PENDING MODULES (15–24) — NOT STARTED
 ================================================================================
 
 #   Module              Controller(s)              Screens  Priority
 --  ------------------  -------------------------  -------  --------
-14  Webshop             Webshop.php                  170      P2
 15  Webshop Settings    Webshop_settings.php         36       P3
 16  Eshop (Mobile API)  Eshop, Eshop_admin,          10       P2
                         Eshop_api.php
@@ -60,8 +60,8 @@ PENDING MODULES (14–24) — NOT STARTED
 ================================================================================
 SUMMARY
 ================================================================================
-Complete  : 13 modules (Auth through Production Unit)
-Pending   : 11 modules (14–24)
-Progress  : 13 / 24 modules certified complete
+Complete  : 14 modules (Auth through Webshop)
+Pending   : 10 modules (15–24)
+Progress  : 14 / 24 modules certified complete
 
 ================================================================================

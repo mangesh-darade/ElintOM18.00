@@ -53,7 +53,7 @@ class Webshop extends MY_Controller
 
         $this->data['categories'] = $this->webshop_model->get_categories();
 
-        $this->data['main_categories'] = $this->data['categories']['main'];
+        $this->data['main_categories'] = (!empty($this->data['categories']['main']) && is_array($this->data['categories']['main'])) ? $this->data['categories']['main'] : array();
 
         $this->data['webshop_pos_settings'] = $this->webshop_model->get_webshop_pos_settings();
 
@@ -68,14 +68,18 @@ class Webshop extends MY_Controller
         $this->data['all_brands'] = $this->webshop_model->get_all_brands();
 
 
+        $this->data['cart_items'] = array();
+        $this->data['cart_data'] = array();
         if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
             $this->data['cart_items'] = $_SESSION['cart'];
             $this->data['cart_data'] = $this->webshop_model->get_cart_data();
         }
 
-        $this->data['wishlist_count'] = $this->webshop_model->get_wishlist_count($this->session->webshop->user_id);
+        $this->data['wishlist_count'] = (isset($this->session->webshop) && isset($this->session->webshop->user_id)) ? $this->webshop_model->get_wishlist_count($this->session->webshop->user_id) : 0;
 
         $this->data['custom_pages'] = $this->webshop_model->getCustomPages();
+
+        $this->data['custom_pages_webshop'] = $this->webshop_model->get_custom_pages();
 
         $this->data['restaurant_is_active'] = $this->webshop_model->restaurantWorking();
 
@@ -83,6 +87,7 @@ class Webshop extends MY_Controller
             $this->data['about_us'] = $this->webshop_model->about_usdata($page_key = 'aboutus');
             $this->data['website_setting'] = $this->webshop_model->get_website_setting();
             $setting_map = [];
+            $raw_settings = (!empty($this->data['website_setting']) && is_array($this->data['website_setting'])) ? $this->data['website_setting'] : array();
             foreach ($raw_settings as $row) {
                 $setting_map[$row->fields] = $row->value;
             }
@@ -203,6 +208,7 @@ class Webshop extends MY_Controller
             $this->data['recent_viewed'] = $this->webshop_model->get_recent_viewed_product();
             $this->data['website_setting'] = $this->webshop_model->get_website_setting();
             $setting_map = [];
+            $raw_settings = (!empty($this->data['website_setting']) && is_array($this->data['website_setting'])) ? $this->data['website_setting'] : array();
             foreach ($raw_settings as $row) {
                 $setting_map[$row->fields] = $row->value;
             }
@@ -270,6 +276,10 @@ class Webshop extends MY_Controller
         $product_hash = $this->uri->segment(3);
 
         $this->data['product_details'] = $productDetails = $this->webshop_model->get_product_by_hash($product_hash);
+        if (!$productDetails || empty($productDetails['item'])) {
+            redirect('webshop/products');
+            return;
+        }
         $product = $productDetails['item'];
         $this->data['product'] = $product;
         $this->data['product_variants'] = $productDetails['variants'];
@@ -291,6 +301,7 @@ class Webshop extends MY_Controller
         $this->data['product']['category_is_active'] = $this->webshop_model->categoryActive($product['category_id']);
         $this->data['website_setting'] = $this->webshop_model->get_website_setting();
         $setting_map = [];
+        $raw_settings = (!empty($this->data['website_setting']) && is_array($this->data['website_setting'])) ? $this->data['website_setting'] : array();
         foreach ($raw_settings as $row) {
             $setting_map[$row->fields] = $row->value;
         }
@@ -387,26 +398,34 @@ class Webshop extends MY_Controller
 
         if ($this->webshop_settings->webshop_theme == 'restaurant') {
 
+            if (!empty($this->data['listItems']) && is_array($this->data['listItems'])) {
             foreach ($this->data['listItems'] as &$item) {
                 $item['proudctIdHash'] = md5($item['id']);
                 $item['formatedPrice'] = $this->sma->formatMoney($item['price']);
             }
+            }
 
+            if (!empty($this->data['special_items']) && is_array($this->data['special_items'])) {
             foreach ($this->data['special_items'] as &$special_item) {
                 $special_item['proudctIdHash'] = md5($special_item['id']);
                 $special_item['formatedPrice'] = $this->sma->formatMoney($special_item['special_price']);
             }
+            }
             echo json_encode($this->data);
         } else if ($this->webshop_settings->webshop_theme == 'nw') {
+            if (!empty($this->data['listItems']) && is_array($this->data['listItems'])) {
             foreach ($this->data['listItems'] as &$item) {
                 $item['proudctIdHash'] = md5($item['id']);
                 $item['formatedPrice'] = $this->sma->formatMoney($item['price']);
             }
+            }
             $this->load_view("nw_theme/category_products", $this->data);
         } else if ($this->webshop_settings->webshop_theme == 'gulfpharmacy') {
+            if (!empty($this->data['listItems']) && is_array($this->data['listItems'])) {
             foreach ($this->data['listItems'] as &$item) {
                 $item['proudctIdHash'] = md5($item['id']);
                 $item['formatedPrice'] = $this->sma->formatMoney($item['price']);
+            }
             }
             $this->load_view("gulfpharmacy_theme/category_products", $this->data);
         } else {
@@ -434,8 +453,10 @@ class Webshop extends MY_Controller
         $this->data['listItems'] = $products = $this->webshop_model->search_category_products($keyword, $category);
 
         $list_item = [];
+        if (!empty($this->data['listItems']) && is_array($this->data['listItems'])) {
         foreach ($this->data['listItems'] as $itemsList) {
             $list_item[] = $itemsList['code'];
+        }
         }
 
         $other_product = $this->webshop_model->search_other_products($keyword, $category);
@@ -467,12 +488,20 @@ class Webshop extends MY_Controller
     public function wishlist()
     {
 
+        if (!isset($this->session->webshop) || !$this->session->webshop->user_id) {
+            redirect('webshop/login');
+            return;
+        }
+
         $wishlist = $this->webshop_model->get_wishlist($this->session->webshop->user_id);
 
+        $products = array();
+        if (!empty($wishlist) && is_array($wishlist)) {
         foreach ($wishlist as $list) {
             $products[] = $list->product_id;
 
             $this->data['wishlist_variants'][$list->product_id][] = $list->option_id;
+        }
         }
 
         $this->data['wishlist'] = $this->webshop_model->get_products_list('products', $products, true);
@@ -505,6 +534,7 @@ class Webshop extends MY_Controller
             $this->data['state_list'] = $this->webshop_model->get_state();
             $this->data['website_setting'] = $this->webshop_model->get_website_setting();
             $setting_map = [];
+            $raw_settings = (!empty($this->data['website_setting']) && is_array($this->data['website_setting'])) ? $this->data['website_setting'] : array();
             foreach ($raw_settings as $row) {
                 $setting_map[$row->fields] = $row->value;
             }
@@ -583,6 +613,7 @@ class Webshop extends MY_Controller
             }
             $this->data['website_setting'] = $this->webshop_model->get_website_setting();
             $setting_map = [];
+            $raw_settings = (!empty($this->data['website_setting']) && is_array($this->data['website_setting'])) ? $this->data['website_setting'] : array();
             foreach ($raw_settings as $row) {
                 $setting_map[$row->fields] = $row->value;
             }
@@ -1695,13 +1726,14 @@ class Webshop extends MY_Controller
                 }
             }
         } else {
-            if ($this->session->webshop->is_login && $this->session->webshop->user_id) {
+            if (isset($this->session->webshop) && $this->session->webshop->is_login && $this->session->webshop->user_id) {
                 redirect("webshop/index");
             }
             // $theme = $this->webshop_settings->webshop_theme;
-            $this->data['return_page'] = str_replace(base_url(), '', $_SERVER['HTTP_REFERER']);
+            $this->data['return_page'] = isset($_SERVER['HTTP_REFERER']) ? str_replace(base_url(), '', $_SERVER['HTTP_REFERER']) : 'webshop/index';
             $this->data['website_setting'] = $this->webshop_model->get_website_setting();
             $setting_map = [];
+            $raw_settings = (!empty($this->data['website_setting']) && is_array($this->data['website_setting'])) ? $this->data['website_setting'] : array();
             foreach ($raw_settings as $row) {
                 $setting_map[$row->fields] = $row->value;
             }
@@ -1724,7 +1756,7 @@ class Webshop extends MY_Controller
         unset($_SESSION['cart']);
         unset($_SESSION['webshop']);
 
-        if (!$this->session->webshop->is_login && !$this->session->webshop->user_id) {
+        if (!isset($this->session->webshop) || (!$this->session->webshop->is_login && !$this->session->webshop->user_id)) {
             redirect("webshop");
         }
     }
@@ -1814,12 +1846,13 @@ class Webshop extends MY_Controller
                 }
             }
         } else {
-            if ($this->session->webshop->is_login && $this->session->webshop->user_id) {
+            if (isset($this->session->webshop) && $this->session->webshop->is_login && $this->session->webshop->user_id) {
                 redirect("webshop/index");
             }
             // Append your theme-based logic here
             $this->data['website_setting'] = $this->webshop_model->get_website_setting();
             $setting_map = [];
+            $raw_settings = (!empty($this->data['website_setting']) && is_array($this->data['website_setting'])) ? $this->data['website_setting'] : array();
             foreach ($raw_settings as $row) {
                 $setting_map[$row->fields] = $row->value;
             }
@@ -2040,6 +2073,7 @@ class Webshop extends MY_Controller
         }
         $this->data['website_setting'] = $this->webshop_model->get_website_setting();
         $setting_map = [];
+        $raw_settings = (!empty($this->data['website_setting']) && is_array($this->data['website_setting'])) ? $this->data['website_setting'] : array();
         foreach ($raw_settings as $row) {
             $setting_map[$row->fields] = $row->value;
         }
@@ -3008,6 +3042,7 @@ class Webshop extends MY_Controller
             $this->data['about_us'] = $this->webshop_model->about_usdata($page_key = 'aboutus');
             $this->data['website_setting'] = $this->webshop_model->get_website_setting();
             $setting_map = [];
+            $raw_settings = (!empty($this->data['website_setting']) && is_array($this->data['website_setting'])) ? $this->data['website_setting'] : array();
             foreach ($raw_settings as $row) {
                 $setting_map[$row->fields] = $row->value;
             }
@@ -3026,6 +3061,7 @@ class Webshop extends MY_Controller
         $this->data['terms_and_conditions'] = $this->webshop_model->terms_conditions($page_key = 'terms_conditions');
         $this->data['website_setting'] = $this->webshop_model->get_website_setting();
         $setting_map = [];
+        $raw_settings = (!empty($this->data['website_setting']) && is_array($this->data['website_setting'])) ? $this->data['website_setting'] : array();
         foreach ($raw_settings as $row) {
             $setting_map[$row->fields] = $row->value;
         }
@@ -3049,6 +3085,7 @@ class Webshop extends MY_Controller
         $this->data['privacy_policy'] = $this->webshop_model->privacy_policy($page_key = 'policy');
         $this->data['website_setting'] = $this->webshop_model->get_website_setting();
         $setting_map = [];
+        $raw_settings = (!empty($this->data['website_setting']) && is_array($this->data['website_setting'])) ? $this->data['website_setting'] : array();
         foreach ($raw_settings as $row) {
             $setting_map[$row->fields] = $row->value;
         }
@@ -3071,6 +3108,7 @@ class Webshop extends MY_Controller
         $theme = $this->webshop_settings->webshop_theme;
         $this->data['website_setting'] = $this->webshop_model->get_website_setting();
         $setting_map = [];
+        $raw_settings = (!empty($this->data['website_setting']) && is_array($this->data['website_setting'])) ? $this->data['website_setting'] : array();
         foreach ($raw_settings as $row) {
             $setting_map[$row->fields] = $row->value;
         }

@@ -1,5 +1,6 @@
 <?php
 $setting_map = [];
+$website_setting = (isset($website_setting) && is_array($website_setting)) ? $website_setting : array();
 foreach ($website_setting as $item) {
     $setting_map[$item->fields] = $item->value;
 }
@@ -213,17 +214,17 @@ foreach ($website_setting as $item) {
                         <li class="Logoutsection">
                             <a href="<?= base_url('webshop/logout') ?>">logout</a>
                         </li>
-                        <?php if (!empty($custom_pages_webshop_webshop->contactus) && (int) $custom_pages_webshop->contactus->is_active == 1): ?>
+                        <?php if (!empty($custom_pages_webshop->contactus) && (int) $custom_pages_webshop->contactus->is_active == 1): ?>
                             <li>
                                 <a href="<?= base_url('webshop/contactus') ?>"><?= $custom_pages_webshop->contactus->page_title ?></a>
                             </li>
                         <?php endif; ?>
-                        <?php if (!empty($custom_pages_webshop_webshop->contactus) && (int) $custom_pages_webshop->contactus->is_active == 1): ?>
+                        <?php if (!empty($custom_pages_webshop->contactus) && (int) $custom_pages_webshop->contactus->is_active == 1): ?>
                             <li>
                                 <a href="<?= base_url('webshop/login') ?>"><?= $custom_pages_webshop->contactus->page_title ?></a>
                             </li>
                         <?php endif; ?>
-                        <?php if (!empty($custom_pages_webshop_webshop->contactus) && (int) $custom_pages_webshop->contactus->is_active == 1): ?>
+                        <?php if (!empty($custom_pages_webshop->contactus) && (int) $custom_pages_webshop->contactus->is_active == 1): ?>
                             <li>
                                 <a href="<?= base_url('webshop/register') ?>"><?= $custom_pages_webshop->contactus->page_title ?></a>
                             </li>

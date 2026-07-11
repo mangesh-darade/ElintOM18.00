@@ -53,7 +53,7 @@
 
                                 <!-- Social Media Icons Section -->
                                 <ul>
-                                    <?php if (!empty($website_setting)): ?>
+                                    <?php if (!empty($website_setting) && is_array($website_setting)): ?>
                                     <?php foreach ($website_setting as $item): ?>
                                     <?php
                                                     if (

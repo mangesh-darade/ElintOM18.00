@@ -1485,7 +1485,59 @@ GROUP BY p.id, p.name, p.code, pup.quantity, poi.total_order_quantity, u.code
 
 ---
 
-## Test scripts index (Modules 1–13)
+## Module 14 — Webshop
+
+**Tests:** `phase4_webshop_test.php` (**12/12**), `phase4_webshop_links_test.php` (**9/9**) PASS  
+**Status:** ✅ Module complete — fixes applied + retest 2026-07-11  
+**Controllers:** `Webshop.php` — `Webshop_model.php`
+
+| # | File | Old | New | Type |
+|---|------|-----|-----|------|
+| 14.1 | `Webshop.php` | `foreach ($raw_settings)` — variable never assigned (~12×) | Assign from `website_setting` + `array()` fallback | guard |
+| 14.2 | `Webshop_model.php` | SQL `rank` unquoted (MySQL 8 reserved word) | Backtick `` `rank` `` in get_categories | syntax |
+| 14.3 | `Webshop.php` | `$categories['main']` when get_categories false | `!empty` guard → `array()` | guard |
+| 14.4 | `Webshop.php` | `$session->webshop->user_id` without isset | isset guards (wishlist_count, login, logout) | guard |
+| 14.5 | `Webshop.php` | `$cart_items` unset → `count()` fatal in header | Always init `cart_items`/`cart_data` as `array()` | guard |
+| 14.6 | `Webshop.php` | `$custom_pages_webshop` missing in views | Load via `get_custom_pages()` in ctor | guard |
+| 14.7 | `Webshop.php` | `get_product_by_hash` false → property access | Early redirect to products | guard |
+| 14.8 | `Webshop.php` | `foreach ($listItems)` unguarded | `!empty` + `is_array` guards | guard |
+| 14.9 | `Webshop.php` | bare `HTTP_REFERER` on login | isset + fallback `webshop/index` | guard |
+| 14.10 | `webshop_restaurant_t1/header.php` | `foreach ($website_setting)` on false; typo var | is_array guard; fix `$custom_pages_webshop_webshop` typo | guard |
+| 14.11 | `webshop_restaurant_t1/footer.php` | foreach website_setting without is_array | `is_array` guard | guard |
+| 14.12 | `phase4_webshop_*.php` | — | Screen + deep-link scripts | test |
+
+#### 14.1 `Webshop.php` — raw_settings foreach
+
+**Old code:**
+```php
+$this->data['website_setting'] = $this->webshop_model->get_website_setting();
+$setting_map = [];
+foreach ($raw_settings as $row) {
+```
+
+**New code:**
+```php
+$this->data['website_setting'] = $this->webshop_model->get_website_setting();
+$setting_map = [];
+$raw_settings = (!empty($this->data['website_setting']) && is_array($this->data['website_setting'])) ? $this->data['website_setting'] : array();
+foreach ($raw_settings as $row) {
+```
+
+#### 14.2 `Webshop_model.php` — categories rank column
+
+**Old code:**
+```php
+WHEN rank IS NULL OR TRIM(rank) = '' THEN NULL
+```
+
+**New code:**
+```php
+WHEN `rank` IS NULL OR TRIM(`rank`) = '' THEN NULL
+```
+
+---
+
+## Test scripts index (Modules 1–14)
 
 | Module | Scripts |
 |--------|---------|
@@ -1499,7 +1551,7 @@ GROUP BY p.id, p.name, p.code, pup.quantity, poi.total_order_quantity, u.code
 | 8 Customers | `phase4_customers_test.php`, `phase4_customers_links_test.php` |
 | 9 Suppliers & Billers | `phase4_suppliers_billers_test.php`, `phase4_suppliers_billers_links_test.php` |
 | 10 Quotes | `phase4_quotes_test.php`, `phase4_quotes_links_test.php` |
-| 13 Production Unit | `phase4_production_test.php`, `phase4_production_links_test.php` |
+| 14 Webshop | `phase4_webshop_test.php`, `phase4_webshop_links_test.php` |
 | Shared | `phase4_test_lib.php` |
 
 **Run:** `cd upgrade && php phase4_<module>_*.php Admin "Admin@554"`
@@ -1530,6 +1582,7 @@ GROUP BY p.id, p.name, p.code, pup.quantity, poi.total_order_quantity, u.code
 | 2026-07-11 | 11 | Module 11 Transfers **certified complete** — HTTP_REFERER, getTransferByID/Request guards, suggestions; screen **10/10**, links **12/12** |
 | 2026-07-11 | 12 | Module 12 Restaurant **certified complete** — kitchen_view restore, invoice/guest guards, test DB bootstrap; screen **10/10**, links **10/10** |
 | 2026-07-11 | 13 | Module 13 Production Unit **certified complete** — productionUnit array, warehouse/KOT guards, HTTP_REFERER; screen **21/21**, links **8/8** |
+| 2026-07-11 | 14 | Module 14 Webshop **certified complete** — raw_settings, rank SQL, cart_items/custom_pages guards; screen **12/12**, links **9/9** |
 
 ---
 
