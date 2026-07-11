@@ -630,7 +630,7 @@ class Service_requests extends MY_Controller
                 $emailSubject = 'Service Site Report - ' . (string) $data['service_report_no'];
                 $emailBody = '<p>Dear ' . htmlspecialchars($customer->name, ENT_QUOTES, 'UTF-8') . ',</p>'
                     . '<p>Please find attached Service Site Report <strong>' . htmlspecialchars((string) $data['service_report_no'], ENT_QUOTES, 'UTF-8') . '</strong>.</p>'
-                    . '<p>Regards,<br>' . htmlspecialchars($this->Settings->site_name, ENT_QUOTES, 'UTF-8') . '</p>';
+                    . '<p>Regards,<br>' . htmlspecialchars(isset($this->Settings->site_name) ? $this->Settings->site_name : '', ENT_QUOTES, 'UTF-8') . '</p>';
                 $emailSent = $this->sma->send_email($customer->email, $emailSubject, $emailBody, null, null, $pdfPath);
                 $dispatchMessages[] = $emailSent ? 'Email sent' : 'Email failed';
                 $dispatchStatus['email'] = $emailSent ? 'sent' : 'failed';
@@ -699,7 +699,7 @@ class Service_requests extends MY_Controller
         $this->data['report'] = $payload;
         $this->data['customer'] = $customer;
         $html = $this->load->view($this->theme . 'service_requests/service_site_report_pdf', $this->data, true);
-        if (!$this->Settings->barcode_img) {
+        if (!isset($this->Settings->barcode_img) || !$this->Settings->barcode_img) {
             $html = preg_replace("'\<\?xml(.*)\?\>'", '', $html);
         }
         $safeRef = preg_replace('/[^A-Za-z0-9\-_]/', '_', (string) $payload['service_report_no']);

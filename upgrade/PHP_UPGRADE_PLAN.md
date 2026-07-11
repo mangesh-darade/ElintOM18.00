@@ -154,7 +154,8 @@
 | **Module 18 — System Settings** | **✅ Module complete** | Screen 15/15, deep-links 18/18 |
 | **Module 19 — Attendance** | **✅ Module complete** | Screen 4/4, deep-links 7/7 |
 | **Module 20 — Leads** | **✅ Module complete** | Screen 4/4, deep-links 8/8 |
-| Remaining controllers (21–24) | Pending | Full module scan during Phase 4 |
+| **Module 21 — Service Requests** | **✅ Module complete** | Screen 5/5, deep-links 11/11 |
+| Remaining controllers (22–24) | Pending | Full module scan during Phase 4 |
 
 #### Phase 4 — Module Testing Log (last run 2026-07-07; status reset 2026-07-11 — pending retest)
 
@@ -293,6 +294,10 @@ php phase4_suppliers_billers_links_test.php Admin "Admin@554"
 
 **Module 19 tests (certified 2026-07-12):** screen **4/4**, deep-links **7/7** (Owner login + public kiosk capture; restored `edit_user` view)
 
+**Module 20 fixes (Leads):** — [`PHP_UPGRADE_FIXES_LOG.md`](PHP_UPGRADE_FIXES_LOG.md) §Module 20
+
+**Module 20 tests (certified 2026-07-12):** screen **4/4**, deep-links **8/8** (Owner login; list/add/edit/modals + get_leads/getHistory/getDeals AJAX)
+
 **Stock/timing note:** Adjustment screen uses `async:false` on `product_list` + `qa_suggestions` in JS (`adjustments.js`) — causes UI “stuck” feel on large warehouses; server paths OK under 1s locally.
 
 ---
@@ -320,7 +325,7 @@ php phase4_suppliers_billers_links_test.php Admin "Admin@554"
 | 17 | Shop | `Shop.php` | 88 | P3 | T1/T2 templates | — |
 | 18 | System Settings | `System_settings.php` | 85 | P1 | Import, permissions | ✅ screen 15/15 + links 18/18 |
 | 19 | Attendance | `Attendance.php` | 6 | P3 | Kiosk, geolocation | ✅ screen 4/4 + links 7/7 |
-| 20 | Leads (CRM) | `Leads.php` | 7 | P3 | — | — |
+| 20 | Leads (CRM) | `Leads.php` | 7 | P3 | — | ✅ screen 4/4 + links 8/8 |
 | 21 | Service Requests | `Service_requests.php` | 3 | P3 | MPDF PDF | — |
 | 22 | Urban Piper / Omnichannel | `Urban_piper.php`, `Omnichannel.php` | 30 | P3 | Webhooks, API callbacks | — |
 | 23 | APIs (JSON) | `Api3`, `Api4`, `ApiOwner`, `Restapi5`, `Webhook`, `Whatsapp` | 0 UI | P2 | REST, webhooks | — |
@@ -845,6 +850,8 @@ php phase4_suppliers_billers_links_test.php Admin "Admin@554"
 ---
 
 ## 24. MODULE 20 — Leads (CRM)
+
+**Module status:** ✅ Module complete (screen 4/4 + deep-links 8/8 — 2026-07-12)
 
 | # | Submodule Group | Submodule | Controller | Screen Path | Priority | Test After Upgrade |
 |---|-----------------|-----------|------------|-------------|----------|-------------------|

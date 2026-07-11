@@ -1787,7 +1787,34 @@ $this->data['leads_type'] =  $this->Leads_model->getLeadTypes();
 
 ---
 
-## Test scripts index (Modules 1–20)
+## Module 21 — Service Requests
+
+**Tests:** `phase4_service_requests_test.php` (**5/5**), `phase4_service_requests_links_test.php` (**11/11**) PASS  
+**Status:** ✅ Module complete — fixes applied + retest 2026-07-12  
+**Controllers:** `Service_requests.php` — `service_site_report_mobileview.php`
+
+| # | File | Old | New | Type |
+|---|------|-----|-----|------|
+| 21.1 | `service_site_report_mobileview.php` | `foreach ($customers)` / `foreach ($service_types)` unguarded | `!empty()` guards before foreach | guard |
+| 21.2 | `Service_requests.php` | `$this->Settings->barcode_img` undefined property | `isset` guard before read | guard |
+| 21.3 | `Service_requests.php` | `$this->Settings->site_name` in email body unguarded | `isset(...) ? ... : ''` | guard |
+| 21.4 | `phase4_service_requests_*.php` | — | Screen + tab/AJAX scripts | test |
+
+#### 21.1 `service_site_report_mobileview.php` — foreach guards
+
+**Old code:**
+```php
+<?php foreach($customers as $c):
+```
+
+**New code:**
+```php
+<?php if (!empty($customers)) { foreach($customers as $c):
+```
+
+---
+
+## Test scripts index (Modules 1–21)
 
 | Module | Scripts |
 |--------|---------|
@@ -1807,6 +1834,7 @@ $this->data['leads_type'] =  $this->Leads_model->getLeadTypes();
 | 17 Shop | `phase4_shop_test.php`, `phase4_shop_links_test.php` |
 | 18 System Settings | `phase4_system_settings_test.php`, `phase4_system_settings_links_test.php` |
 | 19 Attendance | `phase4_attendance_test.php`, `phase4_attendance_links_test.php` |
+| 20 Leads | `phase4_leads_test.php`, `phase4_leads_links_test.php` |
 | Shared | `phase4_test_lib.php` |
 
 **Run:** `cd upgrade && php phase4_<module>_*.php Admin "Admin@554"`
@@ -1843,6 +1871,7 @@ $this->data['leads_type'] =  $this->Leads_model->getLeadTypes();
 | 2026-07-12 | 17 | Module 17 Shop **certified complete** — constructor outlets/cart/tax/orderDetails guards; screen **10/10**, links **9/9** |
 | 2026-07-12 | 18 | Module 18 System Settings **certified complete** — HTTP_REFERER, manage_barcode/import guards, manage_barcode view; screen **15/15**, links **18/18** |
 | 2026-07-12 | 19 | Module 19 Attendance **certified complete** — report/list_actions foreach guards, restore `edit_user` view; screen **4/4**, links **7/7** |
+| 2026-07-12 | 20 | Module 20 Leads **certified complete** — add empty `$leads`, getByID/modal guards, getLeadTypes array; screen **4/4**, links **8/8** |
 
 ---
 

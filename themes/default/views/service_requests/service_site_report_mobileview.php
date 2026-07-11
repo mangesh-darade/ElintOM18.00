@@ -313,7 +313,7 @@
                     <label>Customer *</label>
                     <select name="customer_id" id="customer_id" class="form-control-mobile" required>
                         <option value="">Select customer</option>
-                        <?php foreach($customers as $c): 
+                        <?php if (!empty($customers)) { foreach($customers as $c): 
                             $cname = trim((string)(isset($c->name) ? $c->name : ''));
                             if ($cname === '') continue;
                             
@@ -326,7 +326,7 @@
                             }
                         ?>
                             <option value="<?= $c->id ?>" <?= (isset($draft['customer_id']) && $draft['customer_id'] == $c->id) ? 'selected' : '' ?>><?= htmlspecialchars($displayName) ?></option>
-                        <?php endforeach; ?>
+                        <?php endforeach; } ?>
                     </select>
                 </div>
 
@@ -344,9 +344,9 @@
                     <label>Type of Service</label>
                     <select name="service_type" class="form-control-mobile">
                         <option value="">Select service type</option>
-                        <?php foreach($service_types as $st): ?>
+                        <?php if (!empty($service_types)) { foreach($service_types as $st): ?>
                             <option value="<?= $st->name ?>" <?= (isset($draft['service_type']) && $draft['service_type'] == $st->name) ? 'selected' : '' ?>><?= $st->name ?></option>
-                        <?php endforeach; ?>
+                        <?php endforeach; } ?>
                     </select>
                 </div>
 
