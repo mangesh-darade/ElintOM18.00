@@ -207,7 +207,7 @@ class Production_Unit extends MY_Controller {
                 $row->unit_weight       = $row->weight;
                 $row->quantity          = 1;
 
-                if (($location->price_group_id)) {                 
+                if (($location && $location->price_group_id)) {                 
                     // if ($pr_group_price = $this->site->getProductGroupPrice($row->id, $location->price_group_id)) {
                         $row->unit_price = $row->c_price;
                     // }
@@ -769,13 +769,21 @@ class Production_Unit extends MY_Controller {
         $user_id               = $this->session->userdata('user_id');   
         $user_data             = $this->site->getUser($user_id); 
         $location_id           = $user_data->warehouse_id;
-        $location_data         = $this->site->getWarehouseByIDs($location_id); 
+        if ($this->Owner || $this->Admin) {
+            $location_data = $this->site->getAllWarehouses();
+        } else {
+            $location_data = $this->site->getWarehouseByIDs($location_id);
+        }
+        if (!$location_data || !is_array($location_data)) {
+            $location_data = array();
+        }
         $productionUnitName    = $this->input->get('productionUnitName');
         
-        $default_location      = reset($location_data); // Get the first location
-        $default_location_name = $default_location->name; 
+        $default_location      = !empty($location_data) ? reset($location_data) : false;
+        $default_location_name = ($default_location && is_object($default_location)) ? $default_location->name : '';
        
-        $productionUnit  = '';
+        $productionUnit  = array();
+        $productionUnitId = null;
         foreach ($location_data as $location) {
             $productionUnit[] = $location->name;
             $productionUnitId = $location->id;
@@ -792,7 +800,7 @@ class Production_Unit extends MY_Controller {
                 if ($productionUnitName) {
                     $products = $this->production_unit_model->getproductDetailsByLocation($productionUnitName);
                 } else {
-                    $products = $this->production_unit_model->getproductDetailsByLocation($default_location->name);
+                    $products = $default_location_name ? $this->production_unit_model->getproductDetailsByLocation($default_location_name) : array();
                 }
                 echo json_encode($products);
                 return;
@@ -807,7 +815,7 @@ class Production_Unit extends MY_Controller {
             if ($productionUnitName) {
                 $products = $this->production_unit_model->getproductDetailsByLocation($productionUnitName);
             } else {
-                $products = $this->production_unit_model->getproductDetailsByLocation($default_location->name);
+                $products = $default_location_name ? $this->production_unit_model->getproductDetailsByLocation($default_location_name) : array();
             }
             if ($this->input->is_ajax_request()) {
                 echo json_encode($products);
@@ -1823,7 +1831,7 @@ class Production_Unit extends MY_Controller {
         $Order = $this->production_unit_model->getOrderRefrenceNoById($id);
         if (!$Order) {
             $this->session->set_flashdata('error', 'Invalid Order.');
-             return redirect($_SERVER['HTTP_REFERER']);
+             return redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('Production_Unit/inventory'));
         }
 
         $OrderRefrenceNo = $Order->procurement_order_ref_no;
@@ -1839,18 +1847,18 @@ class Production_Unit extends MY_Controller {
                 force_download($file_path, NULL);
             } else {
                 $this->session->set_flashdata('error', 'Attachment file not found on server.');
-                return redirect($_SERVER['HTTP_REFERER']);
+                return redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('Production_Unit/inventory'));
             }
         } else {
             $this->session->set_flashdata('error', 'No attachment found for this order.');
-            return redirect($_SERVER['HTTP_REFERER']);
+                return redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('Production_Unit/inventory'));
         }
         
     }
     function product_actions($wh = NULL) {
         if (!$this->Owner && !$this->GP['bulk_actions']) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('Production_Unit/inventory'));
         }
         if ((!$this->Owner || !$this->Admin) && !$wh) {
             $user = $this->site->getUser();
@@ -1866,14 +1874,14 @@ class Production_Unit extends MY_Controller {
                         $this->site->syncQuantity(NULL, NULL, NULL, $id);
                     }
                     $this->session->set_flashdata('message', $this->lang->line("products_quantity_sync"));
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('Production_Unit/inventory'));
                 } elseif ($this->input->post('form_action') == 'fav_products') {
                     if ($this->Products_model->productsMarkFavourite($_POST['val'])) {
                         $this->session->set_flashdata('message', $this->lang->line("Product Mark as Favourite"));
                     } else {
                         $this->session->set_flashdata('error', $this->lang->line("Please try again"));
                     }
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('Production_Unit/inventory'));
                 } elseif ($this->input->post('form_action') == 'delete') {
 
                     $this->sma->checkPermissions('delete');
@@ -1882,7 +1890,7 @@ class Production_Unit extends MY_Controller {
                         $this->Products_model->deleteProduct($id);
                     }
                     $this->session->set_flashdata('message', $this->lang->line("products_deleted"));
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('Production_Unit/inventory'));
                 } elseif ($this->input->post('form_action') == 'labels') {
 
                     foreach ($_POST['val'] as $id) {
@@ -2037,15 +2045,15 @@ class Production_Unit extends MY_Controller {
                         return $objWriter->save('php://output');
                     }
 
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('Production_Unit/inventory'));
                 }
             } else {
                 $this->session->set_flashdata('error', $this->lang->line("no_product_selected"));
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('Production_Unit/inventory'));
             }
         } else {
             $this->session->set_flashdata('error', validation_errors());
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('Production_Unit/inventory'));
         }
     }
    
@@ -2144,15 +2152,22 @@ class Production_Unit extends MY_Controller {
         $user_id               = $this->session->userdata('user_id');   
         $user_data             = $this->site->getUser($user_id); 
         $location_id           = $user_data->warehouse_id;
-        $location_data         = $this->site->getWarehouseByIDs($location_id); 
+        if ($this->Owner || $this->Admin) {
+            $location_data = $this->site->getAllWarehouses();
+        } else {
+            $location_data = $this->site->getWarehouseByIDs($location_id);
+        }
+        if (!$location_data || !is_array($location_data)) {
+            $location_data = array();
+        }
         $productionUnitName    = $this->input->get('productionUnitName');       
        
-        $default_location      = reset($location_data); // Get the first location
-        $default_location_name = $default_location->name;
+        $default_location      = !empty($location_data) ? reset($location_data) : false;
+        $default_location_name = ($default_location && is_object($default_location)) ? $default_location->name : '';
 
         $warehousesWithProductsDetails =  $this->production_unit_model->getWarehousesWithProductsData();     
 
-        $productionUnit  = '';
+        $productionUnit  = array();
         foreach ($location_data as $location) {
             $productionUnit[] = $location->name;
         }
@@ -2180,7 +2195,7 @@ class Production_Unit extends MY_Controller {
             if ($productionUnitName) {
                 $products = $this->production_unit_model->getproductDetailsByLocation($productionUnitName);
             } else {
-                $products = $this->production_unit_model->getproductDetailsByLocation($default_location->name);
+                $products = $default_location_name ? $this->production_unit_model->getproductDetailsByLocation($default_location_name) : array();
             }            
             if ($this->input->is_ajax_request()) {
                 echo json_encode($products);
@@ -2369,7 +2384,7 @@ class Production_Unit extends MY_Controller {
                         $today = date('Y-m-d');
                         if ($item_expiry <= $today) {
                             $this->session->set_flashdata('error', lang('product_expiry_date_issue') . ' (' . $product_details->name . ')');
-                            redirect($_SERVER["HTTP_REFERER"]);
+                            redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('Production_Unit/inventory'));
                         }
                     }
                     // $unit_cost = $real_unit_cost;
@@ -2571,7 +2586,7 @@ class Production_Unit extends MY_Controller {
                 if (!$this->upload->do_upload('document')) {
                     $error = $this->upload->display_errors();
                     $this->session->set_flashdata('error', $error);
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('Production_Unit/inventory'));
                 }
                 $photo = $this->upload->file_name;
                 $data['attachment'] = $photo;
@@ -2774,16 +2789,27 @@ class Production_Unit extends MY_Controller {
         // Normalize to indexed array for the view
         if (is_array($workstations)) {
             $workstations = array_values($workstations);
+        } else {
+            $workstations = array();
         }
 
-        $location_data         = $this->site->getWarehouseByIDs($user_warehouses_raw); 
+        $location_data         = $this->site->getWarehouseByIDs($user_warehouses_raw);
+        if ($this->Owner || $this->Admin) {
+            if (!$location_data || !is_array($location_data)) {
+                $location_data = $this->site->getAllWarehouses();
+            }
+        }
+        if (!$location_data || !is_array($location_data)) {
+            $location_data = array();
+        }
         $productionUnitName    = $this->input->get('productionUnitName');
         $workstation_id        = $this->input->get('workstation_id');
         
-        $default_location      = reset($location_data); // Get the first location
-        $default_location_name = $default_location ? $default_location->name : ''; 
+        $default_location      = !empty($location_data) ? reset($location_data) : false;
+        $default_location_name = ($default_location && is_object($default_location)) ? $default_location->name : ''; 
        
-        $productionUnit  = '';
+        $productionUnit  = array();
+        $productionUnitId = null;
         foreach ($location_data as $location) {
             $productionUnit[] = $location->name;
             $productionUnitId = $location->id;
@@ -2808,6 +2834,7 @@ class Production_Unit extends MY_Controller {
                 // Preferred path: products scoped by selected workstation
                 $products = $this->production_unit_model->getProductsByWorkstation($selected_ws,$primary_location_id);
             } else {
+                $products = array();
                 // Fallback to previous behavior if no workstation found
                 // if ($productionUnitName) {
                 //     $products = $this->production_unit_model->getproductDetailsByLocation($productionUnitName);

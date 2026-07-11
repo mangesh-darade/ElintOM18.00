@@ -389,7 +389,7 @@ class Variant_bill_of_materials extends MY_Controller
         
             if (empty($rows)) {
                 $this->session->set_flashdata('error', lang('nothing_found'));
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('Variant_bill_of_materials/vendor_stock'));
             }
         
             // Excel/PDF export

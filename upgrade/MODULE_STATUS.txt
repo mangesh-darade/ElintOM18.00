@@ -12,10 +12,10 @@ PHASE OVERVIEW
 Phase 1  Framework (system/)           DONE (ElintOM18.00 2026-07-11)
 Phase 2  Third party (MPDF, Stripe...) DONE (ElintOM18.00 2026-07-11)
 Phase 3  App core (Sma, crypto, etc.)   IN PROGRESS (base fixes done)
-Phase 4  Module screen + deep testing   IN PROGRESS (12 of 24 complete)
+Phase 4  Module screen + deep testing   IN PROGRESS (13 of 24 complete)
 
 ================================================================================
-MODULES 1–12 — COMPLETE
+MODULES 1–13 — COMPLETE
 ================================================================================
 
 #   Module              Controller(s)              Status
@@ -33,15 +33,15 @@ MODULES 1–12 — COMPLETE
 10  Quotes              Quotes.php                 COMPLETE — screen 6/6 + links 10/10 (2026-07-11)
 11  Transfers           Transfers.php              COMPLETE — screen 10/10 + links 12/12 (2026-07-11)
 12  Restaurant          Restaurant_Order_Taking.php COMPLETE — screen 10/10 + links 10/10 (2026-07-11)
+13  Production Unit     Production_Unit.php,         COMPLETE — screen 21/21 + links 8/8 (2026-07-11)
+                        Bill_of_material.php
 
 ================================================================================
-PENDING MODULES (13–24) — NOT STARTED
+PENDING MODULES (14–24) — NOT STARTED
 ================================================================================
 
 #   Module              Controller(s)              Screens  Priority
 --  ------------------  -------------------------  -------  --------
-13  Production Unit     Production_Unit.php,         21       P3
-                        Bill_of_material.php
 14  Webshop             Webshop.php                  170      P2
 15  Webshop Settings    Webshop_settings.php         36       P3
 16  Eshop (Mobile API)  Eshop, Eshop_admin,          10       P2
@@ -58,15 +58,10 @@ PENDING MODULES (13–24) — NOT STARTED
 24  Other Modules       Various                      50+      P2-P4
 
 ================================================================================
-RESTAURANT TEST DB (first-time setup)
-================================================================================
-c:\wamp64\bin\php\php8.5.0\php.exe upgrade\restaurant_bootstrap_db.php
-
-================================================================================
 SUMMARY
 ================================================================================
-Complete  : 12 modules (Auth through Restaurant)
-Pending   : 12 modules (13–24)
-Progress  : 12 / 24 modules certified complete
+Complete  : 13 modules (Auth through Production Unit)
+Pending   : 11 modules (14–24)
+Progress  : 13 / 24 modules certified complete
 
 ================================================================================

@@ -1435,7 +1435,57 @@ $this->Restaurant_Order_Taking_model->update_order($order_id, ['guest_count' => 
 
 ---
 
-## Test scripts index (Modules 1–12)
+## Module 13 — Production Unit
+
+**Tests:** `phase4_production_test.php` (**21/21**), `phase4_production_links_test.php` (**8/8**) PASS  
+**Status:** ✅ Module complete — fixes applied + retest 2026-07-11  
+**Controllers:** `Production_Unit.php`, `Bill_of_material.php`, `Variant_bill_of_materials.php` — `production_unit_model.php`
+
+| # | File | Old | New | Type |
+|---|------|-----|-----|------|
+| 13.1 | `Production_Unit.php` | 12× bare `HTTP_REFERER` | P1 → `site_url('Production_Unit/inventory')` | guard |
+| 13.2 | `Production_Unit.php` | `reset()`/`foreach` on false `getWarehouseByIDs` (Admin empty warehouse) | Owner/Admin `getAllWarehouses()` + `array()` fallback | guard |
+| 13.3 | `Production_Unit.php` | `$productionUnit = ''` then `$productionUnit[]` (PHP 8.5 fatal) | `$productionUnit = array()` | syntax |
+| 13.4 | `Production_Unit.php` | `$default_location->name` when reset false | `$default_location_name` with empty fallback | guard |
+| 13.5 | `Production_Unit.php` | `$location->price_group_id` when warehouse false | `$location &&` guard | guard |
+| 13.6 | `Production_Unit.php` | `$workstations` false in kitchen view foreach | Normalize to `array()` | guard |
+| 13.7 | `production_unit_model.php` | KOT `GROUP BY pup.stock_quantity` (column missing) | `pup.quantity` | syntax |
+| 13.8 | `Bill_of_material.php` | `foreach ($location_data)` on false | `array()` fallback after warehouse fetch | guard |
+| 13.9 | `Bill_of_material.php` | `$location->price_group_id` unguarded | `$location &&` guard | guard |
+| 13.10 | `Variant_bill_of_materials.php` | bare `HTTP_REFERER` on export | P1 guard | guard |
+| 13.11 | `phase4_production_*.php` | — | Screen + deep-link scripts | test |
+
+#### 13.3 `Production_Unit.php` — productionUnit string append
+
+**Old code:**
+```php
+$productionUnit  = '';
+foreach ($location_data as $location) {
+    $productionUnit[] = $location->name;
+```
+
+**New code:**
+```php
+$productionUnit  = array();
+foreach ($location_data as $location) {
+    $productionUnit[] = $location->name;
+```
+
+#### 13.7 `production_unit_model.php` — all_kot GROUP BY
+
+**Old code:**
+```php
+GROUP BY p.id, p.name, p.code, pup.stock_quantity, poi.total_order_quantity, u.code
+```
+
+**New code:**
+```php
+GROUP BY p.id, p.name, p.code, pup.quantity, poi.total_order_quantity, u.code
+```
+
+---
+
+## Test scripts index (Modules 1–13)
 
 | Module | Scripts |
 |--------|---------|
@@ -1449,7 +1499,7 @@ $this->Restaurant_Order_Taking_model->update_order($order_id, ['guest_count' => 
 | 8 Customers | `phase4_customers_test.php`, `phase4_customers_links_test.php` |
 | 9 Suppliers & Billers | `phase4_suppliers_billers_test.php`, `phase4_suppliers_billers_links_test.php` |
 | 10 Quotes | `phase4_quotes_test.php`, `phase4_quotes_links_test.php` |
-| 12 Restaurant | `phase4_restaurant_test.php`, `phase4_restaurant_links_test.php` |
+| 13 Production Unit | `phase4_production_test.php`, `phase4_production_links_test.php` |
 | Shared | `phase4_test_lib.php` |
 
 **Run:** `cd upgrade && php phase4_<module>_*.php Admin "Admin@554"`
@@ -1479,6 +1529,7 @@ $this->Restaurant_Order_Taking_model->update_order($order_id, ['guest_count' => 
 | 2026-07-11 | 10 | Module 10 Quotes **certified complete** — HTTP_REFERER, getQuoteByID guards, suggestions; screen **6/6**, links **10/10** |
 | 2026-07-11 | 11 | Module 11 Transfers **certified complete** — HTTP_REFERER, getTransferByID/Request guards, suggestions; screen **10/10**, links **12/12** |
 | 2026-07-11 | 12 | Module 12 Restaurant **certified complete** — kitchen_view restore, invoice/guest guards, test DB bootstrap; screen **10/10**, links **10/10** |
+| 2026-07-11 | 13 | Module 13 Production Unit **certified complete** — productionUnit array, warehouse/KOT guards, HTTP_REFERER; screen **21/21**, links **8/8** |
 
 ---
 
