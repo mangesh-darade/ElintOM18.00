@@ -46,10 +46,13 @@ class Shop extends MY_Controller {
         $this->data['currency'] = $this->Settings->default_currency;
 
         $shopinfo = $this->storeInfo();
+        if (!is_array($shopinfo)) {
+            $shopinfo = array();
+        }
 
-        $shopinfo['default_biller'] = (isset($shopinfo['default_eshop_biller']) && $shopinfo['default_eshop_biller'] != '') ? $shopinfo['default_eshop_biller'] : $shopinfo['default_biller'];
+        $shopinfo['default_biller'] = (isset($shopinfo['default_eshop_biller']) && $shopinfo['default_eshop_biller'] != '') ? $shopinfo['default_eshop_biller'] : $this->Settings->default_biller;
 
-        $shopinfo['default_eshop_warehouse'] = $this->eshop_warehouse_id = (isset($this->shopinfo['default_eshop_warehouse']) && $this->shopinfo['default_eshop_warehouse'] != '') ? $this->shopinfo['default_eshop_warehouse'] : $this->Settings->default_warehouse;
+        $shopinfo['default_eshop_warehouse'] = $this->eshop_warehouse_id = (isset($shopinfo['default_eshop_warehouse']) && $shopinfo['default_eshop_warehouse'] != '') ? $shopinfo['default_eshop_warehouse'] : $this->Settings->default_warehouse;
 
         $shopinfo['eshop_overselling'] = (isset($shopinfo['eshop_overselling']) && $shopinfo['eshop_overselling'] != '') ? $shopinfo['eshop_overselling'] : 0;
 
@@ -75,39 +78,51 @@ class Shop extends MY_Controller {
 
         $this->setShopTheme();
 
-        $this->data['active_multi_outlets'] = $this->eshop_settings->active_multi_outlets;
+        $this->data['active_multi_outlets'] = ($this->eshop_settings && isset($this->eshop_settings->active_multi_outlets)) ? $this->eshop_settings->active_multi_outlets : 0;
 
-        if ($this->eshop_settings->active_multi_outlets) {
+        if ($this->eshop_settings && $this->eshop_settings->active_multi_outlets) {
 
             $shopinfo['default_eshop_warehouse'] = $this->eshop_warehouse_id = isset($_SESSION['eshop_location_id']) ? $_SESSION['eshop_location_id'] : $this->eshop_warehouse_id;
 
             $outlets = $this->shop_model->getEshopOutlets();
             
+            if (is_array($outlets) && isset($outlets[$this->eshop_warehouse_id])) {
             $this->data['current_outlet'] = $outlets[$this->eshop_warehouse_id]['name'];
 
             $_SESSION['eshop_biller_id'] = $outlets[$this->eshop_warehouse_id]['biller_id'] ? $outlets[$this->eshop_warehouse_id]['biller_id'] : $shopinfo['default_biller'];
+            }
             
             if (isset($_SESSION['shipping_methods']) && $_SESSION['shipping_methods']['location']) {
                 
                 $shipping_methods = $this->eshop_model->getShippingMethods(['code' => $_SESSION['shipping_methods']['methods']]);
+                if (!empty($shipping_methods) && is_array($shipping_methods) && isset($shipping_methods[0])) {
                 $this->data['shipping_methods'] = $shipping_methods[0];
                 $_SESSION['shipping_methods']['id'] = $shipping_methods[0]['id'];
                 $_SESSION['shipping_methods']['minimum_order_amount'] = $shipping_methods[0]['minimum_order_amount'];
+                }
                 
                 $shippingData = '<b>Shipping Details</b>';
+                if (is_array($outlets) && isset($outlets[$_SESSION['shipping_methods']['location']])) {
                 $shippingData .= '<br/><b>Outlet&nbsp;&nbsp; : </b>' . $outlets[$_SESSION['shipping_methods']['location']]['name'];
+                }
+                if (!empty($shipping_methods) && is_array($shipping_methods) && isset($shipping_methods[0])) {
                 $shippingData .= '<br/><b>Method : </b>' . $shipping_methods[0]['name'];
+                }
                 $shippingData .= '<br/><b>Pincode : </b>' . $_SESSION['shipping_methods']['pincode'];
                 $shippingData .= '<br/><b>Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : </b>' . $_SESSION['shipping_methods']['date'];
                 $shippingData .= '<br/><b>Time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : </b>' . ($_SESSION['shipping_methods']['time'] == '00:00' ? 'Any Time' : $_SESSION['shipping_methods']['time']);
 
                 $this->data['outlets'] = [$this->eshop_warehouse_id => $shippingData];
                 
+                if (is_array($outlets) && isset($outlets[$_SESSION['shipping_methods']['location']])) {
                 $this->data['current_outlet'] = $outlets[$_SESSION['shipping_methods']['location']]['name'];
-            } else {                
+                }
+            } else {
+                if (is_array($outlets)) {
                 foreach ($outlets as $otid=> $outlet) {
                     $this->data['outlets'][$otid] = $outlet['name'];
-                }                
+                }
+                }
             }
 
         } else {
@@ -118,6 +133,7 @@ class Shop extends MY_Controller {
                 
                 $shipping_methods = $this->eshop_model->getShippingMethods(['code' => $_SESSION['shipping_methods']['methods']]);
                 
+                if (!empty($shipping_methods) && is_array($shipping_methods) && isset($shipping_methods[0])) {
                 $_SESSION['shipping_methods']['minimum_order_amount'] = $shipping_methods[0]['minimum_order_amount'];
                 
                 $this->data['shipping_methods'] = $shipping_methods[0];
@@ -128,6 +144,7 @@ class Shop extends MY_Controller {
                 $shippingData .= '<br/><b>Time&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : </b>' . ($_SESSION['shipping_methods']['time'] == '00:00' ? 'Any Time' : $_SESSION['shipping_methods']['time']);
 
                 $this->data['shipping_info'] = $shippingData;
+                }
             }
         }
 
@@ -528,11 +545,13 @@ class Shop extends MY_Controller {
         $details = $this->shop_model->category_navigation($category);
 
         $navegation = '<i class="fa fa-sitemap"></i> PRODUCTS / ';
+        if (!empty($details) && is_array($details) && isset($details[0])) {
         if (!empty($details[0]['parent'])) {
             $navegation .= $details[0]['parent'] . ' / ';
         }
         $navegation .= $details[0]['category'];
         $navegation .= '<small> (' . $details[0]['products_count'] . ' Items) </small>';
+        }
 
         return $navegation;
     }
@@ -644,7 +663,7 @@ class Shop extends MY_Controller {
                 }
             }
 
-            $this->data['default_category'] = ($default_category) ? $default_category : $this->data['category'][0]['id'];
+            $this->data['default_category'] = ($default_category) ? $default_category : ((is_array($this->data['category']) && isset($this->data['category'][0]['id'])) ? $this->data['category'][0]['id'] : 0);
             $this->data['page_no'] = $pagingData['pageno'] = ($this->uri->segment(4)) ? $this->uri->segment(4) : 1;
             $this->data['per_page_items'] = $pagingData['itemsPerPage'] = 16;
             $this->data['brands'] = $this->shop_model->brandList();
@@ -657,7 +676,7 @@ class Shop extends MY_Controller {
             } else {
                 $this->data['subCategories'] = $this->allChildCategories();
 
-                if ($_POST['action'] == "search_products" && !empty($this->input->post('search_keyword'))) {
+                if (isset($_POST['action']) && $_POST['action'] == "search_products" && !empty($this->input->post('search_keyword'))) {
                     $this->data['catlogProducts'] = $this->shop_model->searchProducts($this->input->post('search_keyword'), $this->input->post('page'), $pagingData['itemsPerPage'], $this->eshop_warehouse_id);
                     $pagingData['search_products'] = $this->input->post('search_keyword');
                     $pagingData['pageno'] = $this->input->post('page');
@@ -699,6 +718,9 @@ class Shop extends MY_Controller {
             redirect('home');
         } else {
             $this->data['product'] = $product = $this->shop_model->getProductInfoByHash($product_hash);
+            if (!$product || !is_array($product)) {
+                redirect('shop/home');
+            }
             $pro_id = $this->data['product']['id'];
             $this->data['images']   = $this->shop_model->getProductImagesByHash($product_hash);
             $this->data['veriants'] = $this->shop_model->getProductVeriantsById($pro_id);
@@ -809,7 +831,7 @@ class Shop extends MY_Controller {
         /* if (count($_SESSION['cart']) <= 0) {
           redirect('shop/home');
           } */
-        if (count($_SESSION['cart']) > 0) {
+        if (isset($_SESSION['cart']) && is_array($_SESSION['cart']) && count($_SESSION['cart']) > 0) {
             $productIds = [];
             foreach ($_SESSION['cart'] as $key) {
                 $productIds[] = $key['product_id'];
@@ -2090,8 +2112,11 @@ class Shop extends MY_Controller {
     public function getTaxMethods() {
 
         $result = $this->pos_model->getAllTaxRates();
+        $data = array();
+        if (!empty($result) && is_array($result)) {
         foreach ($result as $key => $method) {
             $data[$method['id']] = $method;
+        }
         }
 
         return $data;
@@ -2100,9 +2125,11 @@ class Shop extends MY_Controller {
     public function getTaxAttribs() {
 
         $result = $this->pos_model->getTaxAttributes();
-
+        $data = array();
+        if (!empty($result) && is_array($result)) {
         foreach ($result as $key => $attr) {
             $data[$attr->id] = (array) $attr;
+        }
         }
 
         return $data;
@@ -2288,11 +2315,11 @@ class Shop extends MY_Controller {
                 $paidamount = $this->shop_model->getpaidamount(['sale_id' => $validOrder]);
             }
 
-            $order['payment'] = $pay_details[0];
+            $order['payment'] = !empty($pay_details) ? $pay_details[0] : array();
             $order['paidamount'] = $paidamount;
 
             //-------------- Shipping -------------//
-            $deli = $this->sales_model->getDeliveryByID($id);
+            $deli = $this->sales_model->getDeliveryByID($validOrder);
             $order['delivery'] = $deli;
 
             //--------------billing_shipping Details --------------------//
@@ -2303,7 +2330,7 @@ class Shop extends MY_Controller {
                 $billing_details = $this->eshop_model->getOrderDetails(array('sale_id' => $order_row->id, 'customer_id' => $UserId));
             }
 
-            $order['billing_shipping'] = $billing_details[0];
+            $order['billing_shipping'] = !empty($billing_details) ? $billing_details[0] : array();
 
             //--------------Item Details --------------------//
 
@@ -2719,12 +2746,12 @@ class Shop extends MY_Controller {
             endif;
         } elseif ($this->input->post('edit_customer')) {
             $this->session->set_flashdata('error', validation_errors());
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'shop/home');
         }
 
         if ($this->form_validation->run() == true && $this->companies_model->updateCompany($id, $data)) {
             $this->session->set_flashdata('message', lang("customer_updated"));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'shop/home');
         } else {
             $this->data['customer'] = $company_details;
             $this->data['error'] = (validation_errors() ? validation_errors() : $this->session->flashdata('error'));
@@ -2883,7 +2910,7 @@ class Shop extends MY_Controller {
     }
 
     public function login() {
-        $this->session->set_userdata('referred_from', $_SERVER['HTTP_REFERER']);
+        $this->session->set_userdata('referred_from', isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '');
 
         if (isset($_POST['btn_submit']) && $_POST['btn_submit'] === 'Authentication') {
 
@@ -2927,7 +2954,7 @@ class Shop extends MY_Controller {
                         $this->session->unset_userdata('referred_from');
                         redirect('shop/checkout');
                     } else {
-                        if (count($_SESSION['cart']) > 0) {
+                        if (isset($_SESSION['cart']) && is_array($_SESSION['cart']) && count($_SESSION['cart']) > 0) {
                             redirect('shop/checkout');
                         } else {
                             redirect('shop/home');
@@ -3101,7 +3128,7 @@ class Shop extends MY_Controller {
                         $this->session->unset_userdata('referred_from');
                         redirect('shop/checkout');
                     } else {
-                        if (count($_SESSION['cart']) > 0) {
+                        if (isset($_SESSION['cart']) && is_array($_SESSION['cart']) && count($_SESSION['cart']) > 0) {
                             redirect('shop/checkout');
                         } else {
                             redirect('shop/home');
@@ -3828,7 +3855,7 @@ class Shop extends MY_Controller {
         ];
         $result = $this->shop_model->otp_action('Update', ['id' => $getdata->id], $fieldotp);
         $this->otp_sms($getdata->phone, $otpnumber);
-        return redirect($_SERVER['HTTP_REFERER']);
+        return redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'shop/home');
     }
 
     /* shopkeeper mail */
@@ -4184,7 +4211,7 @@ class Shop extends MY_Controller {
                     $this->session->unset_userdata('referred_from');
                     redirect('shop/checkout');
                 } else {
-                    if (count($_SESSION['cart']) > 0) {
+                    if (isset($_SESSION['cart']) && is_array($_SESSION['cart']) && count($_SESSION['cart']) > 0) {
                         redirect('shop/checkout');
                     } else {
                         redirect('shop/home');
@@ -4225,7 +4252,7 @@ class Shop extends MY_Controller {
                     redirect('shop/checkout');
                 } else {
 
-                    if (count($_SESSION['cart']) > 0) {
+                    if (isset($_SESSION['cart']) && is_array($_SESSION['cart']) && count($_SESSION['cart']) > 0) {
                         redirect('shop/checkout');
                     } else {
                         redirect('shop/home');
@@ -4465,7 +4492,7 @@ class Shop extends MY_Controller {
                     $this->session->unset_userdata('referred_from');
                     redirect('shop/checkout');
                 } else {
-                    if (count($_SESSION['cart']) > 0) {
+                    if (isset($_SESSION['cart']) && is_array($_SESSION['cart']) && count($_SESSION['cart']) > 0) {
                         redirect('shop/checkout');
                     } else {
                         redirect('shop/home');
@@ -4488,7 +4515,7 @@ class Shop extends MY_Controller {
         $this->otp_sms($guestdata['phone'], $vmcode);
         $guestdata['vcode'] = $vmcode;
         $this->session->set_userdata('guestlogininfo', $guestdata);
-        return redirect($_SERVER['HTTP_REFERER']);
+        return redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'shop/home');
     }
 
     /**
@@ -4498,7 +4525,7 @@ class Shop extends MY_Controller {
 
         $_SESSION['eshop_location_id'] = $outlet_id;
 
-        redirect($_SERVER["HTTP_REFERER"]);
+        redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'shop/home');
     }
 
     public function get_shipping_times($method_id = null) {

@@ -1643,7 +1643,42 @@ $Releted_products = $this->eshop_api_model->getCategoryProducts($products[0]->ca
 
 ---
 
-## Test scripts index (Modules 1–16)
+## Module 17 — Shop
+
+**Tests:** `phase4_shop_test.php` (**10/10**), `phase4_shop_links_test.php` (**9/9**) PASS  
+**Status:** ✅ Module complete — fixes applied + retest 2026-07-12  
+**Controllers:** `Shop.php` — `Shop_model.php`
+
+| # | File | Old | New | Type |
+|---|------|-----|-----|------|
+| 17.1 | `Shop.php` | `storeInfo()` false; `$this->shopinfo` before assign | `is_array` fallback; use `$shopinfo` for warehouse | guard |
+| 17.2 | `Shop.php` | `foreach ($outlets)` when `getEshopOutlets()` false | `is_array` guards on outlets + shipping `[0]` | guard |
+| 17.3 | `Shop.php` | `count($_SESSION['cart'])` without isset | `isset` + `is_array` before count (6×) | guard |
+| 17.4 | `Shop.php` | `product_info()` false hash → property access | Redirect `shop/home` when product missing | guard |
+| 17.5 | `Shop.php` | `home()` `$category[0]['id']` when categories false | `isset` fallback default category | guard |
+| 17.6 | `Shop.php` | `productNavigations()` `$details[0]` unguarded | `!empty` + `isset($details[0])` guard | guard |
+| 17.7 | `Shop.php` | `getTaxMethods`/`getTaxAttribs` foreach on false | Init `$data` + `!empty`/`is_array` guards | guard |
+| 17.8 | `Shop.php` | `orderDetails()` `getDeliveryByID($id)` undefined `$id` | Use `$validOrder`; guard payment/billing `[0]` | guard |
+| 17.9 | `Shop.php` | unguarded `HTTP_REFERER` redirects (6×) | `isset` + fallback `shop/home` | guard |
+| 17.10 | `Shop.php` | `$_POST['action']` without isset on T2 home | `isset($_POST['action'])` guard | guard |
+| 17.11 | `Shop_model.php` | `count($_SESSION['cart'])` on logout | `isset` + `is_array` guard | guard |
+| 17.12 | `phase4_shop_*.php` | — | Screen + deep-link scripts | test |
+
+#### 17.3 `Shop.php` — session cart count
+
+**Old code:**
+```php
+if (count($_SESSION['cart']) > 0) {
+```
+
+**New code:**
+```php
+if (isset($_SESSION['cart']) && is_array($_SESSION['cart']) && count($_SESSION['cart']) > 0) {
+```
+
+---
+
+## Test scripts index (Modules 1–17)
 
 | Module | Scripts |
 |--------|---------|
@@ -1660,6 +1695,7 @@ $Releted_products = $this->eshop_api_model->getCategoryProducts($products[0]->ca
 | 14 Webshop | `phase4_webshop_test.php`, `phase4_webshop_links_test.php` |
 | 15 Webshop Settings | `phase4_webshop_settings_test.php`, `phase4_webshop_settings_links_test.php` |
 | 16 Eshop | `phase4_eshop_test.php`, `phase4_eshop_links_test.php` |
+| 17 Shop | `phase4_shop_test.php`, `phase4_shop_links_test.php` |
 | Shared | `phase4_test_lib.php` |
 
 **Run:** `cd upgrade && php phase4_<module>_*.php Admin "Admin@554"`
@@ -1693,6 +1729,7 @@ $Releted_products = $this->eshop_api_model->getCategoryProducts($products[0]->ca
 | 2026-07-11 | 14 | Module 14 Webshop **certified complete** — raw_settings, rank SQL, cart_items/custom_pages guards; screen **12/12**, links **9/9** |
 | 2026-07-12 | 15 | Module 15 Webshop Settings **certified complete** — getWebshopSettings/sections/custom_pages/elements guards; screen **7/7**, links **4/4** |
 | 2026-07-12 | 16 | Module 16 Eshop **certified complete** — API foreach guards, getCategoryProducts arg, product_details/legacy API; screen **14/14**, links **10/10** |
+| 2026-07-12 | 17 | Module 17 Shop **certified complete** — constructor outlets/cart/tax/orderDetails guards; screen **10/10**, links **9/9** |
 
 ---
 

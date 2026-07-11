@@ -133,7 +133,7 @@ class Shop_model extends CI_Model {
     }
 
     public function end_user_session() {
-        if (count($_SESSION['cart']) > 0) {
+        if (isset($_SESSION['cart']) && is_array($_SESSION['cart']) && count($_SESSION['cart']) > 0) {
             $cartItem = array();
             foreach ($_SESSION['cart'] as $cartProduct) {
                 $cartItem[] = [

@@ -150,7 +150,8 @@
 | **Module 14 — Webshop** | **✅ Module complete** | Screen 12/12, deep-links 9/9 |
 | **Module 15 — Webshop Settings** | **✅ Module complete** | Screen 7/7, deep-links 4/4 |
 | **Module 16 — Eshop** | **✅ Module complete** | Screen 14/14, deep-links 10/10 |
-| Remaining controllers (17–24) | Pending | Full module scan during Phase 4 |
+| **Module 17 — Shop** | **✅ Module complete** | Screen 10/10, deep-links 9/9 |
+| Remaining controllers (18–24) | Pending | Full module scan during Phase 4 |
 
 #### Phase 4 — Module Testing Log (last run 2026-07-07; status reset 2026-07-11 — pending retest)
 
@@ -276,6 +277,10 @@ php phase4_suppliers_billers_links_test.php Admin "Admin@554"
 **Module 16 fixes (Eshop):** — [`PHP_UPGRADE_FIXES_LOG.md`](PHP_UPGRADE_FIXES_LOG.md) §Module 16
 
 **Module 16 tests (certified 2026-07-12):** screen **14/14**, deep-links **10/10** (`Eshop_admin` + `Eshop_api` + legacy `Eshop` router)
+
+**Module 17 fixes (Shop):** — [`PHP_UPGRADE_FIXES_LOG.md`](PHP_UPGRADE_FIXES_LOG.md) §Module 17
+
+**Module 17 tests (certified 2026-07-12):** screen **10/10**, deep-links **9/9** (guest storefront T1/T2; `active_eshop` on test DB)
 
 **Stock/timing note:** Adjustment screen uses `async:false` on `product_list` + `qa_suggestions` in JS (`adjustments.js`) — causes UI “stuck” feel on large warehouses; server paths OK under 1s locally.
 
