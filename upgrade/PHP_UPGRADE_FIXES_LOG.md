@@ -1149,8 +1149,8 @@ $this->data['biller'] = $this->site->getCompanyByID($this->Settings->default_bil
 
 ## Module 9 — Suppliers & Billers
 
-**Tests:** `phase4_suppliers_billers_test.php` (**10/10**), `phase4_suppliers_billers_links_test.php` (**14/14**) PASS  
-**Status:** ⏳ Not done — retest required  
+**Tests:** `phase4_suppliers_billers_test.php` (**10/10**), `phase4_suppliers_billers_links_test.php` (**14/14**)  
+**Status:** ✅ Module complete — screen + deep-links certified on PHP 8.5 (2026-07-11)
 **Controllers:** `Suppliers.php`, `Billers.php` — shared `companies_model.php`
 
 | # | File | Old | New | Type |
@@ -1420,6 +1420,7 @@ if($this->input->is_ajax_request()) {
 | 2026-07-11 | 6 | Module 6 Purchases — `view_return` uses `getPurchaseByID`/`getAllPurchaseItems` (not missing `return_purchases` table); restored `view_return.php`; return deep 7/7 + links 20/20 PASS |
 | 2026-07-11 | 7 | Module 7 Reports **certified complete** — `comp.state`, ledger dates, `load_ajax_reports`, `getCosting` sale_id; screen **71/71**, deep **50/50**, links **24/24** |
 | 2026-07-11 | 8 | Module 8 Customers **certified complete** — `getGiftCard` DESC→desc, `getGiftBalance` guards, HTTP_REFERER; screen **10/10**, links **19/19** |
+| 2026-07-11 | 9 | Module 9 Suppliers & Billers **certified complete** — HTTP_REFERER, getCompanyByID guards, suggestions `return array()`; screen **10/10**, links **14/14** |
 
 ---
 

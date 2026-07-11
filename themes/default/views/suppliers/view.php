@@ -76,10 +76,10 @@
             </div>
             <div class="modal-footer no-print">
                 <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><?= lang('close'); ?></button>
-                <?php if ($Owner || $Admin || $GP['reports-suppliers']) { ?>
+                <?php if ($Owner || $Admin || !empty($GP['reports-suppliers'])) { ?>
                     <a href="<?=site_url('reports/supplier_report/'.$supplier->id);?>" target="_blank" class="btn btn-primary"><?= lang('suppliers_report'); ?></a>
                 <?php } ?>
-                <?php if ($Owner || $Admin || $GP['suppliers-edit']) { ?>
+                <?php if ($Owner || $Admin || !empty($GP['suppliers-edit'])) { ?>
                     <a href="<?=site_url('suppliers/edit/'.$supplier->id);?>" data-toggle="modal" data-target="#myModal2" class="btn btn-primary"><?= lang('edit_supplier'); ?></a>
                 <?php } ?>
             </div>

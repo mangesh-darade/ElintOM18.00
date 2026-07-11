@@ -207,6 +207,7 @@ class Companies_model extends CI_Model {
 
             return $data;
         }
+        return array();
     }
 
     public function getCustomerSuggestions($term, $limit = 10) {
@@ -226,6 +227,7 @@ class Companies_model extends CI_Model {
 
             return $data;
         }
+        return array();
     }
 
     public function getSupplierSuggestions($term, $limit = 10) {
@@ -242,6 +244,7 @@ class Companies_model extends CI_Model {
 
             return $data;
         }
+        return array();
     }
 
     public function getCustomerSales($id) {
@@ -627,11 +630,11 @@ class Companies_model extends CI_Model {
         $array = array('customer_id' => $cust_id, 'balance >' => '0', 'expiry >=' => date('Y-m-d'));
         $get = $this->db->select('balance as giftbalance')
                         ->where($array)
-                        ->order_by('balance', DESC)
+                        ->order_by('balance', 'desc')
                         ->limit(1)
                         ->get('sma_gift_cards')->row();
 
-        return $get->giftbalance;
+        return $get ? $get->giftbalance : null;
     }
 
     /** End get payment option * */
@@ -664,7 +667,7 @@ class Companies_model extends CI_Model {
         $array = array('customer_id' => $cust_id, 'balance >' => '0', 'expiry >=' => date('Y-m-d'));
         $get = $this->db->select('sum(balance)as giftbalance ,count(id) as giftqty')
                         ->where($array)
-                        ->order_by('balance', DESC)
+                        ->order_by('balance', 'desc')
                         ->get('sma_gift_cards')->row();
 
         return $get;

@@ -13,7 +13,7 @@ class Suppliers extends MY_Controller
         }
         if ($this->Customer || $this->Supplier) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('suppliers'));
         }
         $this->lang->load('suppliers', $this->Settings->user_language);
         $this->load->library('form_validation');
@@ -62,6 +62,10 @@ class Suppliers extends MY_Controller
         $this->sma->checkPermissions('index', true);
         $this->data['error'] = (validation_errors()) ? validation_errors() : $this->session->flashdata('error');
         $this->data['supplier'] = $this->companies_model->getCompanyByID($id);
+        if (!$this->data['supplier']) {
+            $this->session->set_flashdata('error', lang('supplier_not_found'));
+            redirect(site_url('suppliers'));
+        }
         $this->load->view($this->theme.'suppliers/view',$this->data);
     }
 
@@ -184,8 +188,10 @@ class Suppliers extends MY_Controller
                 $first_warehouse_id = trim($warehouse_ids[0]);
                 $warehouseArr = $this->site->getWarehouseByID($first_warehouse_id);
                 // var_dump($warehouseArr);exit;
-                $warehouse = reset($warehouseArr);
-                $biller_details = $this->site->getCompanyByID($warehouse->primary_biller_id);
+                $warehouse = is_array($warehouseArr) ? reset($warehouseArr) : false;
+                $biller_details = ($warehouse && !empty($warehouse->primary_biller_id))
+                    ? $this->site->getCompanyByID($warehouse->primary_biller_id)
+                    : $this->site->getCompanyByID($this->Settings->default_biller);
             }
 
             // var_dump("biller_details",$biller_details);exit;
@@ -225,7 +231,7 @@ class Suppliers extends MY_Controller
         $this->form_validation->set_rules('userfile', lang("map_image"), 'xss_clean');
 
         if ($this->form_validation->run() == TRUE) {
-            if ($_FILES['userfile']['size'] > 0) {
+            if (!empty($_FILES['userfile']['size']) && $_FILES['userfile']['size'] > 0) {
                 $this->load->library('upload');
                 $config['upload_path'] = 'assets/mdata/' . $this->Customer_assets . '/uploads/';
                 $config['allowed_types'] = 'gif|jpg|png|jpeg';
@@ -347,6 +353,8 @@ class Suppliers extends MY_Controller
             $this->data['location_types'] = $this->settings_model->getAllLocationTypes();
             $this->data['owned_by'] = $this->settings_model->getAllOwned_by();
             $this->data['billers_data'] = $this->settings_model->getBillers();
+            $this->data['warehouse'] = (object) array('state' => '', 'postal_code' => '');
+            $this->data['location_type'] = (object) array('location_type' => '');
             $this->load->view($this->theme . 'suppliers/add_warehouse_from_supplier', $this->data);
         }
     }
@@ -360,6 +368,10 @@ class Suppliers extends MY_Controller
         }
 
         $company_details = $this->companies_model->getCompanyByID($id);
+        if (!$company_details) {
+            $this->session->set_flashdata('error', lang('supplier_not_found'));
+            redirect(site_url('suppliers'));
+        }
         //if ($this->input->post('email') != $company_details->email) {
            // $this->form_validation->set_rules('email', lang("email_address"), 'is_unique[companies.email]');
        // }
@@ -391,7 +403,7 @@ class Suppliers extends MY_Controller
 
         if ($this->form_validation->run('biller/add') == true) {
             $state = $this->input->post('state');
-            if (strpos($state, '~') !== false) {
+            if ($state !== null && $state !== '' && strpos((string) $state, '~') !== false) {
                 $p = explode('~', $state);
                 $state = $p[0];
                 $state_code = $p[1];
@@ -427,12 +439,12 @@ class Suppliers extends MY_Controller
             );
         } elseif ($this->input->post('edit_supplier')) {
             $this->session->set_flashdata('error', validation_errors());
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('suppliers'));
         }
 
         if ($this->form_validation->run() == true && $this->companies_model->updateCompany($id, $data)) {
             $this->session->set_flashdata('message', $this->lang->line("supplier_updated"));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('suppliers'));
         } 
         
         else {
@@ -463,6 +475,10 @@ class Suppliers extends MY_Controller
         $this->data['error'] = (validation_errors() ? validation_errors() : $this->session->flashdata('error'));
         $this->data['modal_js'] = $this->site->modal_js();
         $this->data['company'] = $this->companies_model->getCompanyByID($company_id);
+        if (!$this->data['company']) {
+            $this->session->set_flashdata('error', lang('supplier_not_found'));
+            redirect(site_url('suppliers'));
+        }
         $this->data['users'] = $this->companies_model->getCompanyUsers($company_id);
         $this->load->view($this->theme . 'suppliers/users', $this->data);
 
@@ -523,7 +539,7 @@ class Suppliers extends MY_Controller
 
             if (DEMO) {
                 $this->session->set_flashdata('warning', $this->lang->line("disabled_in_demo"));
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('suppliers'));
             }
 
             if (isset($_FILES["csv_file"])) /* if($_FILES['userfile']['size'] > 0) */ {
@@ -630,12 +646,20 @@ class Suppliers extends MY_Controller
     {
         // $this->sma->checkPermissions('index');
         $row = $this->companies_model->getCompanyByID($id);
+        if (!$row) {
+            $this->sma->send_json(array());
+            return;
+        }
         $this->sma->send_json(array(array('id' => $row->id, 'text' => $row->company)));
     }
     function getSupplierName($id = NULL)
     {
         // $this->sma->checkPermissions('index');
         $row = $this->companies_model->getCompanyByID($id);
+        if (!$row) {
+            $this->sma->send_json(array());
+            return;
+        }
         $this->sma->send_json(array(array('id' => $row->id, 'text' => $row->name.'('.$row->company.')')));
     }
 
@@ -643,7 +667,7 @@ class Suppliers extends MY_Controller
     {
         if (!$this->Owner && !$this->GP['bulk_actions']) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('suppliers'));
         }
 
         $this->form_validation->set_rules('form_action', lang("form_action"), 'required');
@@ -666,7 +690,7 @@ class Suppliers extends MY_Controller
                     } else {
                         $this->session->set_flashdata('message', $this->lang->line("suppliers_deleted"));
                     }
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('suppliers'));
                 }
 
                 if ($this->input->post('form_action') == 'export_excel' || $this->input->post('form_action') == 'export_pdf') {
@@ -702,6 +726,9 @@ class Suppliers extends MY_Controller
                     $row = 3;
                     foreach ($_POST['val'] as $id) {
                         $customer = $this->site->getCompanyByID($id);
+                        if (!$customer) {
+                            continue;
+                        }
                          $this->excel->getActiveSheet()->SetCellValue('A' . $row, $customer->company);
                         $this->excel->getActiveSheet()->SetCellValue('B' . $row, $customer->name);
                         $this->excel->getActiveSheet()->SetCellValue('C' . $row, $customer->email);
@@ -756,15 +783,15 @@ class Suppliers extends MY_Controller
                         return $objWriter->save('php://output');
                     }
 
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('suppliers'));
                 }
             } else {
                 $this->session->set_flashdata('error', $this->lang->line("no_supplier_selected"));
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('suppliers'));
             }
         } else {
             $this->session->set_flashdata('error', validation_errors());
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('suppliers'));
         }
     }
 

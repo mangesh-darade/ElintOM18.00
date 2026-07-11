@@ -38,7 +38,7 @@ function delSupplier(){
         ], "footer");
     });
 </script>
-<?php if ($Owner || $GP['bulk_actions']) {
+<?php if ($Owner || !empty($GP['bulk_actions'])) {
     echo form_open('suppliers/supplier_actions', 'id="action-form"');
 } ?>
 <div class="box">
@@ -153,7 +153,7 @@ function delSupplier(){
         </div>
     </div>
 </div>
-<?php if ($Owner || $GP['bulk_actions']) { ?>
+<?php if ($Owner || !empty($GP['bulk_actions'])) { ?>
     <div style="display: none;">
         <input type="hidden" name="form_action" value="" id="form_action"/>
         <?= form_submit('performAction', 'performAction', 'id="action-form-submit"') ?>

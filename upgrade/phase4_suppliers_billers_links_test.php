@@ -10,7 +10,7 @@ require __DIR__ . '/phase4_test_lib.php';
 
 phase4_webOutputStart();
 
-$base = 'http://localhost/phpupgrade';
+$base = 'http://localhost/ElintOM18.00';
 list($identity, $password) = phase4_credentials();
 $cookieFile = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'phpupgrade_suppliers_billers_links_cookies.txt';
 $phase4_fail = 0;

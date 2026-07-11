@@ -13,7 +13,7 @@ class Billers extends MY_Controller
         }
         if (!$this->Owner) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('billers'));
         }
         $this->lang->load('billers', $this->Settings->user_language);
         $this->load->library('form_validation');
@@ -178,6 +178,10 @@ class Billers extends MY_Controller
         }
 
         $company_details = $this->companies_model->getCompanyByID($id);
+        if (!$company_details) {
+            $this->session->set_flashdata('error', lang('biller_not_found'));
+            redirect(site_url('billers'));
+        }
         if ($this->input->post('email') != $company_details->email) {
             $this->form_validation->set_rules('code', lang("email_address"), 'is_unique[companies.email]');
         }
@@ -313,6 +317,10 @@ class Billers extends MY_Controller
         $this->sma->checkPermissions('index');
 
         $row = $this->companies_model->getCompanyByID($id);
+        if (!$row) {
+            $this->sma->send_json(array());
+            return;
+        }
         $this->sma->send_json(array(array('id' => $row->id, 'text' => $row->company)));
     }
 
@@ -337,7 +345,7 @@ class Billers extends MY_Controller
     {
         if (!$this->Owner && !$this->GP['bulk_actions']) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('billers'));
         }
 
         $this->form_validation->set_rules('form_action', lang("form_action"), 'required');
@@ -360,7 +368,7 @@ class Billers extends MY_Controller
                     } else {
                         $this->session->set_flashdata('message', $this->lang->line("billers_deleted"));
                     }
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('billers'));
                 }
 
                 if ($this->input->post('form_action') == 'export_excel' || $this->input->post('form_action') == 'export_pdf') {
@@ -426,15 +434,15 @@ class Billers extends MY_Controller
                         return $objWriter->save('php://output');
                     }
 
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('billers'));
                 }
             } else {
                 $this->session->set_flashdata('error', $this->lang->line("no_biller_selected"));
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('billers'));
             }
         } else {
             $this->session->set_flashdata('error', validation_errors());
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('billers'));
         }
     }
 
