@@ -1595,7 +1595,55 @@ $this->data['page_data'] = (is_array($pageData) && $page && isset($pageData[$pag
 
 ---
 
-## Test scripts index (Modules 1–15)
+## Module 16 — Eshop (Mobile API)
+
+**Tests:** `phase4_eshop_test.php` (**14/14**), `phase4_eshop_links_test.php` (**10/10**) PASS  
+**Status:** ✅ Module complete — fixes applied + retest 2026-07-12  
+**Controllers:** `Eshop_admin.php`, `Eshop_api.php`, `Eshop.php` — `Eshop_api_model.php`
+
+| # | File | Old | New | Type |
+|---|------|-----|-----|------|
+| 16.1 | `Eshop_api.php` | `foreach` on false from API model lists | `!empty` + `is_array` guards on all list endpoints | guard |
+| 16.2 | `Eshop_api_model.php` | `getCategoryProducts(..., $type)` missing 4th arg fatal | Default `$type = null`; related call passes `null` | guard |
+| 16.3 | `Eshop_api.php` | `product_details` related products 500 (ArgumentCountError) | Pass 4th arg `null` to `getCategoryProducts` | guard |
+| 16.4 | `Eshop_api.php` | `round()` on empty qty strings TypeError | `(float)` cast before `round()` | guard |
+| 16.5 | `Eshop_api.php` | `checkout_details` foreach on missing `slitems` | Validate decoded JSON + `slitems` array | guard |
+| 16.6 | `Eshop_api.php` | `storeInfo()` false → property access in checkout | Fallback `shopinfo` array in constructor | guard |
+| 16.7 | `Eshop_api.php` | `json_encode` invalid UTF-8 | `JSON_INVALID_UTF8_SUBSTITUTE` in `json_op` | syntax |
+| 16.8 | `Eshop.php` | `count($cart)` on null POST sales | `empty` + `is_countable` guard | guard |
+| 16.9 | `Eshop.php` | `getInvoiceByID` / `getSaleByReff` false property access | False guards before `->` access | guard |
+| 16.10 | `Eshop.php` | `getDeliveryByID($id)` undefined `$id` | Use `$validOrder`; guard payment/billing `[0]` | guard |
+| 16.11 | `Eshop_admin.php` | `foreach ($_POST['price'])` unguarded; HTTP_REFERER | POST `isset` guards; referer fallback paths | guard |
+| 16.12 | `eshop/pages.php`, `settings.php` | bareword `id=>` array key (undefined constant) | Quoted `'id' =>` | syntax |
+| 16.13 | `phase4_eshop_*.php` | — | Screen + deep-link scripts | test |
+
+#### 16.2 `Eshop_api_model.php` — getCategoryProducts 4th parameter
+
+**Old code:**
+```php
+public function getCategoryProducts($category_id, $pageno = 1, $itemsPerPage = 18, $type) {
+```
+
+**New code:**
+```php
+public function getCategoryProducts($category_id, $pageno = 1, $itemsPerPage = 18, $type = null) {
+```
+
+#### 16.3 `Eshop_api.php` — product_details related products call
+
+**Old code:**
+```php
+$Releted_products = $this->eshop_api_model->getCategoryProducts($products[0]->category_id,1, 10);
+```
+
+**New code:**
+```php
+$Releted_products = $this->eshop_api_model->getCategoryProducts($products[0]->category_id, 1, 10, null);
+```
+
+---
+
+## Test scripts index (Modules 1–16)
 
 | Module | Scripts |
 |--------|---------|
@@ -1611,6 +1659,7 @@ $this->data['page_data'] = (is_array($pageData) && $page && isset($pageData[$pag
 | 10 Quotes | `phase4_quotes_test.php`, `phase4_quotes_links_test.php` |
 | 14 Webshop | `phase4_webshop_test.php`, `phase4_webshop_links_test.php` |
 | 15 Webshop Settings | `phase4_webshop_settings_test.php`, `phase4_webshop_settings_links_test.php` |
+| 16 Eshop | `phase4_eshop_test.php`, `phase4_eshop_links_test.php` |
 | Shared | `phase4_test_lib.php` |
 
 **Run:** `cd upgrade && php phase4_<module>_*.php Admin "Admin@554"`
@@ -1643,6 +1692,7 @@ $this->data['page_data'] = (is_array($pageData) && $page && isset($pageData[$pag
 | 2026-07-11 | 13 | Module 13 Production Unit **certified complete** — productionUnit array, warehouse/KOT guards, HTTP_REFERER; screen **21/21**, links **8/8** |
 | 2026-07-11 | 14 | Module 14 Webshop **certified complete** — raw_settings, rank SQL, cart_items/custom_pages guards; screen **12/12**, links **9/9** |
 | 2026-07-12 | 15 | Module 15 Webshop Settings **certified complete** — getWebshopSettings/sections/custom_pages/elements guards; screen **7/7**, links **4/4** |
+| 2026-07-12 | 16 | Module 16 Eshop **certified complete** — API foreach guards, getCategoryProducts arg, product_details/legacy API; screen **14/14**, links **10/10** |
 
 ---
 

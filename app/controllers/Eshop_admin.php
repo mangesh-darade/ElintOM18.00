@@ -203,7 +203,8 @@ class Eshop_admin extends MY_Controller {
 
             $this->db->where(['id' => '1'])->update('eshop_settings', $settingFiled);
 
-
+            $batchArr = array();
+            if (!empty($_POST['price']) && is_array($_POST['price'])) {
             foreach ($_POST['price'] as $id => $price) {
                 $price = (is_numeric($price)) ? $price : 0;
                 $codeName = str_replace('_', ' ', $_POST['code'][$id]);
@@ -230,11 +231,12 @@ class Eshop_admin extends MY_Controller {
                     }
                 }
             }//end foreach.
+            }
 
             if (is_array($batchArr)) {
                 $rec = $this->db->update_batch('eshop_shipping_methods', $batchArr, 'id');
 
-                $redirecturl = str_replace(base_url(), '', $_SERVER['HTTP_REFERER']);
+                $redirecturl = isset($_SERVER['HTTP_REFERER']) ? str_replace(base_url(), '', $_SERVER['HTTP_REFERER']) : 'eshop_admin/shipping_methods';
                 
                 if ($rec) {
                     unset($_POST);
@@ -333,7 +335,7 @@ class Eshop_admin extends MY_Controller {
 
             $this->db->query("Update `sma_categories` set `in_eshop` = '0' ");
 
-            if (count($categories)) {
+            if (!empty($categories) && count($categories)) {
 
                 $categories_in = join(',', $categories);
                 $this->db->query("Update `sma_categories` set `in_eshop` = '1' where `id` IN ($categories_in) ");
@@ -341,7 +343,7 @@ class Eshop_admin extends MY_Controller {
 
             $this->db->query("Update `sma_products` set `in_eshop` = '0' where `category_id` = '$category_id' ");
 
-            if (count($products)) {
+            if (!empty($products) && count($products)) {
                 $products_in = join(',', $products);
                 $this->db->query("Update `sma_products` set `in_eshop` = '1' where `id` IN ($products_in) ");
             } else {
@@ -351,7 +353,7 @@ class Eshop_admin extends MY_Controller {
             $this->session->set_flashdata('message', lang("Changes Updated successfully"));
             $this->session->keep_flashdata('message');
 
-            $redirecturl = str_replace(base_url(), '', $_SERVER['HTTP_REFERER']);
+            $redirecturl = isset($_SERVER['HTTP_REFERER']) ? str_replace(base_url(), '', $_SERVER['HTTP_REFERER']) : 'eshop_admin/manage_products/' . $category_id;
             
             redirect($redirecturl);
         } else {

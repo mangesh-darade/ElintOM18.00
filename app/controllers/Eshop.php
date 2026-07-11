@@ -52,6 +52,9 @@ class Eshop extends CI_Controller {
 
         $this->data['rows'] = $this->pos_model->getAllInvoiceItems($sale_id);
         $inv = $this->pos_model->getInvoiceByID($sale_id);
+        if (!$inv) {
+            die('No sale selected.');
+        }
         $biller_id = $inv->biller_id;
         $customer_id = $inv->customer_id;
         $this->data['biller'] = $this->pos_model->getCompanyByID($biller_id);
@@ -555,7 +558,7 @@ class Eshop extends CI_Controller {
 
         $result = $this->eshop_model->getSaleByReff($reffNo);
 
-        if ($result->reference_no == $reffNo) {
+        if ($result && $result->reference_no == $reffNo) {
             return TRUE;
         } else {
             return FALSE;
@@ -578,7 +581,7 @@ class Eshop extends CI_Controller {
 
         $cart = $this->input->post('sales');
 
-        if (count($cart) == 0):
+        if (empty($cart) || (is_countable($cart) && count($cart) == 0)):
             $result['ofl_sale']['status'] = 'ERROR';
             $result['ofl_sale']['msg'] = 'Order details is empty';
             return $this->json_op($result);
@@ -1237,16 +1240,16 @@ class Eshop extends CI_Controller {
             $array['result']['order'] = (array) $order_details;
             //--------------Payments Details --------------------//
             $pay_details = $this->sales_model->getInvoicePayments($validOrder);
-            $array['result']['payment'] = $pay_details[0];
+            $array['result']['payment'] = !empty($pay_details) ? $pay_details[0] : array();
 
             //-------------- Shipping -------------//
-            $deli = $this->sales_model->getDeliveryByID($id);
+            $deli = $this->sales_model->getDeliveryByID($validOrder);
             $array['result']['delivery'] = $deli;
 
             //--------------billing_shipping Details --------------------//
             $billing_details = $this->eshop_model->getOrderDetails(array('sale_id' => $validOrder));
             ;
-            $array['result']['billing_shipping'] = $billing_details[0];
+            $array['result']['billing_shipping'] = !empty($billing_details) ? $billing_details[0] : array();
 
             //--------------Payments Details --------------------//
             $items_details = $this->sales_model->getAllInvoiceItems($validOrder);
@@ -1296,17 +1299,17 @@ class Eshop extends CI_Controller {
 
             //--------------Payments Details --------------------//
             $pay_details = $this->sales_model->getInvoicePayments($validOrder);
-            $array['result']['payment'] = $pay_details[0];
+            $array['result']['payment'] = !empty($pay_details) ? $pay_details[0] : array();
 
 
             //-------------- Shipping -------------//
-            $deli = $this->sales_model->getDeliveryByID($id);
+            $deli = $this->sales_model->getDeliveryByID($validOrder);
             $array['result']['delivery'] = $deli;
 
             //--------------billing_shipping Details --------------------//
             $billing_details = $this->eshop_model->getOrderDetails(array('sale_id' => $validOrder));
             ;
-            $array['result']['billing_shipping'] = $billing_details[0];
+            $array['result']['billing_shipping'] = !empty($billing_details) ? $billing_details[0] : array();
 
             //--------------Item Details --------------------//
             $items_details = $this->sales_model->getAllInvoiceItems($validOrder);

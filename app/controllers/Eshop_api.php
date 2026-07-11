@@ -23,6 +23,9 @@ class Eshop_api extends MY_Controller {
 		$this->data['currency_symbol'] = $this->Settings->symbol;
         $this->data['currency'] = $this->Settings->default_currency;
         $this->data['shopinfo'] = $this->storeInfo();
+        if (!is_array($this->data['shopinfo'])) {
+            $this->data['shopinfo'] = array('eshop_free_delivery_on_order' => 0);
+        }
 		$this->data['shop_pagename'] = $this->uri->segment(2);
 		$this->data['eshop_settings'] = $this->eshop_settings = $this->eshop_model->getEshopSettings(1);
 		$this->pos_settings = $this->site->get_pos_setting();
@@ -31,7 +34,7 @@ class Eshop_api extends MY_Controller {
 
      private function json_op($arr) {
         $arr = is_array($arr) ? $arr : array();
-        echo @json_encode($arr);
+        echo json_encode($arr, JSON_INVALID_UTF8_SUBSTITUTE);
         exit;
     }
      
@@ -41,10 +44,12 @@ class Eshop_api extends MY_Controller {
         
       $product =  $this->eshop_api_model->getFeaturedProducts();
         $ProductArr = array();
+        if (!empty($product) && is_array($product)) {
         foreach($product as $row){
             $veriant = $this->eshop_api_model->getProductVeriantsById($row->id);
             $row->option = ($veriant)?$veriant :False;
             $ProductArr[]=$row;
+        }
         }
         
         echo $this->json_op($ProductArr);
@@ -57,6 +62,8 @@ class Eshop_api extends MY_Controller {
     }*/
 	public function get_brands_list() {
 		$brand = $this->eshop_api_model->get_brands();
+		$data = array();
+		if (!empty($brand) && is_array($brand)) {
 			foreach($brand as $brand_value){
 				if (file_exists('assets/mdata/'.$this->Customer_assets.'/uploads/' . $brand_value->image)) {
 					$checkimage = TRUE;
@@ -71,11 +78,13 @@ class Eshop_api extends MY_Controller {
 				}
 				$data[] = $brand_value;
 			}
+		}
 		echo $this->json_op($data);
 	}
     public function popular_categories(){
 		$category =  $this->eshop_api_model->getPopularCategories();
 		$data  = array();
+		if (!empty($category) && is_array($category)) {
 		foreach($category as $category_value){
 			if (file_exists('assets/mdata/'.$this->Customer_assets.'/uploads/' . $category_value->image)) {
 				$checkimage = TRUE;
@@ -90,15 +99,18 @@ class Eshop_api extends MY_Controller {
 			}
 			$data[] = $category_value;
 		}
+		}
 		
 		 echo $this->json_op($data);
     }
    public function get_categories(){
        $ParentCat = $this->eshop_api_model->get_parent_categories();
 	   $DataArr = array();
+	   if (!empty($ParentCat) && is_array($ParentCat)) {
 	   foreach($ParentCat as $val){
 			$Subcategories = array();
 		    $ChildCat = $this->eshop_api_model->get_parent_categories($val->id);
+			if (!empty($ChildCat) && is_array($ChildCat)) {
 			foreach($ChildCat as $child_val){
 				$Subcategories[]=array(
 					'id'=>$child_val->id,
@@ -107,6 +119,7 @@ class Eshop_api extends MY_Controller {
 					'parent_id'=>$child_val->parent_id,
 			    );
 			}
+			}
 			$DataArr[]=array(
 				'id'=>$val->id,
 				'name'=>$val->name,
@@ -114,6 +127,7 @@ class Eshop_api extends MY_Controller {
 				'parent_id'=>$val->parent_id,
 				'subcategories'=>$Subcategories,
 			);
+	   }
 	   }
 	   
         echo $this->json_op($DataArr);
@@ -128,10 +142,12 @@ class Eshop_api extends MY_Controller {
     public function populerproduct(){
         $popular = $this->eshop_api_model->getpopulerProduct();
          $ProductArr = array();
+        if (!empty($popular) && is_array($popular)) {
         foreach($popular as $row){
             $veriant = $this->eshop_api_model->getProductVeriantsById($row->id);
             $row->option = ($veriant)?$veriant :False;
             $ProductArr[]=$row;
+        }
         }
         
         echo $this->json_op($ProductArr);
@@ -140,14 +156,15 @@ class Eshop_api extends MY_Controller {
    public function categoryproducts(){
         $categoryproduct = $this->eshop_api_model->getPopularCategoryProducts();
          $ProductArr = array();
+        if (!empty($categoryproduct) && is_array($categoryproduct)) {
         foreach($categoryproduct as $row){
             $veriant = $this->eshop_api_model->getProductVeriantsById($row->id);
             $row->option = ($veriant)?$veriant :False;
             $ProductArr[]=$row;
         }
+        }
         
         echo $this->json_op($ProductArr);
-        echo $this->json_op($categoryproduct);
     }
     /**
      * Product list
@@ -160,7 +177,7 @@ class Eshop_api extends MY_Controller {
         $this->data['msg'] = $product_list['msg'];
         $this->data['category_id'] = $category_id;
         $this->data['pageno'] = $pageno;
-		if($this->data['count']!=0){
+		if($this->data['count']!=0 && !empty($product_list['items']) && is_array($product_list['items'])){
 		foreach($product_list['items'] as $row){
                         // && @getimagesize($this->data['thumbs'].$row->image)
 			if(!empty($row->image)){
@@ -204,7 +221,7 @@ class Eshop_api extends MY_Controller {
 			if($promo_price) {
 				$DelPrice=$row->price + $option_price;
 			}
-			$stocks = round($option_quantity ? $option_quantity : $row->quantity);
+			$stocks = round((float)($option_quantity ? $option_quantity : $row->quantity));
 			$veriant = $this->eshop_api_model->getProductVeriantsById($row->id);
 			
 			$this->data['items'][] = array(
@@ -276,12 +293,12 @@ class Eshop_api extends MY_Controller {
 				$DelPrice=$row->price + $row->option_price;
 			}
 			if($row->option_id==null){ 
-				$stocks = round($row->option_quantity ? $row->option_quantity : $row->quantity);
+				$stocks = round((float)($row->option_quantity ? $row->option_quantity : $row->quantity));
 			}else{
 				if($row->option_quantity==null)
 					$stocks = 0;
 				else
-					$stocks = round($row->option_quantity ? $row->option_quantity : $row->quantity);
+					$stocks = round((float)($row->option_quantity ? $row->option_quantity : $row->quantity));
 			}
 // && @getimagesize($this->data['thumbs'].$row->image)
 			if(!empty($row->image)){
@@ -332,7 +349,8 @@ class Eshop_api extends MY_Controller {
 		//$this->data['product_item_id'] = $product_item;
         $product = explode('_', $product_item);
         $product_id = $product[0];
-        $variant_id = $product[1]? $product[1] : '';
+        $variant_id = isset($product[1]) ? $product[1] : '';
+        $image_src = $this->data['thumbs'].'no_image.jpg';
         $products = $this->eshop_api_model->getProductVariantDetails($product_id, $variant_id);
 		$Arr = array();
 		if(!empty($products)){
@@ -355,12 +373,12 @@ class Eshop_api extends MY_Controller {
 				$DelPrice=$row->price + $row->option_price;
 			}
 			if($row->option_id==null){ 
-				$stocks = round($row->option_quantity ? $row->option_quantity : $row->quantity);
+				$stocks = round((float)($row->option_quantity ? $row->option_quantity : $row->quantity));
 			}else{
 				if($row->option_quantity==null)
 					$stocks = 0;
 				else
-					$stocks = round($row->option_quantity ? $row->option_quantity : $row->quantity);
+					$stocks = round((float)($row->option_quantity ? $row->option_quantity : $row->quantity));
 			}
 // && @getimagesize($this->data['thumbs'].$row->image)
 			if(!empty($row->image)){
@@ -422,7 +440,10 @@ class Eshop_api extends MY_Controller {
 		$this->data['variants']=$ArrVariant;
 		/********************* PRODUCTS IMAGES************************/
         $product_images  = $this->eshop_api_model->getProductsImages($product_id);
+		$ArrImg = array();
+		if (!empty($image_src)) {
 		$ArrImg[]=$image_src;
+		}
 		if(!empty($product_images) && is_array($product_images)){
 			foreach ($product_images as $product_image) {
 // && @getimagesize($this->data['thumbs'].$product_image)
@@ -434,8 +455,9 @@ class Eshop_api extends MY_Controller {
 		$this->data['product_images']=$ArrImg;
 		/*********************REALTED PRODUCTS************************/
 		$ReletedProductArr = array();
-		$Releted_products = $this->eshop_api_model->getCategoryProducts($products[0]->category_id,1, 10);
-		if(!empty($Releted_products) && is_array($Releted_products)){
+		if (!empty($products) && isset($products[0])) {
+		$Releted_products = $this->eshop_api_model->getCategoryProducts($products[0]->category_id, 1, 10, null);
+		if(!empty($Releted_products) && is_array($Releted_products) && !empty($Releted_products['items']) && is_array($Releted_products['items'])){
 			
 			foreach ($Releted_products['items'] as $row) {
 				if($product_id == $row->id) continue;
@@ -480,7 +502,7 @@ class Eshop_api extends MY_Controller {
 				if($promo_price) {
 					$DelPrice=$row->price + $option_price;
 				}
-				$stocks = round($option_quantity ? $option_quantity : $row->quantity);
+				$stocks = round((float)($option_quantity ? $option_quantity : $row->quantity));
 				$veriant = $this->eshop_api_model->getProductVeriantsById($row->id);
 				
 				$ReletedProductArr[] = array(
@@ -517,6 +539,7 @@ class Eshop_api extends MY_Controller {
 				);
 			}
 		}
+		}
 		$this->data['releted_products']=$ReletedProductArr;
         echo $this->json_op($this->data);
     }
@@ -525,7 +548,8 @@ class Eshop_api extends MY_Controller {
      * Get Products name
      */
     public function suggestions(){
-        $result = $this->eshop_api_model->search($_GET['search'], $limit = 10);       
+        $search = isset($_GET['search']) ? $_GET['search'] : '';
+        $result = $this->eshop_api_model->search($search, $limit = 10);       
         echo json_encode($result);
     }
     
@@ -542,7 +566,7 @@ class Eshop_api extends MY_Controller {
         $this->data['totalPages'] = $product_list['totalPages'];
         $this->data['msg'] = $product_list['msg'];
         $this->data['pageno'] = $pageno;
-		if($this->data['count']!=0){
+		if($this->data['count']!=0 && !empty($product_list['items']) && is_array($product_list['items'])){
 		foreach($product_list['items'] as $row){
 			if(!empty($row->image) && @getimagesize($this->data['thumbs'].$row->image)){
 				$image_src = $this->data['thumbs'].$row->image;
@@ -584,7 +608,7 @@ class Eshop_api extends MY_Controller {
 			if($promo_price) {
 				$DelPrice=$row->price + $option_price;
 			}
-			$stocks = round($option_quantity ? $option_quantity : $row->quantity);
+			$stocks = round((float)($option_quantity ? $option_quantity : $row->quantity));
 			$veriant = $this->eshop_api_model->getProductVeriantsById($row->id);
 			
 			$this->data['items'][] = array(
@@ -626,6 +650,10 @@ class Eshop_api extends MY_Controller {
     }
     public function checkout_details() {
 		$Data = json_decode(file_get_contents('php://input'),true);
+		if (!is_array($Data) || empty($Data['slitems']) || !is_array($Data['slitems'])) {
+			echo $this->json_op(array('status' => 'ERROR', 'msg' => 'Invalid cart data'));
+			return;
+		}
 		$productIds = [];
 		foreach ($Data['slitems'] as $key => $val) {
 			$productIds[] = $val['id'];

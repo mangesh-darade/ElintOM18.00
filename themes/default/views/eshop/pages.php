@@ -10,7 +10,7 @@
 <p class="introtext"><?php echo lang('enter_info'); ?></p>
     <div class="box-content">
         <?php
-        $attrib = array('data-toggle' => 'validator', 'role' => 'form', 'name' => "sendsmsemail", id=>"sendsmsemail");
+        $attrib = array('data-toggle' => 'validator', 'role' => 'form', 'name' => "sendsmsemail", 'id' => "sendsmsemail");
         echo form_open_multipart("eshop_admin/pages", $attrib)
         ?>
         <div class="row">

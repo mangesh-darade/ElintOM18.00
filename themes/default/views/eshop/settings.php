@@ -17,7 +17,7 @@
     </div>
     <div class="box-content">
         <?php
-        $attrib = array('data-toggle' => 'validator', 'role' => 'form', 'name' => "eshop_settings", id => "eshop_settings");
+        $attrib = array('data-toggle' => 'validator', 'role' => 'form', 'name' => "eshop_settings", 'id' => "eshop_settings");
         echo form_open_multipart("eshop_admin/settings", $attrib, ['action' => 'save_settings'])
         ?>
         <div class="row">

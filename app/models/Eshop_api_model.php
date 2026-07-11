@@ -143,7 +143,7 @@ class Eshop_api_model extends CI_Model {
     * @param type $category_hash, page_no, number_of_item_per_page
     * @return boolean
     */
-    public function getCategoryProducts($category_id, $pageno = 1, $itemsPerPage = 18, $type) {
+    public function getCategoryProducts($category_id, $pageno = 1, $itemsPerPage = 18, $type = null) {
          
         if (is_numeric($category_id)) {
             $data['count'] = 0;
