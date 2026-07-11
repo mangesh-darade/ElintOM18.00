@@ -1,0 +1,784 @@
+/* ===================================
+   POS Elite Mobile Responsive CSS
+   Only affects mobile devices - Desktop/Laptop unchanged
+   =================================== */
+
+/* Hide header elements except login/logout */
+.hide-header-elements {
+    display: none !important;
+}
+
+/* Mobile Devices Only */
+@media screen and (max-width: 768px) {
+    
+    /* Base Layout */
+    body {
+        overflow-x: hidden;
+        font-size: 14px;
+    }
+    
+    #content {
+        padding: 10px;
+    }
+    
+    /* Left Panel */
+    #leftdiv {
+        width: 100% !important;
+        margin-bottom: 20px;
+        padding: 15px;
+    }
+    
+    #printhead {
+        padding: 15px;
+        margin: -15px -15px 15px -15px;
+    }
+    
+    #printhead h4 {
+        font-size: 18px;
+    }
+    
+    #printhead h5 {
+        font-size: 12px;
+    }
+    
+    /* Right Panel */
+    #cp {
+        width: 100% !important;
+        padding: 15px;
+    }
+    
+    /* Product Table */
+    #posTable {
+        font-size: 12px;
+    }
+    
+    #posTable thead th {
+        padding: 8px 5px;
+        font-size: 11px;
+    }
+    
+    #posTable tbody td {
+        padding: 8px 5px;
+        font-size: 12px;
+    }
+    
+    /* Total Table */
+    #totalTable {
+        font-size: 12px;
+    }
+    
+    #totalTable td {
+        padding: 8px 10px;
+    }
+    
+    /* Search Section */
+    #left-top {
+        margin-bottom: 15px;
+    }
+    
+    .form-group {
+        margin-bottom: 15px;
+    }
+    
+    /* Customer Search */
+    .input-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 10px;
+    }
+    
+    .input-group input,
+    .input-group select {
+        width: 100%;
+        margin-bottom: 5px;
+        border-radius: 5px;
+        padding: 10px;
+    }
+    
+    .input-group-addon {
+        width: 100%;
+        text-align: center;
+        padding: 10px;
+        margin-bottom: 5px;
+    }
+    
+    /* Product Search */
+    #add_item, #add_item_qr {
+        width: 100%;
+        margin-bottom: 10px;
+        padding: 10px;
+        font-size: 14px;
+    }
+    
+    /* Buttons */
+    .btn {
+        width: 100%;
+        margin-bottom: 10px;
+        padding: 12px 15px;
+        font-size: 12px;
+        border-radius: 5px;
+    }
+    
+    .btn-group {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .btn-group .btn {
+        margin-bottom: 5px;
+    }
+    
+    /* Coupon Section */
+    #coupon_code {
+        width: 100%;
+        margin-bottom: 10px;
+        padding: 10px;
+    }
+    
+    #apply_coupon {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    
+    /* Cart Items */
+    #product-list {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    
+    /* Header */
+    #header {
+        padding: 10px;
+    }
+    
+    .header-nav {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .header-nav ul {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .header-nav li {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+    
+    /* Side Menu - Fixed Bottom on Mobile */
+    .btn-cat-con {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: white;
+        border-top: 1px solid #ddd;
+        padding: 10px;
+        z-index: 1000;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+    }
+    
+    .btn-cat-con button {
+        flex: 1;
+        min-width: 80px;
+        margin: 2px;
+        font-size: 10px;
+        padding: 8px 5px;
+    }
+    
+    /* Add bottom padding to account for fixed menu */
+    #content {
+        padding-bottom: 80px;
+    }
+    
+    /* Form Controls */
+    .form-control {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    
+    select.form-control {
+        width: 100%;
+    }
+    
+    /* Grid System */
+    .row {
+        margin: 0;
+    }
+    
+    .col-xs-1, .col-xs-2, .col-xs-3, .col-xs-4, .col-xs-5, .col-xs-6,
+    .col-xs-7, .col-xs-8, .col-xs-9, .col-xs-10, .col-xs-11, .col-xs-12 {
+        padding: 0 5px;
+        margin-bottom: 10px;
+    }
+    
+    /* Alert Messages */
+    .alert {
+        margin-bottom: 10px;
+        padding: 10px;
+        font-size: 12px;
+    }
+    
+    /* Table Responsive */
+    .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+    }
+    
+    .table {
+        font-size: 12px;
+    }
+    
+    .table th, .table td {
+        padding: 5px;
+    }
+    
+    /* Quantity Controls */
+    .quantity-control {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+    }
+    
+    .quantity-btn {
+        width: 25px;
+        height: 25px;
+        font-size: 12px;
+    }
+    
+    /* Modal Responsiveness */
+    .modal {
+        width: 95%;
+        margin: 10px auto;
+    }
+    
+    .modal-dialog {
+        width: 100%;
+        margin: 0;
+    }
+    
+    .modal-body {
+        padding: 15px;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+    
+    /* Print Styles */
+    @media print {
+        .no-print {
+            display: none !important;
+        }
+        
+        #leftdiv, #cp {
+            width: 100% !important;
+            page-break-inside: avoid;
+        }
+        
+        .btn {
+            display: none !important;
+        }
+        
+        .btn-cat-con {
+            display: none !important;
+        }
+    }
+}
+
+/* Small Phones */
+@media screen and (max-width: 360px) {
+    body {
+        font-size: 12px;
+    }
+    
+    .btn {
+        font-size: 11px;
+        padding: 10px 8px;
+    }
+    
+    .form-control {
+        font-size: 12px;
+        padding: 8px;
+    }
+    
+    #posTable {
+        font-size: 11px;
+    }
+    
+    #posTable thead th {
+        font-size: 10px;
+        padding: 5px 3px;
+    }
+    
+    #posTable tbody td {
+        font-size: 11px;
+        padding: 5px 3px;
+    }
+    
+    .btn-cat-con button {
+        font-size: 9px;
+        padding: 6px 3px;
+        min-width: 60px;
+    }
+}
+@media screen and (max-width: 320px) {
+#pos #product-list{
+    background: #fff;
+    height: 1636px !important;
+}
+}
+@media screen and (max-width: 320px) {
+    #pos #product-list {
+        background: #fff;
+        height: 77% !important;
+    }
+}
+/* Landscape Mobile */
+@media screen and (max-width: 768px) and (orientation: landscape) {
+    #header {
+        padding: 5px;
+    }
+    
+    .btn-cat-con {
+        padding: 5px;
+    }
+    
+    .btn-cat-con button {
+        font-size: 9px;
+        padding: 5px 3px;
+        min-width: 60px;
+    }
+    
+    #product-list {
+        max-height: 200px;
+    }
+    
+    .form-control {
+        padding: 5px;
+        font-size: 12px;
+    }
+    
+    #content {
+        padding-bottom: 60px;
+    }
+}
+
+/* Touch-friendly elements for mobile */
+@media (max-width: 768px) and (hover: none) and (pointer: coarse) {
+    .btn:hover {
+        transform: none;
+    }
+    
+    .quantity-btn:hover {
+        transform: none;
+    }
+    
+    .btn:active {
+        transform: scale(0.95);
+    }
+    
+    .quantity-btn:active {
+        transform: scale(0.9);
+    }
+}
+
+/* Mobile Adjustments */
+@media screen and (max-width: 1024px) {
+    #errormsg{
+    margin-top: 6em;
+    margin-left: -24em;
+    margin-right: 18em;
+    }
+    .bootbox.modal{
+    width: 449px!important;
+    margin-left: -243px!important;
+    left: 50%!important;
+    }
+    button#submit-sale{
+    font-size: 16px;
+    }
+    /* Ensure proper font loading */
+    body, input, button, select, textarea, .btn, td, th {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+    }
+    #pos {
+        width: 95% !important;
+        /* margin: 0 auto !important; */
+        /* max-width: 100%; */
+        margin: 0em 0px 0px -15em !important;
+        right: 22px;
+        position: fixed;
+
+    }
+    /* User welcome section - ensure visibility */
+    .header-nav .nav > li > a.btn .user {
+        display: block !important;
+        visibility: visible !important;
+    }
+    
+    .header-nav .nav > li > a.btn .user span {
+        font-size: 24px !important;
+        font-weight: bold !important;
+        color: #333 !important;
+        display: block !important;
+    }
+    
+    .header-nav .nav > li > a.btn .user .subtext {
+        font-size: 23px !important;
+        color: #666 !important;
+        display: block !important;
+        margin-top: -11px !important;
+    }
+    
+    .header-nav .nav > li > a.btn .mini_avatar {
+        width: 50px !important;
+        height: 40px !important;
+        display: inline-block !important;
+        vertical-align: middle !important;
+        margin-right: 8px !important;
+    }
+    button.btn.btn-default{
+        font-size: 33px;
+    }
+    button.btn.btn-primary{
+        font-size: 33px;
+    }
+    .row.card-box.ps-scrollbar-y{
+        width: 191%!important;
+    }
+    /* #header.navbar{
+        background: #fff !important;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        border: none !important;
+        height: 100px!important;
+    } */
+    #wrapper {
+        position: relative;
+        width: 95%!important;
+        margin-left: 2em!important;
+        top: 9px;
+    }
+    #left-middle > div#left-bottom {
+    bottom: 19px!important;
+    position: absolute;
+    width: 100%;
+    height: auto !important;
+    padding-bottom: 20px !important;
+    }
+    .row {
+     margin-right: 0px!important;
+     margin-left: 0px!important;
+    }
+    .modal-content {
+        width: 93%!important;
+        margin-left: 39px!important;
+        margin-top: -7em!important;
+    }
+    #paymentModal .modal-footer{
+        border-top: none;
+        padding: 7px;
+        margin-left: 28rem;
+    }
+    #paymentModal .modal-footer .btn-group {
+    display: flex !important;
+    width: 100%!important;
+    gap: 156px!important;
+    flex-direction: row!important;
+    flex-wrap: nowrap;
+    align-content: stretch;
+    justify-content: center!important;
+    }
+    #paymentModal .final-submit-btn {
+    height: 50px!important;
+    border: none !important;
+    border-radius: 8px !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+    #paymentModal .modal-dialog.modal-lg {
+        border: none!important;
+    }
+
+    .mob-header-actions {
+        display: flex !important;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        left: 10px;
+        gap: 29px;
+        z-index: 10;
+        align-items: center;
+    }
+    .mob-header-actions a.btn {
+        background: #ffffff !important;
+        width: auto !important;
+        min-width: 65px !important;
+        height: 75px !important;
+        border-radius: 8px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 8px 10px !important;
+        border: 1px solid #d4d4d4 !important;
+        margin: 0 !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06) !important;
+        transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+        text-decoration: none !important;
+        cursor: pointer !important;
+    }
+    .mob-header-actions a.btn:active {
+        transform: scale(0.92);
+        box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important;
+        background: #f8f9fa !important;
+    }
+    .mob-header-actions a.btn i {
+        font-size: 30px !important;
+        margin: 0 0 4px 0 !important;
+        filter: drop-shadow(0 2px 2px rgba(0,0,0,0.1));
+    }
+    .mob-header-actions a.btn .btn-lbl {
+        font-size: 28px !important;
+        font-weight: 700 !important;
+        color: #555 !important;
+        line-height: 1 !important;
+        text-transform: uppercase !important;
+    }
+    button.btn.btn-xs.btn-default.no-print.pull-right{
+        font-size: 22px !important;
+        margin-top: -7px;
+    }
+    
+    /* Give each button a distinct, vibrant icon color and 3d UI */
+    .mob-header-actions a.btn:nth-child(1) {
+        background: linear-gradient(to bottom, #39a0d3 0%, #166a9e 100%) !important;
+        border: 1px solid #145887 !important;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 2px 4px rgba(0,0,0,.2) !important;
+    }
+    .mob-header-actions a.btn:nth-child(1) i, 
+    .mob-header-actions a.btn:nth-child(1) .btn-lbl { 
+        color: #ffffff !important; 
+        text-shadow: 0 -1px 0 rgba(0,0,0,.2) !important;
+    }
+
+    .mob-header-actions .dropdown:nth-child(2) > a.btn {
+        background: linear-gradient(to bottom, #357ebd 0%, #5bc0de 100%) !important;
+        border: 1px solid #cccccc !important;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15) !important;
+    }
+    .mob-header-actions .dropdown:nth-child(2) > a.btn i { color: #d35400 !important; }
+
+    /* Premium Dropdown Menu Styling */
+    .mob-header-actions .dropdown-menu {
+        transform: translate3d(0, 15px, 0) !important;
+        background: #fdfdfd !important;
+        border: none !important;
+        border-radius: 20px !important;
+        padding: 20px !important;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.3) !important;
+        min-width: 320px !important;
+        border: 1px solid rgba(0,0,0,0.05) !important;
+    }
+    .mob-header-actions .dropdown-menu li {
+        margin-bottom: 12px !important;
+        list-style: none !important;
+    }
+    .mob-header-actions .dropdown-menu li:last-child {
+        margin-bottom: 0 !important;
+    }
+    .mob-header-actions .dropdown-menu a.btn {
+        width: 100% !important;
+        height: auto !important;
+        min-height: 90px !important;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        padding: 15px 25px !important;
+        gap: 20px !important;
+        justify-content: flex-start !important;
+        text-align: left !important;
+        border: none !important;
+        border-radius: 15px !important;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+        box-shadow: 0 6px 12px rgba(0,0,0,0.1) !important;
+        color: #ffffff !important;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.3) !important;
+    }
+    .mob-header-actions .dropdown-menu a.btn:active {
+        transform: scale(0.96) !important;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2) !important;
+    }
+    
+    /* Vibrant Gradients for Menu Items */
+    .mob-header-actions .dropdown-menu li:nth-child(1) a.btn { background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%) !important; } /* Recent */
+    .mob-header-actions .dropdown-menu li:nth-child(2) a.btn { background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%) !important; } /* Today */
+    .mob-header-actions .dropdown-menu li:nth-child(3) a.btn { background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%) !important; } /* Alert */
+    .mob-header-actions .dropdown-menu li:nth-child(4) a.btn { background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%) !important; } /* Expense */
+    .mob-header-actions .dropdown-menu li:nth-child(5) a.btn { background: linear-gradient(135deg, #1abc9c 0%, #16a085 100%) !important; } /* Register */
+    .mob-header-actions .dropdown-menu li:nth-child(6) a.btn { background: linear-gradient(135deg, #3498db 0%, #2980b9 100%) !important; } /* Profit */
+    .mob-header-actions .dropdown-menu li:nth-child(7) a.btn { background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%) !important; } /* Purchase */
+    .mob-header-actions .dropdown-menu li:nth-child(8) a.btn { background: linear-gradient(135deg, #d35400 0%, #e67e22 100%) !important; } /* Close */
+
+    .mob-header-actions .dropdown-menu a.btn i {
+        font-size: 42px !important;
+        margin: 0 !important;
+        width: 50px !important;
+        text-align: center !important;
+        color: #fff !important;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+    }
+    .mob-header-actions .dropdown-menu a.btn .btn-lbl {
+        font-size: 34px !important;
+        font-weight: 800 !important;
+        margin: 0 !important;
+        color: #fff !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+    }
+
+    /* UI Gradients for POS Table and Bottom Layout */
+    #posTable thead th {
+        background: linear-gradient(to bottom, #39a0d3 0%, #166a9e 100%) !important;
+        color: #ffffff !important;
+        border-color: #145887 !important;
+        text-shadow: 0 -1px 0 rgba(0,0,0,.2) !important;
+    }
+
+    #totalTable tr:nth-child(1) td,
+    #totalTable tr:nth-child(2) td {
+        background: linear-gradient(to bottom, #39a0d3 0%, #166a9e 100%) !important;
+        color: #ffffff !important;
+        border-color: #145887 !important;
+        text-shadow: 0 -1px 0 rgba(0,0,0,.2) !important;
+    }
+
+    #totalTable tr:nth-child(3) td,
+    #totalTable tr:nth-child(3) td.text-right {
+        background: linear-gradient(to bottom, #444444 0%, #000000 100%) !important;
+        color: #ffffff !important;
+        border-color: #222222 !important;
+        text-shadow: 0 -1px 0 rgba(0,0,0,.3) !important;
+    }
+
+    #apply_coupon {
+        background: linear-gradient(to bottom, #39a0d3 0%, #166a9e 100%) !important;
+        border: 1px solid #145887 !important;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 2px 4px rgba(0,0,0,.2) !important;
+        color: #ffffff !important;
+        text-shadow: 0 -1px 0 rgba(0,0,0,.2) !important;
+        border-radius: 4px !important;
+        font-weight: bold !important;
+    }
+    
+    button#reset {
+        background: linear-gradient(to bottom, #f25555 0%, #b82323 100%) !important;
+        border: 1px solid #9e1a1a !important;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 4px 6px rgba(0,0,0,.2) !important;
+        color: #ffffff !important;
+        text-shadow: 0 -1px 0 rgba(0,0,0,.3) !important;
+        border-radius: 6px !important;
+        font-weight: 700 !important;
+    }
+    
+    button#payment {
+        background: linear-gradient(to bottom, #5dcb5d 0%, #358c35 100%) !important;
+        border: 1px solid #2b752b !important;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 4px 6px rgba(0,0,0,.2) !important;
+        color: #ffffff !important;
+        text-shadow: 0 -1px 0 rgba(0,0,0,.3) !important;
+        border-radius: 6px !important;
+        font-weight: 700 !important;
+    }
+    a#ppdiscount {
+    color: black !important;
+    font-size: 50px;
+    }
+    a#pptax2{
+    color: black !important;
+    font-size: 50px;
+    }
+    .sname {
+    line-height: 31px !important;
+    font-size: 34px!important;
+    }
+    td.text-center.litever{
+    font-size: 40px !important;   
+    }
+    #add_item{
+    height: 69px;
+    padding: 1px 18px !important;
+    font-size: 42px !important;  
+    }
+    input#search_customer{
+    height: 66px;
+    padding: 1px 18px !important;
+    font-size: 42px !important;  
+    }
+    .elite-tools button {
+    height: 69px!important;
+    font-size: 36px;
+    width: 48px!important;
+    border-radius: 10px!important;
+    }
+    #content{
+    background: #06121b !important;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 26px !important;
+    min-height: 100vh;
+    }
+    button#reset{
+    font-size: 56px;
+    background: #ca1d1d !important;
+    }
+    button.btn.btn-default.btn-xs.btn-primary.dropdown-toggle{
+    font-size: 20px!important;
+    }
+
+    /* Dropdown Autocomplete & Select2 Font Size Improvements */
+    .ui-autocomplete {
+        font-size: 36px !important;
+        z-index: 1050 !important;
+        max-height: 600px !important;
+        overflow-y: auto !important;
+        border-radius: 10px !important;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2) !important;
+    }
+    .ui-menu-item {
+        padding: 12px 20px !important;
+        border-bottom: 1px solid #eee !important;
+    }
+    .ui-menu-item .ui-menu-item-wrapper {
+        font-size: 32px !important;
+        padding: 10px !important;
+    }
+    
+    /* Select2 Dropdowns (Customer) */
+    .select2-container--default .select2-results__option {
+        font-size: 32px !important;
+        padding: 15px !important;
+    }
+    .select2-search--dropdown .select2-search__field {
+        font-size: 32px !important;
+        height: 60px !important;
+    }
+}
+.mob-header-actions { display: none; }
+
+#verticalbtns {
+    padding: 12px;
+    border-radius: 10px;
+    box-shadow: 0 5px 3px 0 #d6d6d6;
+    height: 310px;
+    background: #f7f7f7;
+    display: none;
+}

@@ -1,0 +1,634 @@
+/* A4 New Format receipt (Proforma-style) */
+#a4-new-format-receipt {
+    --a4nf-border: 1px solid #000;
+    max-width: 794px;
+    margin: 0 auto;
+    padding: 16px 12px 8px;
+    color: #000;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    line-height: 1.35;
+}
+#a4-new-format-receipt .a4nf-page {
+    border: none;
+    padding: 0;
+}
+.a4nf-tagline {
+    font-size: 10px;
+    margin: 2px 0 4px;
+}
+.a4nf-company-name {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0;
+    text-align: center;
+}
+.a4nf-biller-name-wrap {
+    padding: 2px 12px 0;
+}
+.a4nf-biller-name-line {
+    border-bottom: var(--a4nf-border);
+    margin: 2px 0 0;
+    width: 100%;
+    display: block;
+}
+.a4nf-biller-block {
+    padding: 4px 12px 6px;
+}
+.a4nf-biller-body {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+.a4nf-biller-logo {
+    flex: 0 0 130px;
+    max-width: 130px;
+}
+.a4nf-biller-details {
+    flex: 1;
+    min-width: 0;
+    text-align: left;
+}
+.a4nf-header-contact,
+.a4nf-header-contact-row,
+.a4nf-header-address,
+.a4nf-header-extra,
+.a4nf-header-extra-row {
+    font-size: 10px;
+    margin: 2px 0 0;
+    line-height: 1.4;
+    text-align: left;
+}
+.a4nf-header-address {
+    text-align: left;
+}
+.a4nf-biller-logo-img {
+    max-width: 120px;
+    max-height: 120px;
+    width: auto;
+    height: auto;
+    display: block;
+}
+.a4nf-doc-title {
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+    margin: 10px 0 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.a4nf-master-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+#a4-new-format-receipt .a4nf-table td.a4nf-company-header {
+    padding: 0;
+    vertical-align: top;
+    border-top: var(--a4nf-border) !important;
+    border-left: var(--a4nf-border) !important;
+    border-right: var(--a4nf-border) !important;
+    border-bottom: none !important;
+}
+#a4-new-format-receipt .a4nf-doc-title-cell {
+    border-top: none !important;
+}
+.a4nf-comment-section {
+    min-height: 34px;
+    padding: 5px 8px;
+}
+.a4nf-comment-fields {
+    display: block;
+    font-size: 10px;
+    line-height: 1.45;
+}
+.a4nf-comment-item {
+    display: inline-block;
+    margin-right: 14px;
+    white-space: nowrap;
+}
+.a4nf-comment-item:last-child {
+    margin-right: 0;
+}
+.a4nf-comment-label {
+    font-weight: normal;
+}
+.a4nf-doc-title-cell {
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 6px 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.a4nf-party-left {
+    padding: 6px 8px;
+    vertical-align: top;
+    width: 50%;
+}
+.a4nf-customer-line {
+    font-size: 10px;
+    margin-bottom: 2px;
+    line-height: 1.4;
+}
+.a4nf-meta-cell {
+    padding: 4px 6px;
+    font-size: 10px;
+    vertical-align: middle;
+    width: 25%;
+}
+.a4nf-meta-pair {
+    padding: 5px 8px;
+    font-size: 10px;
+    vertical-align: top;
+    text-align: left;
+    min-height: 34px;
+}
+.a4nf-meta-pair-label {
+    font-weight: normal;
+    margin-bottom: 2px;
+    line-height: 1.3;
+}
+.a4nf-meta-pair-value {
+    font-weight: normal;
+    line-height: 1.35;
+    min-height: 14px;
+}
+.a4nf-meta-pair-value-empty {
+    min-height: 16px;
+}
+#a4-new-format-receipt .a4nf-shipping-block {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: var(--a4nf-border);
+}
+.a4nf-meta-value-cell {
+    font-weight: normal;
+}
+.a4nf-dispatch-details {
+    min-height: 40px;
+    padding: 5px 8px;
+}
+.a4nf-dispatch-body {
+    min-height: 28px;
+}
+#a4-new-format-receipt .a4nf-items-wrap {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    border: none;
+}
+#a4-new-format-receipt .a4nf-product-details {
+    border: none;
+    margin-top: 0;
+}
+#a4-new-format-receipt .a4nf-footer-table {
+    margin-top: 0;
+}
+#a4-new-format-receipt .a4nf-product-details table {
+    margin: 0;
+    width: 100%;
+    border-collapse: collapse !important;
+    border: none !important;
+}
+#a4-new-format-receipt .a4nf-items-wrap table.table,
+#a4-new-format-receipt .a4nf-items-wrap table.table-bordered {
+    border: none !important;
+}
+#a4-new-format-receipt .a4nf-product-details table > thead > tr:first-child > th,
+#a4-new-format-receipt .a4nf-product-details table > tbody > tr:first-child > td {
+    border-top: none !important;
+}
+#a4-new-format-receipt .a4nf-product-details table > tbody > tr:last-child > td,
+#a4-new-format-receipt .a4nf-product-details table > tbody > tr:last-child > th {
+    border-bottom: none !important;
+}
+.a4nf-product-details table td,
+.a4nf-product-details table th {
+    padding: 4px 5px;
+}
+#a4-new-format-receipt .a4nf-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+}
+#a4-new-format-receipt .a4nf-table td,
+#a4-new-format-receipt .a4nf-table th,
+#a4-new-format-receipt .a4nf-items-wrap table td,
+#a4-new-format-receipt .a4nf-items-wrap table th,
+#a4-new-format-receipt .a4nf-total-label,
+#a4-new-format-receipt .a4nf-total-value {
+    border: var(--a4nf-border) !important;
+    border-width: 1px !important;
+    border-style: solid !important;
+    border-color: #000 !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+#a4-new-format-receipt .a4nf-table td,
+#a4-new-format-receipt .a4nf-table th {
+    padding: 3px 5px;
+    vertical-align: top;
+}
+.a4nf-table th {
+    font-weight: bold;
+    text-align: center;
+    font-size: 10px;
+}
+.a4nf-meta-label {
+    width: 42%;
+    font-weight: normal;
+}
+.a4nf-meta-value {
+    font-weight: bold;
+}
+.a4nf-section-title {
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+.a4nf-customer-name {
+    font-weight: bold;
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+#a4-new-format-receipt .a4nf-items-wrap table {
+    width: 100%;
+    border-collapse: collapse !important;
+    margin: 0;
+    font-size: 10px;
+}
+#a4-new-format-receipt .a4nf-items-wrap table td,
+#a4-new-format-receipt .a4nf-items-wrap table th {
+    padding: 3px 5px;
+    vertical-align: top;
+}
+.a4nf-items-wrap table th {
+    font-weight: bold;
+    text-align: center;
+    font-size: 9px;
+}
+.a4nf-items-wrap .a4nf-col-cgst { width: 8%; }
+.a4nf-items-wrap .a4nf-col-sgst { width: 8%; }
+.a4nf-items-wrap .a4nf-col-igst { width: 8%; }
+.a4nf-items-wrap tfoot {
+    display: none !important;
+}
+#a4-new-format-receipt .modal-content .a4nf-items-wrap table tfoot {
+    display: none !important;
+}
+.a4nf-items-table th {
+    font-size: 9px;
+    padding: 4px 3px;
+}
+.a4nf-items-head-row .a4nf-col-no { width: 3%; }
+.a4nf-items-head-row .a4nf-col-item { width: 20%; }
+.a4nf-items-head-row .a4nf-col-hsn { width: 16%; }
+.a4nf-items-head-row .a4nf-col-qty { width: 3%; }
+.a4nf-items-head-row .a4nf-col-per { width: 3%; }
+.a4nf-items-head-row .a4nf-col-rate { width: 8%; }
+.a4nf-items-head-row .a4nf-col-disc { width: 6%; }
+.a4nf-items-head-row .a4nf-col-cgst { width: 8%; }
+.a4nf-items-head-row .a4nf-col-sgst { width: 8%; }
+.a4nf-items-head-row .a4nf-col-total { width: 10%; }
+.a4nf-items-table .a4nf-col-hsn {
+    font-size: 8px;
+    word-break: break-all;
+    padding: 4px 2px;
+}
+.a4nf-items-table .a4nf-col-qty,
+.a4nf-items-table .a4nf-col-per {
+    padding: 4px 1px;
+    white-space: nowrap;
+}
+.a4nf-item-cell {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    min-height: 20px;
+}
+#a4-new-format-receipt .a4nf-item-thumb {
+    width: 18px;
+    height: 18px;
+    object-fit: cover;
+    border: var(--a4nf-border);
+    border-radius: 2px;
+    flex: 0 0 18px;
+}
+.a4nf-item-name {
+    line-height: 1.3;
+}
+.a4nf-items-table td {
+    font-size: 10px;
+}
+.a4nf-items-table .text-right {
+    text-align: right;
+}
+.a4nf-items-table .text-center {
+    text-align: center;
+}
+#a4-new-format-receipt .a4nf-tax-row td {
+    font-size: 9px;
+}
+.a4nf-terms-row td {
+    font-style: italic;
+}
+.a4nf-items-total-row td {
+    font-size: 10px;
+    padding: 4px 5px;
+}
+.a4nf-bank-cell {
+    padding: 6px 8px;
+    font-size: 10px;
+    vertical-align: top;
+}
+.a4nf-left-stack .a4nf-stack-block {
+    margin-bottom: 8px;
+}
+.a4nf-left-stack .a4nf-stack-block:last-child {
+    margin-bottom: 0;
+}
+.a4nf-bank-details {
+    font-weight: bold;
+}
+.a4nf-notes-block {
+    white-space: normal;
+}
+.a4nf-notes-block p {
+    margin: 0 0 0.35em;
+}
+.a4nf-notes-block p:last-child {
+    margin-bottom: 0;
+}
+.a4nf-notes-block ul,
+.a4nf-notes-block ol {
+    margin: 0.2em 0 0.35em 1.2em;
+    padding: 0 0 0 1em;
+}
+.a4nf-notes-block li {
+    margin: 0.15em 0;
+}
+.a4nf-notes-block blockquote {
+    margin: 0.2em 0 0.35em 1em;
+    padding-left: 0.8em;
+}
+#a4-new-format-receipt .a4nf-total-label,
+#a4-new-format-receipt .a4nf-total-value {
+    padding: 4px 6px;
+    font-size: 10px;
+    color: #000 !important;
+    background: #fff !important;
+}
+.a4nf-total-label {
+    text-align: left;
+    font-weight: normal;
+}
+.a4nf-total-value {
+    text-align: right;
+    font-weight: normal;
+}
+#a4-new-format-receipt .a4nf-footer-table .a4nf-bank-cell {
+    width: 50%;
+    border-right: var(--a4nf-border) !important;
+}
+#a4-new-format-receipt .a4nf-footer-table .a4nf-total-label {
+    width: 16.66%;
+    border-right: var(--a4nf-border) !important;
+}
+#a4-new-format-receipt .a4nf-footer-table .a4nf-total-value {
+    width: 33.34%;
+    padding-right: 10px;
+}
+.a4nf-paid-amount-cell {
+    padding: 0 !important;
+    vertical-align: top;
+}
+#a4-new-format-receipt td.a4nf-paid-amount-cell .a4nf-paid-breakdown,
+#a4-new-format-receipt td.a4nf-paid-amount-cell .a4nf-paid-breakdown td {
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+#a4-new-format-receipt .a4nf-paid-breakdown {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+}
+#a4-new-format-receipt .a4nf-paid-breakdown td {
+    border: none !important;
+    padding: 3px 6px;
+    font-size: 10px;
+    vertical-align: top;
+    background: transparent !important;
+}
+.a4nf-paid-method {
+    text-align: left;
+    white-space: nowrap;
+    width: 38%;
+}
+.a4nf-paid-ref {
+    text-align: center;
+    width: 34%;
+}
+.a4nf-paid-amt {
+    text-align: right;
+    white-space: nowrap;
+    width: 28%;
+}
+.a4nf-paid-by-value {
+    text-align: left;
+}
+.a4nf-total-label-bold,
+.a4nf-total-value-bold {
+    font-weight: bold !important;
+}
+#a4-new-format-receipt .a4nf-amount-words-cell {
+    padding: 6px 8px;
+    font-size: 10px;
+    border: var(--a4nf-border) !important;
+}
+.a4nf-signatures-row td {
+    padding: 0;
+    vertical-align: top;
+    height: 68px;
+}
+.a4nf-sig-box {
+    position: relative;
+    padding: 0;
+    font-size: 10px;
+    height: 68px;
+    box-sizing: border-box;
+}
+.a4nf-sig-fill {
+    display: block;
+}
+.a4nf-sig-label {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    bottom: 3px;
+    text-align: center;
+    padding: 0;
+    margin: 0;
+    line-height: 1.2;
+}
+.a4nf-sig-customer .a4nf-sig-fill {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    top: 8px;
+    bottom: 22px;
+    height: auto;
+}
+.a4nf-sig-company {
+    position: absolute;
+    top: 4px;
+    left: 8px;
+    right: 8px;
+    text-align: center;
+    font-weight: bold;
+    padding: 0;
+}
+.a4nf-sig-authorised .a4nf-sig-fill {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    top: 22px;
+    bottom: 22px;
+    height: auto;
+}
+.a4nf-sig-biller-info {
+    text-align: left;
+    vertical-align: middle !important;
+    padding: 10px 12px;
+}
+.a4nf-sig-biller-info div {
+    margin-bottom: 4px;
+}
+.a4nf-sig-biller-info div:last-child {
+    margin-bottom: 0;
+}
+.a4nf-declaration-cell {
+    padding: 6px 8px;
+    font-size: 10px;
+    vertical-align: top;
+}
+.a4nf-declaration-cell strong {
+    font-weight: bold;
+}
+.a4nf-declaration-cell p {
+    margin: 0.2em 0 0;
+    display: inline;
+}
+.a4nf-declaration-cell ul,
+.a4nf-declaration-cell ol {
+    margin: 0.2em 0 0.35em 1.2em;
+    padding: 0 0 0 1em;
+}
+.a4nf-page-no {
+    text-align: right;
+    font-size: 10px;
+    margin-top: 6px;
+    padding-right: 4px;
+}
+.a4nf-actions-bar {
+    max-width: 794px;
+    margin: 0 auto;
+    padding: 10px 12px 24px;
+    text-transform: uppercase;
+    box-sizing: border-box;
+}
+.a4nf-actions-bar hr {
+    margin: 0 0 10px;
+}
+.a4nf-action-item {
+    display: block;
+    margin-bottom: 8px;
+}
+.a4nf-action-item .btn {
+    display: block;
+    padding: 10px 12px;
+    font-size: 13px;
+    line-height: 1.4;
+}
+.a4nf-action-note {
+    background: #f5f5f5;
+    padding: 10px;
+    margin-top: 4px;
+    font-size: 11px;
+    text-transform: none;
+}
+.a4nf-action-note p {
+    margin: 0;
+    font-weight: bold;
+}
+@media print {
+    .no-print { display: none !important; }
+    #a4-new-format-receipt {
+        max-width: 100%;
+        padding: 0 0 4px;
+    }
+    body { margin: 0; }
+    #a4-new-format-receipt .a4nf-items-wrap table.table,
+    #a4-new-format-receipt .a4nf-items-wrap table {
+        margin-bottom: 0 !important;
+    }
+    #a4-new-format-receipt .a4nf-items-wrap table tfoot,
+    #a4-new-format-receipt .modal-content .a4nf-items-wrap table tfoot {
+        display: none !important;
+    }
+    #a4-new-format-receipt .a4nf-footer-table {
+        margin-top: 0 !important;
+    }
+    #a4-new-format-receipt .a4nf-table td,
+    #a4-new-format-receipt .a4nf-table th,
+    #a4-new-format-receipt .a4nf-items-wrap table td,
+    #a4-new-format-receipt .a4nf-items-wrap table th,
+    #a4-new-format-receipt .a4nf-total-label,
+    #a4-new-format-receipt .a4nf-total-value {
+        border: var(--a4nf-border) !important;
+        border-width: 1px !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    #a4-new-format-receipt .a4nf-table td.a4nf-company-header {
+        border-top: var(--a4nf-border) !important;
+        border-left: var(--a4nf-border) !important;
+        border-right: var(--a4nf-border) !important;
+        border-bottom: none !important;
+    }
+    #a4-new-format-receipt .a4nf-doc-title-cell {
+        border-top: none !important;
+    }
+    #a4-new-format-receipt .a4nf-product-details table > thead > tr:first-child > th {
+        border-top: var(--a4nf-border) !important;
+    }
+    #a4-new-format-receipt .a4nf-product-details table > tbody > tr:first-child > td {
+        border-top: none !important;
+    }
+    #a4-new-format-receipt .a4nf-product-details table > tbody > tr:last-child > td,
+    #a4-new-format-receipt .a4nf-product-details table > tbody > tr:last-child > th {
+        border-bottom: none !important;
+    }
+    #a4-new-format-receipt .a4nf-footer-table > tbody > tr:first-child > td {
+        border-top: var(--a4nf-border) !important;
+    }
+    #a4-new-format-receipt .a4nf-footer-table .a4nf-bank-cell,
+    #a4-new-format-receipt .a4nf-footer-table .a4nf-total-label {
+        border-right: var(--a4nf-border) !important;
+    }
+    #a4-new-format-receipt td.a4nf-paid-amount-cell .a4nf-paid-breakdown,
+    #a4-new-format-receipt td.a4nf-paid-amount-cell .a4nf-paid-breakdown td {
+        border: none !important;
+        box-shadow: none !important;
+        outline: none !important;
+    }
+    #a4-new-format-receipt .a4nf-notes-block ul,
+    #a4-new-format-receipt .a4nf-notes-block ol {
+        margin: 0.2em 0 0.35em 1.2em;
+        padding: 0 0 0 1em;
+    }
+    #a4-new-format-receipt .a4nf-signatures-row td,
+    #a4-new-format-receipt .a4nf-sig-box {
+        height: 68px;
+    }
+}

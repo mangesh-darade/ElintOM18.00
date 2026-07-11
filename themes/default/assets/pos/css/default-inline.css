@@ -1,0 +1,915 @@
+/*inline css of add.php*/
+@media only screen and (min-width: 280px) and (max-width: 767px) {
+    #sales_icon{
+        padding:2px 8px;border-left: 0;display: table-cell!important;
+    }
+}
+#sellGiftCard{
+    z-index:10003;
+}
+#printhead h4{
+    text-transform:uppercase;
+}
+#posTable{
+    margin-bottom: 0;
+}
+
+.fa-trash-o{
+    opacity:0.5; filter:alpha(opacity=50);
+}
+.th5
+    {width: 5%; 
+        text-align: center;
+    }
+.clear{ clear:both;
+    }
+#totalTable{
+    width:100% !important;
+    float:right !important;
+    padding:5px !important;
+    color:#000 !important; 
+/*    background: #62d4da;*/
+}
+#pos table#totalTable tr:nth-child(3){
+    padding:5px 10px 5px 10px !important; font-size: 14px;border-top: 1px solid #803232; border-bottom: 1px solid #3a0404; font-weight:bold; background:#610000 !important; color:#FFF;
+}
+.tdbottom{
+    padding: 5px 10px !important; 
+    border-top: 1px solid #666; 
+    border-bottom: 1px solid #333; 
+    font-weight:bold; 
+    background:#333; 
+    color:#FFF;}
+/* .padding0{
+    padding:0!important;
+} */
+#left-bottom .btn-success {
+    height:67px;
+}
+.marginright5{
+margin-right: 5px;}
+.marginright15{
+margin-right: 15px;}
+.z-index2{ z-index:10002;}
+.z-index4{ z-index:10004;}
+.width25{
+    width:25%;
+}
+
+.nodisplay{
+display:none;
+}
+.paddingLR10{
+    padding:0 10px;
+}
+.err{
+color:#a94442; 
+font-size:11px;
+display: none;
+}
+.floatleft{
+    float: left;
+}
+ .btn_back
+ {display:inline-block;
+  padding:6px 12px;
+  margin:15px;
+  font-size:14px;
+  font-weight:400;
+  line-height:1.42857143;
+  text-align:center;
+  white-space:nowrap;
+  vertical-align:middle;
+  cursor:pointer;
+  -webkit-user-select:none;
+  -moz-user-select:none;
+  -ms-user-select:none;
+  user-select:none;
+  background-image:none;
+  border:1px solid #357ebd;
+  border-radius:4px;
+  color:#fff;
+  background-color:#428bca;}
+ .height5 {
+     height:5px;
+ }
+ #addIcon{
+     font-size: 1.4em; color:#428bca;
+ }
+ .icon1{
+     padding: 2px 8px ; border-left: 0;display:none;
+ }
+ .btnpadding{
+ padding: 2px 8px;
+ }
+ .rfidbtn{
+ border: none;background: transparent;color: #428bca;outline: none;}
+.fullwidthtable{
+     margin-bottom: 0px!important;
+     width:100% !important;
+ }
+ .tblicon{color:#428bca !important;}
+#totalTable{
+    width:100% !important;
+    float:right !important;
+    padding:5px !important;
+    color:#333 !important; 
+    background: #fff;
+}
+#pos table#totalTable tr:nth-child(3){
+    padding:5px 10px 5px 10px !important;
+	font-size: 14px;
+	border-top: 1px solid #000; 
+	border-bottom: 1px solid #000; 
+	font-weight:bold; 
+	background:#000 !important; 
+	color:#FFF;
+}
+.bordertop{border-top: 1px solid #ddd;}
+.tdbottom{
+    padding: 5px 10px !important; 
+    border-top: 1px solid #432494; 
+    border-bottom: 1px solid #9ba1dc; 
+    font-weight:bold; 
+    background:#1e1b27; 
+    color:#FFF;}
+ .tblicon{color:#24403d !important;}
+ .tdpadding{padding:5px 10px !important;}
+ .tdpaddingborder{
+    padding: 5px 10px !important;
+    font-size: 16px; 
+    border-top: 1px solid #DDD;
+ }
+ .font-weight-bold{ font-weight:bold;}
+#proContainer .pos-grid-nav .prev button {
+    width: 50px !important;
+    height: 50px;
+    background: url(../../images/prev-btn1.png);
+    background-size: 100%!important;
+    border: 0;
+    -webkit-box-reflect: below 0px -webkit-gradient(linear, left top, left bottom, from(transparent), color-stop(70%, transparent) , to(rgba(250, 250, 250, 0.5)))!important;
+}
+#proContainer .pos-grid-nav .next button {
+    width: 50px !important;
+    height: 50px!important;
+    background: url(../../images/next-btn1.png);
+    background-size: 100%!important;
+    border: 0!important;
+    -webkit-box-reflect: below 0px -webkit-gradient(linear, left top, left bottom, from(transparent), color-stop(70%, transparent) , to(rgba(250, 250, 250, 0.5)))!important;
+}
+.second .owl-stage-outer {
+    overflow-y: visible !important;
+    height: 75px !important;
+}
+/*.owl-item{width:80px!important;}*/
+.owl-carousel .owl-item button {
+height: 80px;}
+.no-js .owl-carousel, .owl-carousel.owl-loaded {
+    margin: 50px 0px;
+}
+a.themeicon{
+	background-image: linear-gradient(to bottom right, #9797ff, #f431f7);
+}
+ #errormsg{display:none !important;margin-top: -4em;margin-left: -24em;margin-right: 18em;}
+ #successmsg{color:green;}
+.error{color:red;}
+
+ .padding28{padding: 2px 8px;} 
+ #view-customer{float: inherit;outline: none;}
+ /* #AddNewCustomer{display:none!important;outline: none!important; float: inherit;} */
+ #loaderimg{display:none; float: inherit; outline: none;}
+ .external{outline: none; float: inherit;} 
+.themeicon{background-image: linear-gradient(to bottom right, #9797ff, #f431f7)!important; content:"";}
+.themeicon1{background-image: linear-gradient(to bottom right, #12acbb, #5dbec7)!important;}
+.navbar-brand {
+    height:40px !important;
+}
+.bblack{padding: 10px 15px !important;}
+#display_time{color:#fff;}
+sub, sup {
+font-size: 72% !important; z-index:1;bottom: -3px; left: 0px; color: #f5f5f5!important;}
+.pointer{cursor:pointer;}
+.activecat{background:#000; color:#fff;}
+.header-nav .user{margin-top:0px;}
+.textucase{text-transform:uppercase;}
+#sales_icon{padding: 2px 8px; border-left: 0;}
+#error{color:#a94442; font-size:11px;display: none}
+.owl-carousel .owl-item button.btn-prni span {
+	  word-break: break-word;
+}
+.btn-prni span{
+	word-break: break-word!important;
+}
+@media only screen and (max-width: 1024px) {
+    .mob{
+    	display: flex;}
+    #sales_icon {
+    	width: 7%;
+    	padding: 5px 8px;
+	}
+}
+@media only screen and (min-width: 768px) and (max-width: 991px) {
+ .header-nav .user,.display_time, .book, .cutlery, .checkoutmodalbtn button img, .Offline {
+    display: none !important;
+}
+nav.menu-opener {top:23vh;}
+.header-nav button#sellGiftCard {padding: 7px 12px; background: #dde056 !important;}
+}
+.product_thumb_image{
+	border-radius: 0px;
+    width: 100% !important;
+    height: 54px !important;
+}
+.category-col {
+    margin-left: -15px;
+}
+
+/* Theme three POS strip/layout rules moved from add_ep.php */
+#content {
+    background: #fff !important;
+    margin-left: 0;
+    padding-top: 0 !important;
+}
+button#reset {
+    margin-top: 6px !important;
+}
+button#print_bill {
+    margin-top: 4px !important;
+    margin-left: 2px !important;
+    margin-bottom: 2px;
+}
+button#payment {
+    margin: 3px 3px !important;
+    margin-left: 3px !important;
+}
+button#payment.checkout-no-print {
+    margin-left: 30px !important;
+}
+input#coupon_code,
+input#apply_coupon {
+    margin-top: 3px !important;
+}
+button#shifttable {
+    margin-top: 6px !important;
+}
+button#print_order {
+    margin-left: 2px !important;
+}
+.qr_main {
+    display: none !important;
+}
+/* POS filter strip: one flex row, equal spacing via gap (themes 3 / 4 / 5). */
+.pos-inline-filters {
+    display: flex;
+    align-items: stretch;
+    flex-wrap: nowrap;
+    gap: 10px;
+    width: 100%;
+    margin: 0 0 10px 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+.pos-inline-filters > * {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+.pos-inline-filters > .col-md-3.pr-0,
+.pos-inline-filters > .col-md-3.pr-2,
+.pos-inline-filters > #ui.form-group,
+.pos-inline-filters > #ui.pr-2 {
+    float: none !important;
+    margin: 0 !important;
+    margin-bottom: 0 !important;
+    display: flex;
+    align-items: stretch;
+    min-width: 0;
+    box-sizing: border-box;
+}
+.pos-inline-filters > .col-md-3.pr-0,
+.pos-inline-filters > .col-md-3.pr-2 {
+    flex: 0 1 22%;
+    max-width: 26%;
+    min-width: 120px;
+}
+.pos-inline-filters > #ui.form-group,
+.pos-inline-filters > #ui.pr-2 {
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: none;
+    width: auto !important;
+    margin-left: 0 !important;
+}
+.pos-inline-filters > #ui.form-group:only-child,
+.pos-inline-filters > #ui.pr-2:only-child {
+    flex: 1 1 100% !important;
+    max-width: 100% !important;
+    width: 100% !important;
+}
+.pos-inline-filters > .col-md-3.pr-0 #seasons,
+.pos-inline-filters > .col-md-3.pr-2 .category-set {
+    width: 100%;
+    max-width: 100%;
+}
+.pos-inline-filters > .col-md-3.pr-0 #seasons,
+.pos-inline-filters > .col-md-3.pr-2 .category-set,
+.pos-inline-filters > #ui.form-group .input-group.pos-dynamic-group,
+.pos-inline-filters > #ui.form-group .input-group.rigsid.pos-dynamic-group,
+.pos-inline-filters > #ui.pr-2 .input-group.pos-dynamic-group {
+    height: 36px !important;
+    min-height: 36px !important;
+    align-items: stretch !important;
+}
+.pos-inline-filters > .col-md-3.pr-0 #seasons,
+.pos-inline-filters > .col-md-3.pr-2 #search_category,
+.pos-inline-filters > #ui #add_item,
+.pos-inline-filters > #ui #add_item_qr {
+    height: 36px !important;
+    line-height: normal !important;
+    box-sizing: border-box;
+}
+.pos-inline-filters #ui .input-group.rigsid,
+.pos-inline-filters #ui .input-group.pos-dynamic-group {
+    width: 100% !important;
+    margin: 0 !important;
+    padding-left: 0 !important;
+    display: flex !important;
+    align-items: stretch !important;
+    flex-wrap: nowrap;
+    gap: 0 !important;
+}
+.pos-inline-filters > #ui.form-group .input-group-addon.qr_main,
+.pos-inline-filters > #ui.pr-2 .input-group-addon.qr_main {
+    display: none !important;
+    width: 0 !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+}
+.pos-inline-filters > #ui.form-group .input-group-addon.qr_main + #add_item,
+.pos-inline-filters > #ui.pr-2 .input-group-addon.qr_main + #add_item {
+    margin-left: 0 !important;
+}
+.pos-inline-filters > #ui.form-group .pos-dynamic-fields,
+.pos-inline-filters > #ui.pr-2 .pos-dynamic-fields {
+    flex: 1 1 0;
+    min-width: 0;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+/* Theme 5 parity: scan / camera / QR row (gap between columns, not zeroed) */
+.pos-inline-filters > #ui.form-group .pos-dynamic-row,
+.pos-inline-filters > #ui.pr-2 .pos-dynamic-row {
+    display: flex !important;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 10px !important;
+    margin: 0 !important;
+    width: 100%;
+}
+.pos-inline-filters > #ui.form-group .pos-dynamic-grow,
+.pos-inline-filters > #ui.pr-2 .pos-dynamic-grow {
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    width: auto !important;
+    float: none !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    margin: 0 !important;
+}
+.pos-inline-filters #ui .pos-dynamic-row .pos-dynamic-grow,
+.pos-inline-filters #ui .input-group.rigsid.pos-dynamic-group .pos-dynamic-row .pos-dynamic-grow:first-child,
+.pos-inline-filters #ui .input-group.pos-dynamic-group .pos-dynamic-row .pos-dynamic-grow:first-child {
+    flex: 1 1 0 !important;
+    max-width: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    min-width: 0 !important;
+}
+.pos-inline-filters #ui .pos-dynamic-row > .pos-dynamic-grow:last-child {
+    flex: 1 1 0 !important;
+    max-width: none !important;
+    padding-right: 0 !important;
+}
+.pos-inline-filters > #ui.form-group #add_item,
+.pos-inline-filters > #ui.pr-2 #add_item {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+.pos-inline-filters > #ui.form-group #add_item_qr,
+.pos-inline-filters > #ui.pr-2 #add_item_qr {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    box-sizing: border-box !important;
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+
+/*
+ * User login (#ui.pr-2): cols are direct children (no .pos-dynamic-row).
+ * :last-of-type on .pos-dynamic-grow never matches (last divs are icon addons) ? use sibling selectors.
+ */
+.pos-inline-filters > #ui.pr-2 .input-group.pos-dynamic-group .pos-dynamic-grow:first-of-type {
+    flex: 1 1 0 !important;
+    max-width: none !important;
+    margin-right: 10px !important;
+}
+.pos-inline-filters > #ui.pr-2 .input-group.pos-dynamic-group > .pos-dynamic-auto + .pos-dynamic-grow {
+    margin-left: 10px !important;
+}
+.pos-inline-filters > #ui.pr-2 .input-group.pos-dynamic-group > .pos-dynamic-grow ~ .pos-dynamic-grow {
+    flex: 1 1 0 !important;
+    max-width: none !important;
+}
+/* Only the QR column is immediately before the + / icon addons */
+.pos-inline-filters > #ui.pr-2 .input-group.pos-dynamic-group > .pos-dynamic-grow + .input-group-addon.padding28 {
+    margin-left: -12px !important;
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+}
+
+.pos-inline-filters > #ui.form-group .input-group-addon.padding28,
+.pos-inline-filters > #ui.pr-2 .input-group-addon.padding28 {
+    flex: 0 0 auto;
+    width: 36px !important;
+    min-width: 36px !important;
+    height: 36px !important;
+    float: none !important;
+    margin-left: 0 !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 0 !important;
+}
+
+/* Theme three user login: prevent left drift in scan/search row */
+.pos-inline-filters > #ui.pr-2 {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+}
+.pos-inline-filters > #ui.pr-2 .input-group.pos-dynamic-group,
+.pos-inline-filters > #ui.pr-2 .pos-dynamic-fields,
+.pos-inline-filters > #ui.pr-2 .pos-dynamic-row,
+.pos-inline-filters > #ui.pr-2 .input-group.pos-dynamic-group .padnew {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+}
+
+/* Theme three user login: neutralize Bootstrap col-sm offsets */
+.pos-inline-filters > #ui.pr-2 .input-group.pos-dynamic-group > [class*="col-sm-"],
+.pos-inline-filters > #ui.pr-2 .pos-dynamic-row > [class*="col-sm-"] {
+    float: none !important;
+    width: auto !important;
+    max-width: none !important;
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+.pos-inline-filters > #ui.pr-2 .input-group.pos-dynamic-group > .pos-dynamic-grow:first-child,
+.pos-inline-filters > #ui.pr-2 .pos-dynamic-row > .pos-dynamic-grow:first-child {
+    margin-left: 0 !important;
+}
+
+.pos-inline-filters > #ui.form-group .input-group.pos-dynamic-group > [class*="col-sm-"],
+.pos-inline-filters > #ui.form-group .pos-dynamic-row > [class*="col-sm-"] {
+    float: none !important;
+    width: auto !important;
+    max-width: none !important;
+    margin-left: 10px !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+.pos-inline-filters > #ui.form-group .input-group.pos-dynamic-group .padnew {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+}
+
+/* Icon addons flush */
+.pos-inline-filters #ui .input-group-addon.padding28 + .input-group-addon.padding28 {
+    margin-left: 0 !important;
+    border-left-width: 0 !important;
+}
+.pos-inline-filters #ui .pos-dynamic-fields + .input-group-addon.padding28 {
+    margin-left: -1px !important;
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+}
+.pos-inline-filters > #ui.form-group .pos-dynamic-fields + .input-group-addon.padding28 {
+    margin-left: -12px !important;
+}
+.pos-inline-filters > #ui.form-group .pos-dynamic-row {
+    align-items: stretch !important;
+}
+.pos-inline-filters #ui .pos-dynamic-row.row {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+.pos-inline-filters > #ui.pr-2 .input-group.pos-dynamic-group {
+    display: flex !important;
+    gap: 0 !important;
+    grid-template-columns: unset !important;
+}
+.pos-inline-filters #ui .input-group.rigsid.pos-dynamic-group > .input-group-addon.padding28:last-child,
+.pos-inline-filters #ui .input-group.pos-dynamic-group > .input-group-addon.padding28:last-child {
+    border-top-right-radius: 4px !important;
+    border-bottom-right-radius: 4px !important;
+}
+#proContainer div#item-list{
+    height: 80% !important;
+}
+#pos #left-top .pos-inline-filters > .col-md-3.pr-2 .input-group.category-set {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: stretch !important;
+    width: 100% !important;
+}
+#pos #left-top .pos-inline-filters > .col-md-3.pr-2 #search_category {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    width: auto !important;
+}
+#pos #left-top .pos-inline-filters > .col-md-3.pr-2 #sales_icon.input-group-addon {
+    flex: 0 0 40px !important;
+    width: 40px !important;
+    min-width: 40px !important;
+    max-width: 40px !important;
+}
+#pos #left-top .pos-inline-filters > .col-md-3.pr-2 #sales_icon.input-group-addon .search-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    line-height: 1 !important;
+}
+#pos #left-top .pos-inline-filters > .col-md-3.pr-2 #sales_icon.input-group-addon .search-btn i {
+    line-height: 1 !important;
+    margin: 0 !important;
+    display: block !important;
+}
+
+/*
+ * Theme 4 product/category layout — aligned with theme_five.css end section.
+ * Do NOT zero horizontal padding on .pd-set / #ajaxproducts (that was cancelling custom_theme
+ * and making grids flush to the edges).
+ */
+#pos #proContainer {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    box-sizing: border-box !important;
+    min-width: 0 !important;
+}
+#pos .quick-menu {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    box-sizing: border-box !important;
+    min-width: 0 !important;
+}
+/* Same inset as theme 5 desktop band (theme_five.css .pd-set in 1240–1366px media) */
+#pos #proContainer .cat-outer.pd-set {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+#pos #proContainer .cat-outer.setting {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    box-sizing: border-box !important;
+    min-width: 0 !important;
+}
+#pos #proContainer #ajaxproducts {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    box-sizing: border-box !important;
+    min-width: 0 !important;
+    overflow-y: auto !important;
+}
+#pos #proContainer #ajaxproducts .item-list,
+#pos #proContainer #ajaxproducts #item-list {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    box-sizing: border-box !important;
+    min-width: 0 !important;
+}
+#pos #proContainer #ajaxproducts #item-list {
+    margin-top: clamp(4px, 0.55vw, 10px) !important;
+    margin-bottom: clamp(14px, 1.8vw, 28px) !important;
+    padding-right: 0 !important;
+}
+#pos #proContainer #category-container.hscroll {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    display: grid !important;
+    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+    column-gap: 7px !important;
+    row-gap: 8px !important;
+    white-space: normal !important;
+    padding: 4px 0px 22px 0px !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+}
+#pos #proContainer #category-container.hscroll > .inline-item {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    /* display: block !important; */
+    float: none !important;
+    box-sizing: border-box !important;
+}
+#pos #proContainer #category-container.hscroll .btn-prni1,
+#pos #proContainer #category-container.hscroll > .category-item.inline-item .btn-prni.category {
+    width: 90% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 5px !important;
+    box-sizing: border-box !important;
+}
+#pos #proContainer #ajaxproducts #item-list .btn-prni {
+    width: calc((100% - 20px) / 5) !important;
+    min-width: calc((100% - 20px) / 5) !important;
+    margin: 2px 2px 3px 2px !important;
+    box-sizing: border-box !important;
+}
+/* Theme 4: rounded Select Season field */
+.pos-inline-filters > .col-md-3.pr-0 #seasons,
+.pos-inline-filters > .col-md-3.pr-0 #s2id_seasons .select2-choice {
+    border-radius: 0px !important;
+}
+
+/* Highlighted POS filter row: unified 36px height */
+#pos #left-top .pos-inline-filters > .col-md-3.pr-2 .input-group.category-set {
+    height: 36px !important;
+}
+#pos #left-top .pos-inline-filters > .col-md-3.pr-0 #seasons,
+#pos #left-top .pos-inline-filters > .col-md-3.pr-0 #s2id_seasons .select2-choice,
+#pos #left-top .pos-inline-filters > .col-md-3.pr-2 #search_category,
+#pos #left-top .pos-inline-filters > .col-md-3.pr-2 #sales_icon.input-group-addon,
+#pos #left-top .pos-inline-filters #ui #add_item,
+#pos #left-top .pos-inline-filters #ui #add_item_qr,
+#pos #left-top .pos-inline-filters #ui .input-group-addon.padding28 {
+    height: 36px !important;
+    min-height: 36px !important;
+    box-sizing: border-box !important;
+}
+#pos #left-top .pos-inline-filters > .col-md-3.pr-2 #sales_icon.input-group-addon {
+    width: 36px !important;
+    min-width: 36px !important;
+    max-width: 36px !important;
+    flex: 0 0 36px !important;
+}
+#pos #left-top .pos-inline-filters > .col-md-3.pr-2 #sales_icon.input-group-addon.icon1 {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+#pos #left-top .pos-inline-filters > .col-md-3.pr-0 #s2id_seasons .select2-choice {
+    line-height: 34px !important;
+    /* padding-top: 4px !important; */
+    padding-bottom: 4px !important;
+}
+#pos #left-top .pos-inline-filters > .col-md-3.pr-2 #search_category {
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+}
+#pos #left-top .pos-inline-filters > .col-md-3.pr-2 #sales_icon #searchicon.search-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+#pos #left-top .pos-inline-filters > .col-md-3.pr-2 #sales_icon #searchicon.search-btn i {
+    display: inline-block !important;
+}
+#pos #left-top .pos-inline-filters #ui #add_item,
+#pos #left-top .pos-inline-filters #ui #add_item_qr {
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+    line-height: 1.25 !important;
+}
+
+/* Theme 4: use theme 5 layout model for stable category/product height behavior */
+#pos #proContainer {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 80% !important;
+    min-height: 0 !important;
+}
+#pos .quick-menu,
+#pos #proContainer .cat-outer,
+#pos #proContainer .cat-outer.pd-set,
+#pos #proContainer .cat-outer.setting,
+#pos #proContainer #ajaxproducts,
+#pos #proContainer #ajaxproducts .item-list,
+#pos #proContainer #ajaxproducts #item-list {
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+}
+#pos #proContainer #category-container.hscroll {
+    flex: 0 0 auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+}
+#pos #proContainer #ajaxproducts {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+}
+#pos #proContainer #ajaxproducts .item-list,
+#pos #proContainer #ajaxproducts #item-list {
+    min-height: 0 !important;
+}
+
+/* Theme 3: keep category/subcategory band in normal flow (avoid overlap on products) */
+#pos #proContainer .cat-outer.setting {
+    position: static !important;
+    bottom: auto !important;
+    width: 100% !important;
+    max-height: none !important;
+    height: auto !important;
+    margin-top: 0 !important;
+}
+
+/* Theme 3: subcategory band should hug content (no extra blank area below) */
+#pos #proContainer #subcat-container,
+#pos #proContainer .cat-outer.setting .cat-div.set-top,
+#pos #proContainer .cat-outer.setting .subcategories-container.hscroll {
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    overflow-y: visible !important;
+}
+
+.padding0{
+    padding:2px!important;
+}
+
+/* Customer mobile search icon (add_ep.php top row): keep visible in theme 4 */
+#pos #left-top #search_customer + #sales_icon,
+#pos #left-top #search_customer + #sales_icon.input-group-addon {
+    display: table-cell !important;
+    vertical-align: middle !important;
+}
+#pos #left-top #search_customer + #sales_icon #searchicon.search-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+.custom-flex {
+    display: flex;
+    align-items: center;
+    margin-top: -14px;
+}
+
+/* Theme 3 header row alignment (moved from add_ep.php) */
+body.theme_three .pos-inline-filters > #ui.pr-2 .input-group.pos-dynamic-group {
+    gap: 10px !important;
+}
+body.theme_three #pos #left-top > .form-group > .row {
+    align-items: stretch !important;
+}
+body.theme_three #pos #left-top #scan_item_qr,
+body.theme_three #pos #left-top #search_customer,
+body.theme_three #pos #left-top #customer_name,
+body.theme_three #pos #left-top #sales_person,
+body.theme_three #pos #left-top #sales_person_trigger,
+body.theme_three #pos #left-top #sales_person_trigger_mobile,
+body.theme_three #pos #left-top > .form-group > .row .input-group-addon {
+    height: 36px !important;
+    min-height: 36px !important;
+    box-sizing: border-box !important;
+}
+body.theme_three #pos #left-top > .form-group > .row > .custom-flex {
+    position: relative !important;
+}
+body.theme_three #pos #left-top > .form-group > .row > .custom-flex #scan_item_qr {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 6px 38px 6px 12px !important;
+    border-radius: 20px !important;
+}
+body.theme_three #pos #left-top > .form-group > .row > .custom-flex #span_value {
+    position: absolute !important;
+    right: 8px !important;
+    top: 40% !important;
+    transform: translateY(-50%) !important;
+    width: 24px !important;
+    min-width: 24px !important;
+    max-width: 24px !important;
+    height: 24px !important;
+    min-height: 24px !important;
+    max-height: 24px !important;
+    padding: 0 !important;
+    border-radius: 50% !important;
+    line-height: 24px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+body.theme_three #pos #left-top #search_customer::-webkit-outer-spin-button,
+body.theme_three #pos #left-top #search_customer::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+body.theme_three #pos #left-top #search_customer[type=number] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+/* Theme 3: enforce single-line top header alignment */
+body.theme_three #pos #left-top > .form-group > .row {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 10px !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+body.theme_three #pos #left-top > .form-group > .row > .custom-flex,
+body.theme_three #pos #left-top > .form-group > .row > .col-sm-9,
+body.theme_three #pos #left-top > .form-group > .row > .col-sm-12,
+body.theme_three #pos #left-top > .form-group > .row > #sales_personId {
+    display: flex !important;
+    align-items: center !important;
+    min-width: 0 !important;
+    margin-top: 0 !important;
+}
+body.theme_three #pos #left-top > .form-group > .row > .col-sm-9 > .row,
+body.theme_three #pos #left-top > .form-group > .row > .col-sm-12 > .row {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+body.theme_three #pos #left-top > .form-group > .row > .col-sm-9 > .row > .col-sm-5,
+body.theme_three #pos #left-top > .form-group > .row > .col-sm-12 > .row > .col-sm-5,
+body.theme_three #pos #left-top > .form-group > .row > .col-sm-9 > .row > .col-sm-7,
+body.theme_three #pos #left-top > .form-group > .row > .col-sm-12 > .row > .col-sm-7 {
+    float: none !important;
+    margin-top: 0 !important;
+}
+body.theme_three #pos #left-top > .form-group > .row .input-group,
+body.theme_three #pos #left-top > .form-group > .row .select-group {
+    width: 100% !important;
+    margin-bottom: 0 !important;
+}
+body.theme_three #pos #left-top > .form-group > .row #span_value {
+    top: 50% !important;
+}
+
+/* Theme 3: prevent Customer Scan field from over-shrinking */
+body.theme_three #pos #left-top > .form-group > .row > .custom-flex {
+    min-width: 170px !important;
+    align-items: stretch !important;
+    align-self: stretch !important;
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    top: 0 !important;
+}
+body.theme_three #pos #left-top > .form-group > .row > .custom-flex #scan_item_qr {
+    display: block !important;
+    position: relative !important;
+    top: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    max-height: 36px !important;
+    line-height: 1.25 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}

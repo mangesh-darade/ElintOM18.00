@@ -1,0 +1,522 @@
+/* === Scrollbar styling === */
+.variant-scroll-container {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding-bottom: 5px;
+    background: #fff;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+}
+
+/* === Table === */
+.variant-scroll-container .custom-table {
+    /* Trick: slightly wider than container, but not full page */
+    width: calc(100% + 150px);   /* gives half-column look */
+    max-width: none;             /* prevents squeezing */
+    border-collapse: collapse;
+    table-layout: fixed;         /* keeps columns aligned */
+    margin: 0;
+}
+
+/* === Table cells === */
+.variant-scroll-container .custom-table th,
+.variant-scroll-container .custom-table td {
+    min-width: 110px; /* adjust for your design */
+    text-align: center;
+    white-space: nowrap;
+    border: 1px solid #ddd;
+}
+
+/* === Scrollbar Styling === */
+.variant-scroll-container::-webkit-scrollbar {
+    height: 6px;
+}
+.variant-scroll-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.variant-scroll-container::-webkit-scrollbar-thumb {
+    background: #428BCA;
+    border-radius: 4px;
+}
+
+.variant-scroll-container::-webkit-scrollbar-thumb:hover {
+    background: #2d6ca2;
+}
+
+.variant-scroll-container {
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding-bottom: 6px;
+}
+
+/* Table header & cell styling */
+.custom-table th,
+.custom-table td {
+    text-align: center;
+    vertical-align: middle;
+    border: 1px solid #ddd !important;
+    background: #fff;
+    padding: 6px 8px;
+}
+
+
+.custom-table th.variant-col {
+    background-color: #428bca !important;
+    color: white;
+    min-width: 65px;   /* slightly narrower but still readable */
+    max-width: 80px;
+    font-size: 10.5px; /* 👈 smaller font for compact look */
+    font-weight: 600;
+    text-align: center;
+    vertical-align: middle;
+    padding: 4px 2px;
+    border-right: 1px solid #fff !important;
+    letter-spacing: 0.3px; /* makes text clearer when small */
+}
+
+.custom-table td.variant-cell {
+    min-width: 65px;
+    max-width: 80px;
+    font-size: 11px;
+    text-align: center;
+    vertical-align: middle;
+    padding: 4px 2px;
+}
+
+
+/* First cell diagonal design */
+.custom-table th.first-col {
+    /* background: linear-gradient(to bottom right, #40b960 50%, #428BCA 50%); */
+    color: white;
+    min-width: 150px;
+}
+
+/* Smooth scrollbar container */
+.variant-scroll-container::-webkit-scrollbar {
+    height: 8px;
+}
+.variant-scroll-container::-webkit-scrollbar-thumb {
+    background-color: #428bca;
+    border-radius: 10px;
+}
+.dropdown-section {
+    border: 2px solid #ccc;     
+    padding-bottom: 30px;             
+    border-radius: 6px;          
+    margin-bottom: 10px;   
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);      
+}
+.bootstrap-select.disabled .btn,
+.bootstrap-select .btn.disabled {
+    background-color: #eeeeee !important;
+    color: #777 !important;
+    border-color: #ccc !important;
+    cursor: not-allowed !important;
+    opacity: 1 !important;
+}
+.disabled-label {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+@media (max-width: 1361px) and (min-width: 1240px){
+.top-filters {
+    display: flex;
+    align-items: flex-end;
+    gap: 6% !important;
+    flex-wrap: nowrap;
+}
+}
+@media only screen and (min-width: 768px) and (max-width: 991px) { 
+.top-filters {
+    display: flex;
+    align-items: flex-end;
+    gap: 0% !important;
+    flex-wrap: nowrap;
+}
+}
+@media screen and (orientation:landscape) and (min-device-width: 280px) and (max-device-width: 930px) {
+.top-filters {
+    display: flex;
+    align-items: flex-end;
+    gap: 3% !important;
+    flex-wrap: nowrap;
+}
+}
+@media only screen and (min-width: 1024px) and (max-width: 1360px){
+.top-filters {
+    display: flex;
+    align-items: flex-end;
+    gap: 12% !important;
+    flex-wrap: nowrap;
+}
+#supplierDropdownContainer{
+    /* margin-left: 26%; */
+}
+#resetFilters{
+    left: 24%!important;
+}
+}
+@media only screen and (min-width: 1361px) and (max-width: 1440px){
+.top-filters {
+    display: flex;
+    align-items: flex-end;
+    gap: 6% !important;
+    flex-wrap: nowrap;
+}
+#supplierDropdownContainer{
+    /* margin-left: 15%; */
+}
+#resetFilters{
+    left: 21%!important;
+}
+}
+@media (min-width: 1441px) and (max-width: 1470px) {
+.top-filters {
+    display: flex;
+    align-items: flex-end;
+    gap: 8% !important;
+    flex-wrap: nowrap;
+}
+#supplierDropdownContainer {
+    /* margin-left: 19% !important; */
+}
+#resetFilters{
+    left: 22%!important;
+}
+}
+@media (min-width: 1471px){
+.top-filters {
+    display: flex;
+    align-items: flex-end;
+    gap: 8% !important;
+    flex-wrap: nowrap;
+}
+#supplierDropdownContainer {
+    /* margin-left: 18% !important; */
+}
+#resetFilters{
+    left: 24%!important;
+}
+}
+@media (min-width: 1701px) and (max-width:2000px) {
+.top-filters {
+    display: flex;
+    align-items: flex-end;
+    gap: 12% !important;
+    flex-wrap: nowrap;
+}
+#supplierDropdownContainer {
+    /* margin-left: 26% !important; */
+}
+#resetFilters{
+    left: 24%!important;
+}
+}
+.breadcrumb {
+    justify-content: flex-start !important;
+    text-align: left !important;
+}
+.table-section {
+    margin-bottom: 40px;
+}
+.table-title {
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+.custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    table-layout: fixed;
+}
+.custom-table th,
+.custom-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+.custom-table th {
+    background-color: #428BCA;
+    color: white;
+    text-align: center;
+}
+/* Keep header above */
+thead th.first-col {
+    z-index: 3;
+} 
+/* Variant col */
+.variant-col {
+    min-width: 100px;
+    text-align: center;
+}
+
+/* Total/Available columns */
+.total-col, .available-col {
+    min-width: 100px;
+    text-align: center;
+}
+
+.top-filters > div:last-child {
+    margin-left: auto;
+}
+.top-filters .form-control {
+    min-width: 250px;
+}
+.note-box {
+    background-color: #ffe5dc;
+    border-radius: 8px;
+    padding: 20px 25px;
+    border-left: 6px solid #f47c6b;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.note-box h4 {
+    margin-top: 0;
+    color: #333;
+    font-weight: 600;
+}
+
+.note-box ol {
+    margin-top: 10px;
+    padding-left: 18px;
+}
+
+.note-box li {
+    margin-bottom: 6px;
+}
+#resetFilters:disabled {
+    background-color: #cccccc !important;
+    border-color: #cccccc !important;
+    color: #666666 !important;
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+td.total-qty.total-col{
+    height: 30px;
+    width: 100%;
+    text-align: center;
+    overflow: hidden;
+    white-space: nowrap;
+    box-sizing: border-box;
+    font-size: 13px;
+    padding: 2px 4px;
+}
+td.available-qty.available-col{
+    height: 30px;
+    width: 100%;
+    text-align: center;
+    overflow: hidden;
+    white-space: nowrap;
+    box-sizing: border-box;
+    font-size: 13px;
+    padding: 2px 4px;
+}
+td.variant-col{
+    height: 30px;
+    width: 100%;
+    text-align: center;
+    overflow: hidden;
+    white-space: nowrap;
+    box-sizing: border-box;
+    font-size: 13px;
+    padding: 2px 4px;
+}
+label#total_order_qty_label{
+   height: 30px;
+    width: 100%;
+    text-align: center;
+    overflow: hidden;
+    white-space: nowrap;
+    box-sizing: border-box;
+    font-size: 13px;
+    padding: 2px 4px;
+}
+
+/* Simple quantity view: aligned columns (class-based — avoid td:first-child; rowspan rows start with warehouse) */
+.simple-product-section .variant-scroll-container {
+    overflow-x: auto;
+    white-space: normal;
+    max-width: 100%;
+}
+/* Simple RM table: no inner scroll — page scrolls; avoids visible scrollbar in box */
+/* Scroll only when many raw materials (short lists stay full height, no bar) */
+.simple-product-section .variant-scroll-container.simple-rm-scroll {
+    box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.06);
+    max-height: min(80vh, 560px);
+    overflow-x: auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+.simple-product-section .variant-scroll-container.simple-rm-scroll::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+.simple-product-section .variant-scroll-container.simple-rm-scroll::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+.simple-product-section .variant-scroll-container.simple-rm-scroll::-webkit-scrollbar-thumb {
+    background: #428bca;
+    border-radius: 4px;
+}
+.simple-product-section .variant-scroll-container.simple-rm-scroll::-webkit-scrollbar-thumb:hover {
+    background: #2e6da4;
+}
+.simple-product-section .variant-scroll-container .simple-rm-table {
+    width: 100% !important;
+    max-width: 100% !important;
+    table-layout: fixed;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-color: #dfe3e8;
+}
+.simple-product-section .variant-scroll-container .simple-rm-table > thead > tr > th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #337ab7;
+    color: #fff;
+    font-weight: 600;
+    font-size: 13px;
+    padding: 11px 12px;
+    vertical-align: middle;
+    border-color: #2e6da4;
+    text-align: left;
+    white-space: normal;
+    word-wrap: break-word;
+    line-height: 1.35;
+    box-shadow: 0 1px 0 #2e6da4;
+}
+.simple-product-section .variant-scroll-container .simple-rm-table > thead > tr > th.simple-rm-th-stock,
+.simple-product-section .variant-scroll-container .simple-rm-table > thead > tr > th.simple-rm-th-vendor,
+.simple-product-section .variant-scroll-container .simple-rm-table > thead > tr > th.simple-rm-th-order {
+    text-align: center;
+}
+.simple-product-section .variant-scroll-container .simple-rm-table > tbody > tr > td {
+    min-width: 0 !important;
+    padding: 10px 12px;
+    vertical-align: middle;
+    border-color: #e8eaed;
+    font-size: 13px;
+    line-height: 1.4;
+    white-space: normal !important;
+    word-wrap: break-word;
+    word-break: break-word;
+}
+.simple-product-section .variant-scroll-container .simple-rm-table .simple-rm-th-material,
+.simple-product-section .variant-scroll-container .simple-rm-table .simple-rm-cell-material {
+    width: 20%;
+    max-width: 30%;
+    text-align: left;
+    box-sizing: border-box;
+}
+.simple-product-section .variant-scroll-container .simple-rm-table .simple-rm-cell-material {
+    background: #f4f8fc;
+    border-right: 1px solid #dde7f0;
+    font-weight: normal;
+}
+.simple-product-section .variant-scroll-container .simple-rm-table .simple-rm-cell-material strong {
+    font-weight: 600;
+    color: #2c3e50;
+}
+.simple-product-section .variant-scroll-container .simple-rm-table .simple-rm-th-wh,
+.simple-product-section .variant-scroll-container .simple-rm-table .simple-rm-cell-wh {
+    width: auto;
+    text-align: left;
+    padding-left: 14px;
+}
+.simple-product-section .variant-scroll-container .simple-rm-table .simple-rm-th-stock,
+.simple-product-section .variant-scroll-container .simple-rm-table .simple-rm-cell-stock {
+    width: 130px;
+    max-width: 130px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+/* Vendor / Order headers: blue/white only on th (body cells use light backgrounds below) */
+.simple-product-section .variant-scroll-container .simple-rm-table > thead > tr > th.simple-rm-th-vendor {
+    width: 118px;
+    max-width: 118px;
+    text-align: center;
+    background: #337ab7;
+    color: #fff;
+    border-color: #2e6da4;
+    box-sizing: border-box;
+}
+.simple-product-section .variant-scroll-container .simple-rm-table > thead > tr > th.simple-rm-th-order {
+    width: 108px;
+    max-width: 108px;
+    text-align: center;
+    background: #337ab7;
+    color: #fff;
+    border-color: #2e6da4;
+    box-sizing: border-box;
+}
+.simple-product-section .variant-scroll-container .simple-rm-table .simple-rm-cell-vendor {
+    width: 118px;
+    max-width: 118px;
+    text-align: center;
+    vertical-align: middle !important;
+    font-variant-numeric: tabular-nums;
+    background: #f7f9fb;
+    border-left: 1px solid #e8eaed;
+    color: #333;
+    box-sizing: border-box;
+}
+.simple-product-section .variant-scroll-container .simple-rm-table .simple-rm-cell-order {
+    width: 108px;
+    max-width: 108px;
+    text-align: center;
+    background: #fafcfd;
+    border-left: 1px solid #e8eaed;
+    box-sizing: border-box;
+    vertical-align: middle !important;
+}
+.simple-product-section .variant-scroll-container .simple-rm-table .simple-rm-qty-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 36px;
+    padding: 4px 0;
+    box-sizing: border-box;
+}
+.simple-product-section .variant-scroll-container .simple-rm-table .simple-rm-qty-wrap .form-control {
+    width: 100%;
+    max-width: 82px;
+    height: 34px;
+    margin: 0 auto;
+    text-align: center;
+    padding-left: 6px;
+    padding-right: 6px;
+    box-sizing: border-box;
+}
+/* Alternate raw-material blocks (warehouse + stock rows only; material cell uses its own tint) */
+.simple-product-section .variant-scroll-container .simple-rm-table tbody tr.simple-rm-mat-0 .simple-rm-cell-wh,
+.simple-product-section .variant-scroll-container .simple-rm-table tbody tr.simple-rm-mat-0 .simple-rm-cell-stock {
+    background-color: #fcfcfd;
+}
+.simple-product-section .variant-scroll-container .simple-rm-table tbody tr.simple-rm-mat-1 .simple-rm-cell-wh,
+.simple-product-section .variant-scroll-container .simple-rm-table tbody tr.simple-rm-mat-1 .simple-rm-cell-stock {
+    background-color: #f5f7f9;
+}
+.simple-product-section .variant-scroll-container .simple-rm-table tbody tr.simple-rm-first-wh:not(:first-child) {
+    border-top: 2px solid #c5d9eb;
+}
+
+/* RM Calculator: no horizontal scroll on full page — only inside .variant-scroll-container */
+#content {
+    overflow-x: hidden;
+    max-width: 100%;
+}

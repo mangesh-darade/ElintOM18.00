@@ -1,0 +1,1312 @@
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: #0F0F0F;
+        }
+
+        html {
+            overflow-y: hidden !important;
+            height: 100%;
+        }
+
+        /* Main Container */
+        .main-container {
+            /* position: fixed; */
+            /* width: 100vw; */
+            height: 100vh;
+            background: #0F0F0F;
+            /* margin: 0; */
+            /* overflow-x: hidden; */
+            /* overflow-y: scroll; */
+        }
+
+        /* Status Bar */
+        .status-bar {
+            position: absolute;
+            width: 100%;
+            height: 24px;
+            left: 0px;
+            top: 0px;
+            background: #000000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            color: #FFFFFF;
+            font-size: 12px;
+        }
+
+        .status-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* Top Bar */
+        .top-bar-rect {
+            position: absolute;
+            width: 100%;
+            height: 68px;
+            left: 0px;
+            top: 24px;
+            background: #1A1A1A;
+            border-bottom: 1px solid #333333;
+        }
+
+        /* Logo */
+        .logo-container {
+            position: absolute;
+            width: 140px;
+            height: 40px;
+            left: 20px;
+            top: 43px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .logo-container img {
+            max-height: 40px;
+            width: auto;
+            display: block;
+        }
+
+        /* Time Display */
+        .time-display {
+            position: absolute;
+            width: 100px;
+            height: 30px;
+            left: 87%;
+            transform: translateX(-50%);
+            top: 48px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            font-size: 18px;
+            color: #FFFFFF;
+            text-align: center;
+            line-height: 30px;
+        }
+
+        /* Menu Icon */
+        .menu-icon {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            right: 20px;
+            top: 48px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3 12h18M3 6h18M3 18h18" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>') no-repeat center;
+            background-size: 24px 24px;
+            cursor: pointer;
+        }
+
+        /* Reset Button */
+        .reset-button {
+            position: absolute;
+            right: 60px;
+            top: 48px;
+            padding: 6px 16px;
+            background: #FF3B47;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            z-index: 1000;
+        }
+
+        .reset-button:hover {
+            background: #FF1A28;
+            transform: scale(1.05);
+        }
+
+        .reset-button:active {
+            transform: scale(0.95);
+        }
+
+        /* Orders Container - Masonry Layout */
+        .orders-container {
+            position: absolute;
+            width: 100%;
+            height: calc(100vh - 182px);
+            left: 0px;
+            top: 92px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            background: #0F0F0F;
+            padding: 12px;
+            /* Masonry layout controlled by JavaScript */
+        }
+
+        /* Masonry wrapper - contains all cards and defines scroll height */
+        .masonry-wrapper {
+            position: relative;
+            width: 100%;
+            min-height: 100%;
+        }
+
+        /* Order Ticket Base Styles - Absolute Positioning for Masonry */
+        .order-ticket {
+            position: absolute;
+            background: #FFFFFF;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            /* Smooth animation when repositioning */
+        }
+
+        /* Show only first 8 orders (4 in first row, 4 in second) */
+        /* .order-ticket:nth-child(n+9) {
+            display: none;
+        } */
+
+        /* Order Header Styles */
+        .order-header {
+            width: 100%;
+            background: #FFFFFF;
+            border-bottom: 1px solid #E9ECEF;
+        }
+
+        .order-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background: #FFFFFF;
+            font-family: 'Inter', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: #000000;
+            position: relative;
+            border-top: 14px solid #8BCDFC;
+        }
+
+        .order-header-top * {
+            color: #000000 !important;
+        }
+
+        .order-header-top.blue {
+            border-top-color: #8BCDFC;
+            background: #FFFFFF !important;
+        }
+
+        .order-header-top.white {
+            border-top-color: #FFFFFF;
+            background: #FFFFFF !important;
+        }
+
+        .order-header-top.orange {
+            border-top-color: #FF9A63;
+            background: #FFFFFF !important;
+        }
+
+        .order-header-top.green {
+            border-top-color: #8FF4AE;
+            background: #FFFFFF !important;
+        }
+
+        .order-time-badge {
+            background: #8BCDFC;
+            border-radius: 2px;
+            padding: 1px 14px;
+            font-size: 18px;
+            font-weight: 600;
+            min-width: 70px;
+            text-align: center;
+            color: #000000 !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Sync badge color with header status */
+        .order-header-top.white .order-time-badge {
+            background: #FFFFFF;
+        }
+
+        .order-header-top.orange .order-time-badge {
+            background: #FF9A63;
+        }
+
+        .order-header-top.green .order-time-badge {
+            background: #8FF4AE;
+        }
+
+        .order-header-top.blue .order-time-badge {
+            background: #8BCDFC;
+        }
+
+        .order-header-bottom {
+            display: flex;
+            align-items: center;
+            padding: 13.5px 20px;
+            background: #F8F9FA;
+            gap: 8px;
+        }
+
+        .table-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .table-icon {
+            width: 32px;
+            height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .table-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .table-number {
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: #000000;
+        }
+
+        .staff-customer {
+            text-align: right;
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            color: #6C757D;
+            min-width: 120px;
+        }
+
+        .staff-customer div {
+            margin-bottom: 2px;
+        }
+
+        .staff-customer div:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Order Items */
+        .order-items {
+            padding: 0;
+        }
+
+        .order-item {
+            position: relative;
+            display: flex;
+            border-bottom: 1px solid #22272E;
+            min-height: 44px;
+            background: #FFFFFF;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .order-item:hover {
+            background-color: #F8F9FA;
+        }
+
+        .order-item.status-red {
+            border-left: 28px solid #FF3B47;
+        }
+
+        .order-item.status-yellow {
+            border-left: 28px solid #FFD97A;
+        }
+
+        .order-item.status-white {
+            border-left: 4px solid #FFFFFF;
+        }
+
+        .order-item.status-orange {
+            border-left: 28px solid #FF9A63;
+        }
+
+        .order-item.status-green {
+            border-left: 28px solid #00C896;
+        }
+
+        .order-item.status-blue {
+            border-left: 28px solid #8FF4AE;
+        }
+
+
+        .order-item-content {
+            flex: 1;
+            padding: 8px 12px 8px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .item-main-line {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .item-quantity {
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            font-weight: 400;
+            color: #000000;
+            flex-shrink: 0;
+        }
+
+        .item-name {
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            font-weight: 400;
+            color: #000000;
+            flex: 1;
+            margin-left: 11px;
+        }
+
+        .item-modifiers {
+            font-family: 'Inter', sans-serif;
+            font-size: 9px;
+            color: #000000;
+            line-height: 1.4;
+            margin-top: 2px;
+        }
+
+        .item-modifier {
+            margin-bottom: 1px;
+        }
+
+        .item-action {
+            width: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 15px;
+        }
+
+        .item-action img {
+            width: 34px;
+            height: 30px;
+            object-fit: contain;
+        }
+
+        /* Serve Button */
+        .serve-button-container {
+            padding: 10px 12px;
+            background: #FFFFFF;
+            border-top: 1px solid #E9ECEF;
+        }
+
+        .serve-button {
+            width: 77%;
+            padding: 10px;
+            background: #8FF4AE;
+            border: 1px solid #000000;
+            border-radius: 10px;
+            font-family: 'Inter', sans-serif;
+            font-size: 20px;
+            font-weight: 400;
+            text-align: center;
+            color: #000000;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-left: 37px;
+        }
+
+        .serve-button:hover {
+            background: #8FF4AE;
+
+        }
+
+        /* Item Active/Selected State */
+        .order-item.active {
+            background-color: #f7c3d1 !important;
+            /* pink highlight when selected */
+        }
+
+        /* Item Alerting State (flashing animation) */
+        .order-item.alerting {
+            animation: flashAlert 1s infinite;
+        }
+
+        @keyframes flashAlert {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        /* Floating Action Bar */
+        .floating-bar {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: stretch;
+            background: #FFFFFF;
+            border-radius: 50px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+            z-index: 1000;
+            overflow: hidden;
+            border: 2px solid #FFFFFF;
+            min-width: 273px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .floating-bar.hidden {
+            display: none;
+        }
+
+        /* Floating Bar Buttons */
+        .btn {
+            border: none;
+            padding: 12px 20px;
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            min-width: 80px;
+            border-radius: 0;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Prep Button - Light Green, Rounded Left Only */
+        .btn.prep {
+            background: #A6F5C1;
+            color: #000;
+            border-radius: 40px 0 0 40px;
+            padding: 8px 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            border: none;
+            border-right: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .btn.prep .btn-icon {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 2px;
+        }
+
+        .btn.prep span {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .btn.prep:hover {
+            background: #5aad60;
+        }
+
+        /* Ready Button - Light Green, Rounded Left Only */
+        .btn.ready {
+            background: #A6F5C1;
+            color: #000;
+            border-radius: 20px 0 0 20px;
+            padding: 12px 20px 12px 24px;
+        }
+
+        .btn.ready:hover {
+            background: #5aad60;
+        }
+
+        /* Serve Button - Light Green, Rounded Left Only */
+        .btn.serve {
+            background: #8FF4AE;
+            color: #000;
+            border-radius: 40px 0 0 40px;
+            padding: 8px 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            border-right: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .btn.serve .btn-icon {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 2px;
+        }
+
+        .btn.serve span {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .btn.serve:hover {
+            background: #5aad60;
+        }
+
+        /* Button Icons */
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .btn span:not(.cancel-text) {
+            font-size: 14px;
+            font-weight: 600;
+            color: #000;
+        }
+
+        /* Cancel Button - Light Pink/Red, Rounded Right Only */
+        .btn.cancel {
+            background: #FFB3B8;
+            color: #000;
+            border-radius: 0 40px 40px 0;
+            padding: 8px 24px;
+            width: auto;
+            height: auto;
+            display: flex;
+            gap: 4px;
+            border: none;
+            cursor: pointer;
+            margin-left: 22px;
+        }
+
+        .btn.cancel .btn-icon {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 2px;
+        }
+
+        .btn.cancel span {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        /* Flashing Animation for Ready Items */
+        @keyframes flash-ready {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .order-item.status-ready {
+            animation: flash-ready 1.5s infinite ease-in-out;
+            background-color: rgba(143, 244, 174, 0.1) !important;
+            border-left: 5px solid #8FF4AE !important;
+        }
+
+        .floating-bar.ready-state {
+            min-width: 220px;
+            animation: none; /* Don't flash the bar itself, just the item */
+        }
+
+        .floating-bar.ready-state .btn.cancel {
+            display: none !important;
+        }
+
+        .floating-bar.ready-state .btn.serve {
+            border-radius: 40px 0 0 40px;
+        }
+
+        .floating-bar.ready-state .bar-timer {
+            border-radius: 0 40px 40px 0;
+        }
+
+        .btn.cancel span:first-child {
+            font-size: 24px;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .btn.cancel .cancel-text {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .btn.cancel:hover {
+            background: #ff8a95;
+        }
+
+        /* Timer in Floating Bar - White Background, Connects Buttons */
+        .bar-timer {
+            display: flex;
+            align-items: center;
+            user-select: none;
+        }
+
+        .bar-timer:hover {
+            background-color: #F8F9FA;
+        }
+
+        /* Timer Icon */
+        .timer-icon {
+            font-size: 20px;
+            display: inline-block;
+            color: #000;
+        }
+
+        .timer-icon-img {
+            width: 40px;
+            height: 20px;
+            object-fit: cover;
+            display: flex;
+        }
+
+        /* Timer Text Color States */
+        .bar-timer.timer-ready #cook-timer {
+            color: #00C896 !important;
+            /* Green for ready state */
+            font-weight: 700;
+        }
+
+        .bar-timer .timer-warning #cook-timer,
+        .bar-timer .timer-alerting #cook-timer,
+        .bar-timer .timer-ready #cook-timer {
+            color: #5E8D70 !important;
+        }
+
+        .bar-timer.timer-overdue #cook-timer {
+            color: #FF3B47 !important;
+            /* Red for overdue/alerting */
+            font-weight: 700;
+        }
+
+        .bar-timer:active {
+            transform: scale(0.98);
+        }
+
+        .bar-timer .timer-icon {
+            font-size: 24px;
+            display: inline-block;
+            line-height: 1;
+            color: #000;
+            font-style: normal;
+        }
+
+        #cook-timer {
+            font-weight: 700;
+            color: #000;
+            transition: color 0.3s;
+        }
+
+        /* Timer color states */
+        .bar-timer.timer-alerting #cook-timer {
+            color: #FF9A63;
+            /* Orange when alerting (not used currently) */
+        }
+
+        .bar-timer.timer-warning #cook-timer {
+            color: #FFD97A;
+            /* Yellow for within 5 minutes */
+        }
+
+        .bar-timer.timer-overdue #cook-timer {
+            color: #FF3B47;
+            /* Red when 10 seconds or less, or overdue/negative */
+        }
+
+        /* Prep Icon (if used as image) */
+        .prep-icon {
+            width: 42px;
+            height: 42px;
+            cursor: pointer;
+        }
+
+        .prep-icon:active {
+            transform: scale(0.95);
+        }
+
+        /* Prep Time Modal - Small Popup */
+        .prep-time-modal {
+            position: fixed;
+            z-index: 10001;
+            background: transparent;
+            pointer-events: none;
+            display: block;
+        }
+
+        .prep-time-modal.hidden {
+            display: none !important;
+        }
+
+        .prep-time-modal-content {
+            background: #1A1A1A;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+            min-width: 260px;
+            max-width: 280px;
+            overflow: hidden;
+            pointer-events: all;
+            border: 1px solid #333;
+            position: relative;
+        }
+
+        .prep-time-modal-header {
+            background: #2A2A2A;
+            padding: 10px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #333;
+            cursor: move;
+            user-select: none;
+        }
+
+        .prep-time-modal-header span {
+            color: #FFFFFF;
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .prep-time-modal-close {
+            background: transparent;
+            border: none;
+            color: #FFFFFF;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .prep-time-modal-close:hover {
+            background: #3A3A3A;
+        }
+
+        .prep-time-modal-body {
+            padding: 16px 14px;
+        }
+
+        .prep-time-input-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .prep-time-input-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .prep-time-input-group label {
+            color: #FFFFFF;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            min-width: 80px;
+        }
+
+        .prep-time-input-group input {
+            flex: 1;
+            background: #2A2A2A;
+            border: 1px solid #444;
+            border-radius: 6px;
+            padding: 8px 12px;
+            color: #FFFFFF;
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            font-weight: 500;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .prep-time-input-group input:focus {
+            border-color: #00C896;
+        }
+
+        .prep-time-input-group input::-webkit-inner-spin-button,
+        .prep-time-input-group input::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            appearance: none;
+            margin: 0;
+        }
+
+        .prep-time-input-group input[type=number] {
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
+
+        .prep-time-modal-footer {
+            padding: 10px 14px;
+            background: #2A2A2A;
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            border-top: 1px solid #333;
+        }
+
+        .btn-prep-time-ok,
+        .btn-prep-time-cancel {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-prep-time-ok {
+            background: #00C896;
+            color: #000000;
+        }
+
+        .btn-prep-time-ok:hover {
+            background: #00B085;
+        }
+
+        .btn-prep-time-cancel {
+            background: #444;
+            color: #FFFFFF;
+        }
+
+        .btn-prep-time-cancel:hover {
+            background: #555;
+        }
+
+        /* + Timer Button (Bottom Right) */
+        .timer-toggle-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #FFFFFF;
+            color: #000000;
+            border: none;
+            border-radius: 40px;
+            padding: 12px 28px;
+            font-family: 'Inter', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            z-index: 10000;
+            transition: all 0.2s;
+        }
+
+        .timer-toggle-btn.hidden {
+            display: none;
+        }
+
+        .timer-toggle-btn:hover {
+            background: #F8F9FA;
+            transform: scale(1.05);
+        }
+
+        .timer-toggle-btn:active {
+            transform: scale(0.95);
+        }
+
+        .timer-toggle-btn span {
+            font-size: 28px;
+            font-weight: 400;
+        }
+
+        /* New Timer Section (Bottom Right) */
+        .timer-section {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10000;
+            transition: all 0.3s ease;
+        }
+
+        .timer-section.hidden {
+            display: none;
+        }
+
+        /* Initial Timer Button */
+        .initial-timer-button {
+            background: #FFFFFF;
+            border: 2px solid #000000;
+            border-radius: 25px;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: #000000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .initial-timer-button.hidden {
+            display: none !important;
+        }
+
+        .initial-timer-button:hover {
+            background: #F8F9FA;
+            transform: scale(1.05);
+        }
+
+        .initial-timer-button:active {
+            transform: scale(0.95);
+        }
+
+        .timer-plus-icon {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .timer-text {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        /* Expanded Timer Display */
+        .expanded-timer {
+            display: flex;
+            flex-direction: row-reverse;
+            align-items: flex-end;
+            gap: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .expanded-timer.hidden {
+            display: none !important;
+        }
+
+        /* Add button positioned above */
+        .expanded-timer .timer-btn.add-btn {
+            align-self: flex-end;
+            margin-bottom: 4px;
+        }
+
+        .timer-container {
+            border-radius: 40px;
+            padding: 7px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 200px;
+            transition: all 0.3s ease;
+        }
+
+        /* Timer Display with integrated cancel button */
+        .timer-display {
+            flex: 1;
+            text-align: center;
+            padding: 5px 16px;
+            border-radius: 12px;
+            background: #FF3B47;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            margin-bottom: -7px;
+        }
+
+        #timer-time {
+            font-family: 'Inter', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #000;
+            letter-spacing: 1px;
+            flex: 1;
+            text-align: center;
+        }
+
+        /* Cancel button integrated in timer display */
+        .timer-display .timer-btn.cancel-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 50%;
+            color: #000;
+            font-size: 24px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .timer-display .timer-btn.cancel-btn:hover {
+            /* background: #FFFFFF; */
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .timer-display .timer-btn.cancel-btn:active {
+            transform: translateY(-50%) scale(0.95);
+        }
+
+        /* Timer Color States */
+        .timer-display.state-green {
+            background: #00C896;
+        }
+
+        .timer-display.state-yellow {
+            background: #FFD97A;
+        }
+
+        .timer-display.state-red {
+            background: #FF3B47;
+            animation: pulseRed 1s infinite;
+        }
+
+        @keyframes pulseRed {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.05);
+                opacity: 0.9;
+            }
+        }
+
+        /* Timer Control Buttons - Vertical Layout */
+        .timer-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .timer-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 50%;
+            font-size: 18px;
+            font-weight: 600;
+            color: #FFFFFF;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .timer-btn.add-btn {
+            background: #FFFFFF;
+            color: #000;
+            font-size: 32px;
+        }
+
+        .timer-btn.add-btn:hover {
+            background: #00B085;
+            transform: scale(1.1);
+        }
+
+        /* .timer-btn.cancel-btn {
+            background: #FF3B47;
+        } */
+
+.timer-btn:active {
+    transform: scale(0.95);
+}
+
+/* Custom Confirm Dialog Styles */
+.custom-confirm-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    z-index: 10000;
+    font-family: 'Inter', sans-serif;
+    padding-top: 50px;
+}
+
+.custom-confirm-dialog {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    min-width: 300px;
+    max-width: 40%;
+    overflow: hidden;
+}
+
+.custom-confirm-content {
+    padding: 24px;
+    text-align: center;
+}
+
+.custom-confirm-message {
+    font-size: 16px;
+    font-weight: 500;
+    color: #333333;
+    margin-bottom: 20px;
+    line-height: 1.4;
+}
+
+.custom-confirm-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.custom-confirm-btn {
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 2px solid;
+    min-width: 80px;
+}
+
+.custom-confirm-cancel {
+    background-color: white;
+    color: #FF69B4;
+    border-color: #FF69B4;
+}
+
+.custom-confirm-cancel:hover {
+    background-color: #FFF0F5;
+}
+
+.custom-confirm-yes {
+    background-color: #FF69B4;
+    color: white;
+    border-color: #FF69B4;
+}
+
+.custom-confirm-yes:hover {
+    background-color: #FF1493;
+    border-color: #FF1493;
+}
+
+.custom-confirm-btn:focus {
+    outline: 2px solid #FF69B4;
+    outline-offset: 2px;
+}
+
+/* Custom Alert Dialog Styles */
+.custom-alert-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    z-index: 10000;
+    font-family: 'Inter', sans-serif;
+    padding-top: 50px;
+}
+
+.custom-alert-dialog {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    min-width: 320px;
+    max-width: 90%;
+    overflow: hidden;
+}
+
+.custom-alert-content {
+    padding: 24px;
+    text-align: center;
+}
+
+.custom-alert-message {
+    font-size: 16px;
+    font-weight: 500;
+    color: #333333;
+    margin-bottom: 20px;
+    line-height: 1.4;
+}
+
+.custom-alert-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.custom-alert-btn {
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 2px solid;
+    min-width: 80px;
+}
+
+.custom-alert-ok {
+    background-color: #FF69B4;
+    color: white;
+    border-color: #FF69B4;
+}
+
+.custom-alert-ok:hover {
+    background-color: #FF1493;
+    border-color: #FF1493;
+}
+
+.custom-alert-btn:focus {
+    outline: 2px solid #FF69B4;
+    outline-offset: 2px;
+}

@@ -1,0 +1,2 @@
+name,code,divisionid,article_code,barcode_symbology,brand,category_code,unit,sale_unit,purchase_unit,cost,price,alert_quantity,tax_rate,tax_method,image,subcategory_code,variants,mrp,hsn_code,warehouse,quantity,cf1,cf2,cf3,cf4,cf5,cf6,season_id
+Sample Product 1,,4,ART001,code128,Guess,C1,pcs,pcs,dozen,90,100,20,NoTax GST,exclusive,no_image.png,SC1,,101,123456,Ware house 1-1,10,cf 1,cf 2,,,,cf 6,0

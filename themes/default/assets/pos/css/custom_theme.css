@@ -1,0 +1,668 @@
+#paymentModal #s2id_paid_by_1,
+#paymentModal #s2id_paid_by_1 a {
+    pointer-events: none !important;
+    cursor: none !important;
+}
+
+/* #sellGiftCard is z-index 10003 in themes — keep it under modal/backdrop (1040/1050) when a modal is open */
+body.modal-open #sellGiftCard {
+    z-index: 1039 !important;
+}
+
+.notification_counter {
+    color: #ff0000;
+    font-weight: bold;
+    border: 1px solid;
+    padding: 2px 4px;
+    margin: 5px;
+    border-radius: 12%
+}
+
+#posbiller {
+    display: block !important;
+}
+
+#brands-list {
+    overflow-y: scroll;
+}
+
+.del_btn_group {
+    display: none !important;
+}
+
+
+.urbanpiper-stock_notify {
+    position: absolute;
+    top: 50px;
+
+    width: 350px;
+    z-index: 55555;
+    -webkit-box-shadow: 0px 5px 10px 0px rgba(102, 102, 102, 1);
+    -moz-box-shadow: 0px 5px 10px 0px rgba(102, 102, 102, 1);
+    box-shadow: 0px 5px 10px 0px rgba(102, 102, 102, 1);
+    display: block;
+}
+
+.alert_notify {
+    position: absolute;
+    top: 50px;
+    right: 10px;
+    width: 350px;
+    z-index: 55555;
+    -webkit-box-shadow: 0px 5px 10px 0px rgba(102, 102, 102, 1);
+    -moz-box-shadow: 0px 5px 10px 0px rgba(102, 102, 102, 1);
+    box-shadow: 0px 5px 10px 0px rgba(102, 102, 102, 1);
+    display: block;
+}
+
+
+@media print {
+    .noprint {
+        display: none;
+    }
+}
+
+#span_value {
+    border: 1px solid #F00;
+    padding: 0.3rem;
+    position: absolute;
+    right: 3.3rem;
+    border-radius: 3rem;
+    min-width: 3.2rem;
+    min-height: 3rem;
+    text-align: center;
+    background: #FDCA62;
+    color: #F00;
+    font-weight: bold;
+}
+
+.custom-flex {
+    display: flex;
+    align-items: center;
+}
+
+#scan_item_qr {
+    border-radius: 4rem !important;
+    padding: 1.77rem;
+}
+
+.customset #scan_item_qr {
+    border-radius: 0rem !important;
+}
+
+.flex {
+    display: flex;
+}
+
+#cust_sus_bill {
+    min-height: auto;
+    height: auto !important;
+    overflow: auto !important;
+}
+
+#product-list {
+    scrollbar-width: thin;
+}
+
+
+
+
+#paymentModal #s2id_paid_by_1,
+#paymentModal #s2id_paid_by_1 a {
+    pointer-events: none !important;
+    cursor: none !important;
+}
+
+/* #sellGiftCard is z-index 10003 in themes — keep it under modal/backdrop (1040/1050) when a modal is open */
+body.modal-open #sellGiftCard {
+    z-index: 1039 !important;
+}
+
+.notification_counter {
+    color: #ff0000;
+    font-weight: bold;
+    border: 1px solid;
+    padding: 2px 4px;
+    margin: 5px;
+    border-radius: 12%
+}
+
+#posbiller {
+    display: block !important;
+}
+
+#brands-list {
+    overflow-y: scroll;
+}
+
+.del_btn_group {
+    display: none !important;
+}
+
+.mt5 {
+    margin-top: 0.5rem;
+}
+
+input#add_item_qr {
+    width: 100%;
+}
+
+.mrgn-setting {
+    margin-top: 1rem;
+    border-radius: 0.5rem !important;
+}
+
+div#s2id_paid_by_1 {
+    border: none;
+    box-shadow: none !important;
+}
+
+input#amount_1 {
+    text-align: right;
+}
+
+/* product image set or hide the pos screen no_image.png product iamge */
+/* Hide images with 'no_image.png' */
+/* img[src*='no_image.png'] {
+    display: none !important;
+} */
+
+.btn-prni {
+    height: auto !important;
+    margin: 2 5px;
+}
+
+.btn-prni1 {
+    font-size: 11px;
+}
+
+.d-flx {
+    display: flex;
+}
+
+.cat-div .owl-carousel::-webkit-scrollbar {
+    height: 8px;
+}
+
+.cat-div .owl-carousel::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 10px;
+}
+
+.cat-div .owl-carousel .item {
+    flex: 0 0 14%;
+    box-sizing: border-box;
+}
+
+.cat-div {
+    display: flex;
+    align-items: center;
+    max-height: 20rem !important;
+    height: auto !important;
+    border-bottom: none !important;
+    /* padding: 22px 0px 16px 1px !important; */
+}
+.padding0{
+    padding:3px!important;
+}
+.d-setting {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#editItem {
+    margin-right: 1rem;
+}
+
+.pr-set {
+    padding-right: 0.5rem;
+}
+
+.btn-prni1 {
+    font-size: 12px;
+}
+
+.d-flx {
+    display: flex;
+}
+
+.d-flx1 {
+    display: flex;
+    align-items: center;
+}
+
+/* .cat-div .owl-carousel {
+    display: flex;
+    justify-content: flex-start;
+    overflow-x: none;
+    scrollbar-width: thin;
+
+} */
+
+.cat-div .owl-carousel::-webkit-scrollbar {
+    height: 8px;
+}
+
+.cat-div .owl-carousel::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 10px;
+}
+
+.cat-div .owl-carousel .item {
+    flex: 0 0 14%;
+    box-sizing: border-box;
+}
+
+.cat-div {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    /* height:100px; */
+}
+
+.custom-border-right {
+    border-top-right-radius: 40px !important;
+    border-bottom-right-radius: 40px !important;
+}
+
+.input-group .form-control:last-child,
+.input-group-addon:last-child,
+.input-group-btn:last-child>.btn,
+.input-group-btn:last-child>.dropdown-toggle,
+.input-group-btn:first-child>.btn:not(:first-child) {
+    border-radius: 0rem !important;
+}
+
+/* Apply border-radius to the Select2 container */
+.custom-brd-radius .select2-container {
+    border-radius: 2rem;
+    overflow: hidden;
+    /* Ensure border-radius applies fully */
+}
+
+/* Apply border-radius to the select2-choice dropdown */
+.custom-brd-radius .select2-choice {
+    border-radius: 2rem;
+    border: 1px solid #ccc;
+    /* Optional: Customize border style */
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Apply border-radius to the Select2 dropdown box */
+.custom-brd-radius .select2-drop {
+    border-radius: 2rem;
+    border: 1px solid #ccc;
+}
+
+.pr-0 {
+    padding-right: 0rem;
+}
+
+#pos .form-group {
+    margin-bottom: 8px;
+}
+
+.hscroll {
+    display: flex;
+    /* Use flexbox layout */
+    flex-direction: row;
+    /* Arrange items in a row */
+    gap: 8px;
+    /* Space between items */
+    width: 100%;
+    /* Full width */
+    height: auto !important;        
+    max-height: 17rem;  
+    /* Set height to accommodate 3 rows of buttons */
+    overflow-x: auto;
+    /* Enable horizontal scrolling */
+    overflow-y: auto !important;
+    /* Prevent vertical scrolling */
+    align-items: flex-start;
+    /* Align items to the top */
+    flex-wrap: wrap;
+    /* margin-left: 1.8rem; */
+}
+
+.btn-prni1 {
+    padding: 3px;
+    min-width: 100;
+}
+
+.inline-item {
+    flex: 0 0 12%;
+    /* Each item takes up 30% of the row, allowing for 3 items per row */
+    box-sizing: border-box;
+    padding: 0;
+    /* Remove padding */
+    margin: 0;
+    /* Remove margin */
+    height: 50px;
+    /* Set height of each item */
+    width: 100%;
+}
+.subcategories-container{
+    top: -65px !important;
+}
+.hscroll::-webkit-scrollbar {
+    height: 8px;
+    /* Height of horizontal scrollbar */
+}
+
+.hscroll::-webkit-scrollbar-thumb {
+    background-color: #888;
+    /* Scrollbar color */
+    border-radius: 4px;
+    /* Round edges */
+}
+
+.hscroll::-webkit-scrollbar-track {
+    background-color: #eee;
+    /* Track color */
+}
+
+
+/* .pd-set {
+    padding: 1rem 2rem 1rem 1rem;
+} */
+
+.catsl-title {
+    padding: 6rem 0rem;
+    height: 100%;
+}
+
+/* @media screen and (max-width: 1250px) and (min-width: 1100px) {
+    .hscroll {
+        display: grid;
+        grid-template-rows: repeat(3, auto);
+        grid-auto-flow: column;
+        gap: 8px;
+        width: 85%;
+        overflow-x: auto;
+        white-space: nowrap;
+        justify-content: start;
+    }
+
+    .inline-item {
+        display: inline-block;
+        width: calc(70rem / 8) !important;
+        box-sizing: border-box;
+        padding: 0px;
+        margin: 0 5px;
+    }
+
+    .pd-set {
+        padding: 0rem 1rem 0rem 1rem;
+    }
+} */
+
+.custom-categorybtn {
+    width: 100%;
+    max-width: 100% !important;
+    word-break: break-word;
+    white-space: normal !important;
+}
+
+.btn-prni span {
+    width: 100%;
+    max-width: 100% !important;
+    word-break: break-word;
+    white-space: normal !important;
+    height: 45px !important;
+    padding: 0.5rem;
+    font-size: 14px;
+}
+
+/* Add any additional styles for subcategories */
+.sub-category-item {
+    display: inline-block;
+    width: calc(70rem / 8) !important;
+    /* Same as categories for consistency */
+}
+
+.cat-outer.setting {
+    /* padding-top: 2rem; */
+    max-height: 16rem !important;
+    height: auto !important;
+    position: absolute;
+    bottom: 0px;
+    width: 97%;
+}
+
+.cat-div.set-bottom {
+    width: 100% !important;
+}
+
+#ajaxproducts {
+    min-height: 63% !important;
+    height: 63% !important;
+    overflow: auto;
+}
+
+.owl-stage {
+    transition: 0.25s;
+    transform: translate3d(0px, 0px, 0px);
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    width: 100%;
+    height: auto;
+    overflow-x: auto;
+    overflow-y: auto !important;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+.owl-carousel .owl-stage-outer {
+    height: auto !important;
+}
+
+.owl-stage-outer {
+    display: flex;
+}
+
+/* Hide scrollbar but still allow scrolling */
+.scrollable-container {
+    overflow: hidden;
+    /* Fully hides the scrollbar */
+    overflow-y: scroll;
+    /* Enables vertical scrolling */
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
+
+* {
+    scrollbar-width: none;
+    /* For Firefox */
+    scrollbar-color: transparent;
+}
+
+/* .nodisplay{
+    display:none;
+} */
+
+.form-horizontal table {
+    width: 100%;
+    /* Make the table take full width of the container */
+    border-collapse: collapse;
+    /* Remove gaps between table borders */
+}
+
+.form-horizontal table td {
+    padding: 10px;
+    /* Padding inside table cells */
+    border: 1px solid #ddd;
+    /* Border for table cells */
+    vertical-align: middle;
+    /* Vertically center the content */
+    width: 33%;
+    /* Ensure each column takes up one-third of the width */
+}
+
+.form-horizontal label {
+    font-weight: bold;
+    /* Make the labels bold */
+}
+
+.form-horizontal table input,
+.form-horizontal table select {
+    width: 100%;
+    /* Ensure inputs take full width of the cell */
+}
+
+.purple-background {
+    background-color: #CB0084 !important;
+    color: #fff;
+    border-top-right-radius: 2rem;
+    border-bottom-left-radius: 2rem;
+}
+
+.subcategory.active {
+    background-color: #fff !important;
+    border: 1px solid #cb0084;
+
+}
+
+.subcategory {
+    white-space: normal;
+    word-break: break-word;
+    width: 100%;
+    border: none;
+    outline: none;
+    /* line-height: 3; */
+    height: 70%;
+}
+
+.custom-posset {
+    z-index: 1;
+    width: 4rem;
+    position: absolute;
+    right: 1;
+    height: 3.4rem;
+    border-left: 1px solid #c7c7c7 !important;
+}
+
+.bootbox.modal {
+    z-index: 99999;
+}
+
+.custom-posset1 {
+    top: 0.5rem;
+    position: relative;
+}
+
+.custom-categorybtn {
+    position: relative;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.custom-categorybtn:active {
+    transform: scale(0.95);
+    /* Add a slight "press" effect */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    /* Increase shadow on click */
+}
+
+.custom-categorybtn.clicked {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    /* Persistent shadow when clicked */
+}
+
+.text-white {
+    color: #fff !important;
+}
+
+.inline-item {
+    width: 35% !important;
+}
+
+/* Additional styles for buttons */
+.btn-prni.category.custom-categorybtn {
+    /* background-image: url('assets/uploads/thumbs/DoubleLinesCat.svg'); */
+    background-color: #008E80;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top right;
+    border-top-right-radius: 1.4rem;
+    border-bottom-left-radius: 1.4rem;
+    color: white;
+    padding: 0px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+/* Optional hover effect */
+.btn-prni.category.custom-categorybtn:hover {
+    background-color: #006A60;
+}
+
+/* Active button styling */
+.btn-prni.category.custom-categorybtn.active {
+    background-color: #008E80;
+}
+
+/* Ensure category items are inline */
+.category-item.inline-item {
+    display: inline-block;
+    /* margin: 5px; */
+}
+
+.btn-prni.subcategory {
+    /* background-color: #CB0084 !important; */
+    color: #fff;
+    border-top-right-radius: 2rem;
+    border-bottom-left-radius: 2rem;
+}
+
+.text-white {
+    color: #fff;
+}
+
+.btn-prni {
+    z-index: 99;
+    /* width:18%!important;
+    min-width:18%!important; */
+}
+
+div#item-list {
+    padding: 0rem 1rem;
+}
+
+.pd0 {
+    padding: 0rem 0.3rem;
+}
+div#s2id_seasons {
+    margin-top: -14px !;
+}
+@media (min-width: 1471px){
+    #ajaxproducts {
+        min-height: 55% !important;
+        height: 56% !important;
+        overflow: auto;
+    }
+    #pos #proContainer {
+        display: block;
+        padding: 5px !important;
+        width: 100% !important;
+        min-height: 73% !important;
+        max-height: 80% !important;
+    }
+    .cat-outer.setting {
+        max-height: 13rem !important;
+        height: auto !important;
+        position: absolute;
+        bottom: 10px !important;
+        width: 97% !important;
+    }
+    .cat-outer {
+        margin: 0 3px !important;
+    }
+}

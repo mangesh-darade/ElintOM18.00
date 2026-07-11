@@ -1,0 +1,181 @@
+#dashset {
+    border-radius: 0% !important;
+    display: inline-block !important;
+    padding: 8px 16px !important;
+    border: 2px solid #66c2ff !important;
+    /* Light blue border */
+    border-radius: 8px !important;
+    /* Rounded corners */
+    background-color: white !important;
+    /* White background */
+    color: #333 !important;
+    /* Text color */
+    text-align: center !important;
+    text-decoration: none !important;
+    transition: background-color 0.3s ease !important;
+}
+
+#close_register,
+#add_expense,
+#update_register_button,
+#today_sale,
+#register_details,
+#pos_details
+ {
+    border-radius: 0% !important;
+    display: inline-block !important;
+    padding: 8px 4px !important;
+    /* Light blue border */
+    border-radius: 8px !important;
+    /* Rounded corners */
+    background-color: white !important;
+    /* White background */
+    color: #333 !important;
+    /* Text color */
+    text-align: center !important;
+    text-decoration: none !important;
+    transition: background-color 0.3s ease !important;
+}
+
+#setnav-section {
+    border-radius: 0% !important;
+    display: inline-block !important;
+    padding: 12px 4px !important;
+    /* Light blue border */
+    border-radius: 8px !important;
+    /* Rounded corners */
+    background-color: white !important;
+    /* White background */
+    color: #333 !important;
+    /* Text color */
+    text-align: center !important;
+    text-decoration: none !important;
+    transition: background-color 0.3s ease !important;
+}
+
+#setnav {
+    border-radius: 0% !important;
+    display: inline-block !important;
+    padding: 12px 7px !important;
+    /* Light blue border */
+    border-radius: 8px !important;
+    /* Rounded corners */
+    background-color: white !important;
+    /* White background */
+    color: #333 !important;
+    /* Text color */
+    text-align: center !important;
+    text-decoration: none !important;
+}
+
+#opened_bills {
+    border-radius: 0% !important;
+    display: inline-block !important;
+    padding: 6px 0px !important;
+    border: 2px solid #66c2ff !important;
+    /* Light blue border */
+    border-radius: 8px !important;
+    /* Rounded corners */
+    background-color: white !important;
+    /* White background */
+    color: #333 !important;
+    /* Text color */
+    text-align: center !important;
+    text-decoration: none !important;
+    transition: background-color 0.3s ease !important;
+    height: 38px;
+    margin-top: 4px;
+}
+
+.container {
+    background-color: white !important;
+}
+
+#dashset:hover,
+#close_register:hover,
+#add_expense:hover,
+#update_register_button:hover,
+#today_sale:hover,
+#register_details:hover,
+#pos_details:hover,
+#setnav-section:hover,
+#opened_bills:hover,
+#today_profit:hover,
+#clearLS:hover
+{
+    background-color: #009DFF !important;
+    /* Sky blue */
+    color: #fff !important;
+    /* Text turns white */
+}
+
+#close_register img,
+#update_register_button img,
+#dashset:hover img,
+#close_register img,
+#add_expense img,
+#update_register_button img,
+#today_sale img,
+#register_details img,
+#pos_details img,
+#setnav-section img,
+#opened_bills img,
+#today_profit img,
+#clearLS img
+{
+    transition: filter 0.3s ease;
+}
+
+#close_register:hover img,
+#update_register_button:hover img,
+#dashset:hover img,
+#close_register:hover img,
+#add_expense:hover img,
+#update_register_button:hover img,
+#today_sale:hover img,
+#register_details:hover img,
+#pos_details:hover img,
+#setnav-section:hover img,
+#opened_bills:hover img,
+#today_profit:hover img,
+#clearLS:hover img
+{
+    filter: brightness(0) invert(1);
+}
+
+img.mini_avatar.img-rounded {
+    margin-left: -6px;
+    height: 29px;
+    margin-top: 6px;
+}
+
+span#display_time {
+    font-size: 14px;
+    padding: 5px;
+    font-weight: normal !important;
+    display: flex;
+    margin-top: 5px;
+    color: black;
+
+}
+.header-nav {
+    position: relative;
+    padding: 0px;
+    color: #000 !important;
+    background: #fff !important;
+}
+.subtext {
+    text-transform: capitalize;
+    color: #000 !important;
+}
+.Settingset:hover{
+    background-color: #009DFF !important;
+    /* Sky blue */
+    color: #fff !important;
+}
+.Settingset:hover img{
+filter: brightness(0) invert(1);
+}
+.Settingset img{
+transition: filter 0.3s ease;
+}
