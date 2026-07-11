@@ -95,13 +95,13 @@
 
 
 
-<?php if ($Owner || $GP['bulk_actions']) {
+<?php if ($Owner || !empty($GP['bulk_actions'])) {
     echo form_open('quotes/quote_actions', 'id="action-form"');
 } ?>
 <div class="box">
     <div class="box-header">
         <h2 class="blue"><i
-                class="fa-fw fa fa-heart-o"></i><?= lang('quotes') . ' (' . (!empty($warehouse_id) && is_numeric($warehouse_id) ? $warehouse[$warehouse_id]->name : lang('all_warehouses'))  . ')'; ?>
+                class="fa-fw fa fa-heart-o"></i><?= lang('quotes') . ' (' . (is_object($warehouse) ? $warehouse->name : lang('all_warehouses'))  . ')'; ?>
         </h2>
 
         <div class="box-icon">
@@ -206,7 +206,7 @@
         </div>
     </div>
 </div>
-<?php if ($Owner || $GP['bulk_actions']) { ?>
+<?php if ($Owner || !empty($GP['bulk_actions'])) { ?>
     <div style="display: none;">
         <input type="hidden" name="form_action" value="" id="form_action"/>
         <?= form_submit('performAction', 'performAction', 'id="action-form-submit"') ?>

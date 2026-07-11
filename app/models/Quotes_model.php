@@ -439,7 +439,7 @@ public function getProductoptioncolor($id) {
                 ->where('product_variants.product_id', $product_id)
                 ->where('product_variants.group_id', $GroupId)
                 ->group_by('product_variants.id');
-        if (!$this->Settings->overselling && !$all) {
+        if (!$this->Settings->overselling) {
             $this->db->where('FWPV.warehouse_id', $warehouse_id);
             $this->db->where('FWPV.quantity >', 0);
         }

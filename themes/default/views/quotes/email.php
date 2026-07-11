@@ -19,7 +19,7 @@
         </div>
         <?php $attrib = array('data-toggle' => 'validator', 'role' => 'form');
         echo form_open("quotes/email/" . $id, $attrib); ?>
-<input type="hidden" name="previous_url" value="<?php echo $_SERVER["HTTP_REFERER"]; ?>" id="previous_url" class="form-control">
+<input type="hidden" name="previous_url" value="<?php echo isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : ''; ?>" id="previous_url" class="form-control">
         <div class="modal-body">
             <p><?= lang('enter_info'); ?></p>
 

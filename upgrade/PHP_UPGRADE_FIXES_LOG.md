@@ -1223,7 +1223,7 @@ return array();
 ## Module 10 — Quotes
 
 **Tests:** `phase4_quotes_test.php` (**6/6**), `phase4_quotes_links_test.php` (**10/10**) PASS  
-**Status:** ⏳ Not done — retest required  
+**Status:** ✅ Module complete — fixes applied + retest 2026-07-11
 **Controllers:** `Quotes.php` — `Quotes_model.php`
 
 | # | File | Old | New | Type |
@@ -1421,6 +1421,7 @@ if($this->input->is_ajax_request()) {
 | 2026-07-11 | 7 | Module 7 Reports **certified complete** — `comp.state`, ledger dates, `load_ajax_reports`, `getCosting` sale_id; screen **71/71**, deep **50/50**, links **24/24** |
 | 2026-07-11 | 8 | Module 8 Customers **certified complete** — `getGiftCard` DESC→desc, `getGiftBalance` guards, HTTP_REFERER; screen **10/10**, links **19/19** |
 | 2026-07-11 | 9 | Module 9 Suppliers & Billers **certified complete** — HTTP_REFERER, getCompanyByID guards, suggestions `return array()`; screen **10/10**, links **14/14** |
+| 2026-07-11 | 10 | Module 10 Quotes **certified complete** — HTTP_REFERER, getQuoteByID guards, suggestions; screen **6/6**, links **10/10** |
 
 ---
 

@@ -143,7 +143,7 @@
 | **Module 7 — Reports** | **✅ Module complete** | Screen 71/71, deep 50/50, deep-links 24/24 |
 | **Module 8 — Customers** | **✅ Module complete** | Screen 10/10, deep-links 19/19 |
 | **Module 9 — Suppliers & Billers** | **✅ Module complete** | Screen 10/10, deep-links 14/14 |
-| **Module 10 — Quotes** | **⏳ Not done** | Retest: screen + deep-links |
+| **Module 10 — Quotes** | **✅ Module complete** | Screen 6/6, deep-links 10/10 |
 | **Module 11 — Transfers** | **⏳ Not done** | Retest: screen + deep-links |
 | Remaining controllers (12–24) | Pending | Full module scan during Phase 4 |
 
@@ -246,7 +246,7 @@ php phase4_suppliers_billers_links_test.php Admin "Admin@554"
 
 **Module 10 fixes (Quotes):** — [`PHP_UPGRADE_FIXES_LOG.md`](PHP_UPGRADE_FIXES_LOG.md) §Module 10
 
-**Module 10 tests (last run — not certified):** screen 6/6, deep-links 10/10 PASS
+**Module 10 tests (certified 2026-07-11):** screen 6/6, deep-links 10/10 PASS
 
 **Module 11 fixes (Transfers):** — [`PHP_UPGRADE_FIXES_LOG.md`](PHP_UPGRADE_FIXES_LOG.md) §Module 11
 
