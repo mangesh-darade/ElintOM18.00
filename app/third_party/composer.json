@@ -1,0 +1,14 @@
+{
+    "name": "elintom/third-party",
+    "description": "ElintOM18.00 PHP 8.5 third-party libraries",
+    "require": {
+        "php": ">=8.1",
+        "mpdf/mpdf": "^8.3",
+        "stripe/stripe-php": "^16.0",
+        "google/apiclient": "^2.15"
+    },
+    "config": {
+        "vendor-dir": "vendor",
+        "sort-packages": true
+    }
+}

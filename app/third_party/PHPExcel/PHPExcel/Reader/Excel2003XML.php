@@ -580,7 +580,7 @@ class PHPExcel_Reader_Excel2003XML extends PHPExcel_Reader_Abstract implements P
 					$rowHasData = false;
 					$row_ss = $rowData->attributes($namespaces['ss']);
 					if (isset($row_ss['Index'])) {
-						$rowID = (integer) $row_ss['Index'];
+						$rowID = (int) $row_ss['Index'];
 					}
 //					echo '<b>Row '.$rowID.'</b><br />';
 
@@ -647,7 +647,7 @@ class PHPExcel_Reader_Excel2003XML extends PHPExcel_Reader_Abstract implements P
 											$type = PHPExcel_Cell_DataType::TYPE_NUMERIC;
 											$cellValue = (float) $cellValue;
 											if (floor($cellValue) == $cellValue) {
-												$cellValue = (integer) $cellValue;
+												$cellValue = (int) $cellValue;
 											}
 											break;
 									case 'Boolean' :
@@ -699,12 +699,12 @@ class PHPExcel_Reader_Excel2003XML extends PHPExcel_Reader_Abstract implements P
 												//	Empty R reference is the current row
 												if ($rowReference == '') $rowReference = $rowID;
 												//	Bracketed R references are relative to the current row
-												if ($rowReference{0} == '[') $rowReference = $rowID + trim($rowReference,'[]');
+												if ($rowReference[0] == '[') $rowReference = $rowID + trim($rowReference,'[]');
 												$columnReference = $cellReference[4][0];
 												//	Empty C reference is the current column
 												if ($columnReference == '') $columnReference = $columnNumber;
 												//	Bracketed C references are relative to the current column
-												if ($columnReference{0} == '[') $columnReference = $columnNumber + trim($columnReference,'[]');
+												if ($columnReference[0] == '[') $columnReference = $columnNumber + trim($columnReference,'[]');
 												$A1CellReference = PHPExcel_Cell::stringFromColumnIndex($columnReference-1).$rowReference;
 													$value = substr_replace($value,$A1CellReference,$cellReference[0][1],strlen($cellReference[0][0]));
 											}

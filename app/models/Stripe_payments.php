@@ -1,6 +1,6 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 
-require_once(APPPATH . 'third_party/stripe/init.php');
+require_once(APPPATH . 'third_party/autoload.php');
 
 class Stripe_payments extends CI_Model
 {
