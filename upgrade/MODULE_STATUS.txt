@@ -1,91 +1,46 @@
 ================================================================================
-PHP 8.5 UPGRADE — MODULE STATUS (phpupgrade / ElintPOS)
+PHP 8.5 UPGRADE — MODULE STATUS (ElintOM18.00)
 ================================================================================
-Updated : 2026-07-07
+Updated : 2026-07-11
 Branch  : Dev
-Commit  : 6a302ea5 (Phase 4 modules 1-11)
 Plan    : PHP_UPGRADE_PLAN.md
 Fix log : PHP_UPGRADE_FIXES_LOG.md
 ================================================================================
 
 PHASE OVERVIEW
 --------------
-Phase 1  Framework (system/)           DONE
-Phase 2  Third party (MPDF, Stripe...) DONE
+Phase 1  Framework (system/)           DONE (ElintOM18.00 2026-07-11)
+Phase 2  Third party (MPDF, Stripe...) DONE (ElintOM18.00 2026-07-11)
 Phase 3  App core (Sma, crypto, etc.)   IN PROGRESS (base fixes done)
-Phase 4  Module screen + deep testing   IN PROGRESS (11 of 24 done)
+Phase 4  Module screen + deep testing   IN PROGRESS (2 of 24 complete)
+
+NOTE: Modules 1–11 status reset 2026-07-11 — fixes applied; completion
+      requires fresh screen + deep + deep-links retest.
 
 ================================================================================
-COMPLETED MODULES (11)
+MODULES 1–11 — NOT DONE (retest required)
 ================================================================================
 
-#   Module              Controller(s)              Tests (last run)
+#   Module              Controller(s)              Status
 --  ------------------  -------------------------  ---------------------------
-1   Auth & Users        Auth.php                   5/5 deep-links PASS
-                                                       phase4_auth_test.php
-                                                       phase4_auth_links_test.php
+1   Auth & Users        Auth.php                   COMPLETE — screen 10/10 + deep-links 5/5 (2026-07-11)
+2   Dashboard/Welcome   Welcome.php                COMPLETE — deep-links 4/4 + dashboard via auth test (2026-07-11)
+3   POS                 Pos, Pos_elite, Pos2,      NOT DONE — retest required
+                        Pos_sun
+4   Sales               Sales.php                  NOT DONE — retest required
+5   Products            Products.php               NOT DONE — retest required
+6   Purchases           Purchases.php              NOT DONE — retest required
+7   Reports             Reports.php                NOT DONE — retest required
+8   Customers (CRM)     Customers.php              NOT DONE — retest required
+9   Suppliers & Billers Suppliers.php, Billers.php NOT DONE — retest required
+10  Quotes              Quotes.php                 NOT DONE — retest required
+11  Transfers           Transfers.php              NOT DONE — retest required
 
-2   Dashboard/Welcome   Welcome.php                4/4 deep-links PASS
-                                                       phase4_welcome_links_test.php
-
-3   POS                 Pos, Pos_elite, Pos2,      11/11 deep-links PASS
-                        Pos_sun                    phase4_pos_test.php
-                                                   phase4_pos_deep_test.php
-                                                   phase4_pos_links_test.php
-
-4   Sales               Sales.php                  12/12 deep-links PASS
-                                                   deep submit 6/6 PASS
-                                                       phase4_sales_test.php
-                                                       phase4_sales_deep_test.php
-                                                       phase4_sales_links_test.php
-
-5   Products            Products.php               17/17 deep-links PASS
-                                                   stock deep 11/11 PASS
-                                                       phase4_products_test.php
-                                                       phase4_products_deep_test.php
-                                                       phase4_products_stock_deep_test.php
-                                                       phase4_products_links_test.php
-
-6   Purchases           Purchases.php              screen 13/13 PASS
-                                                   deep-links 20/20 PASS
-                                                   deep 6/6, return deep 7/7 PASS
-                                                       phase4_purchases_test.php
-                                                       phase4_purchases_links_test.php
-                                                       phase4_purchases_deep_test.php
-                                                       phase4_purchases_return_deep_test.php
-
-7   Reports             Reports.php                ~69/71 screens PASS
-                                                   ~22 deep-links PASS
-                                                   deep AJAX 39/50 (partial)
-                                                       phase4_reports_test.php
-                                                       phase4_reports_links_test.php
-                                                       phase4_reports_deep_test.php
-    NOTE: Reports_new.php NOT touched
-    OPEN: DB definer errors on some views; session tail on long batch
-
-8   Customers (CRM)     Customers.php              10/10 screen PASS
-                                                   19/19 deep-links PASS
-                                                       phase4_customers_test.php
-                                                       phase4_customers_links_test.php
-
-9   Suppliers & Billers Suppliers.php, Billers.php  10/10 screen PASS
-                                                   14/14 deep-links PASS
-                                                       phase4_suppliers_billers_test.php
-                                                       phase4_suppliers_billers_links_test.php
-
-10  Quotes              Quotes.php                 6/6 screen PASS
-                                                   10/10 deep-links PASS
-                                                       phase4_quotes_test.php
-                                                       phase4_quotes_links_test.php
-
-11  Transfers           Transfers.php              10/10 screen PASS
-                                                   12/12 deep-links PASS
-                                                       phase4_transfers_test.php
-                                                       phase4_transfers_links_test.php
-    NOTE: Transfersnew.php DEFERRED (parallel module, not upgraded)
+Test scripts exist for all 11 modules (phase4_*). Run full retest before
+marking any module complete.
 
 ================================================================================
-PENDING MODULES (13) — NOT STARTED
+PENDING MODULES (12–24) — NOT STARTED
 ================================================================================
 
 #   Module              Controller(s)              Screens  Priority
@@ -109,18 +64,9 @@ PENDING MODULES (13) — NOT STARTED
 24  Other Modules       Various                      50+      P2-P4
 
 ================================================================================
-SUGGESTED NEXT ORDER
+RETEST MODULES 1–11 (when ready)
 ================================================================================
-1. Module 12  Restaurant (P2)
-2. Module 18  System Settings (P1 — large, important)
-3. Module 14  Webshop (P2 — very large)
-4. Module 16  Eshop API (P2)
-5. Module 23  APIs (P2)
-
-================================================================================
-RUN ALL COMPLETED MODULE TESTS
-================================================================================
-cd c:\wamp64\www\phpupgrade
+cd c:\wamp64\www\ElintOM18.00\upgrade
 c:\wamp64\bin\php\php8.5.0\php.exe phase4_auth_links_test.php Admin "Admin@554"
 c:\wamp64\bin\php\php8.5.0\php.exe phase4_welcome_links_test.php Admin "Admin@554"
 c:\wamp64\bin\php\php8.5.0\php.exe phase4_pos_links_test.php Admin "Admin@554"
@@ -136,8 +82,9 @@ c:\wamp64\bin\php\php8.5.0\php.exe phase4_transfers_links_test.php Admin "Admin@
 ================================================================================
 SUMMARY
 ================================================================================
-Completed : 11 modules (1-11)
-Pending   : 13 modules (12-24)
-Progress  : 11 / 24 = ~46% modules done
+Complete  : 2 modules (Auth, Welcome)
+In progress (fixes only, not certified): 9 modules (3–11)
+Pending   : 13 modules (12–24)
+Progress  : 2 / 24 modules certified complete
 
 ================================================================================

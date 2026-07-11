@@ -255,8 +255,8 @@ $decryptedText = openssl_decrypt($encryptedText, 'AES-128-CBC', $secretKey, OPEN
 
 ## Module 1 — Auth & Users
 
-**Tests:** `phase4_auth_test.php`, `phase4_auth_links_test.php` — **5/5** deep-links PASS  
-**Status:** ⏳ Not done — retest required
+**Tests:** `phase4_auth_test.php`, `phase4_auth_links_test.php` — screen **10/10** + deep-links **5/5** PASS (2026-07-11 ElintOM18.00 retest)  
+**Status:** ✅ Module complete
 
 | # | File | Old | New | Type |
 |---|------|-----|-----|------|
@@ -321,8 +321,8 @@ redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('
 
 ## Module 2 — Dashboard & Welcome
 
-**Tests:** `phase4_welcome_links_test.php` — **4/4** deep-links PASS (ElintOM18.00 retest 2026-07-11)  
-**Status:** ⏳ Deep-links PASS — screen/deep submit retest still required
+**Tests:** `phase4_welcome_links_test.php` — **4/4** deep-links PASS; dashboard screen via `phase4_auth_test.php` (2026-07-11 retest)  
+**Status:** ✅ Module complete
 
 | # | File | Old | New | Type |
 |---|------|-----|-----|------|

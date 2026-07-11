@@ -5,6 +5,9 @@
 if (!defined('PHPUPGRADE_ROOT')) {
     define('PHPUPGRADE_ROOT', dirname(__DIR__));
 }
+if (!defined('PHASE4_BASE_URL')) {
+    define('PHASE4_BASE_URL', 'http://localhost/ElintOM18.00');
+}
 
 if (!function_exists('phase4_check')) {
     function phase4_isWeb()

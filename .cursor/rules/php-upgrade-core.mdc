@@ -5,7 +5,37 @@ alwaysApply: true
 
 # PHP 8.5 Upgrade — Core Rules
 
-This is a **CodeIgniter 3.1.13** ElintPOS/SMA ERP upgrade (`phpupgrade`). Target: **PHP 8.5.x**.
+This is a **CodeIgniter 3.1.13** ElintPOS/SMA ERP upgrade. **Target codebase:** `ElintOM18.00/`. **Target PHP:** **8.5.x**.
+
+## ElintOM18.00 — Syntax Only (Strict — Non-Negotiable)
+
+**फक्त PHP 8.5 syntax upgrade.** Business logic, flow, आणि ElintOM18.00 मधला existing code जसाचा तसा राहील.
+
+| Rule | Required |
+|------|----------|
+| **No code deletion** | कोणताही working line, block, method, condition, query, किंवा comment **delete करू नका** — commented code देखील काढू नका |
+| **No variable rename** | `$` variables, function names, method names, class properties, array keys, DB column aliases **बदलू नका** |
+| **No logic change** | Calculations, workflows, redirects (fallback path वगळता), permissions, totals **बदलू नका** |
+| **Syntax only** | Deprecated casts, null/`isset` guards, `foreach` on false, `HTTP_REFERER` guard, `#[\AllowDynamicProperties]`, curly-brace offsets, short tags `<?` → `<?php` |
+| **Patch in place** | Fixes **ElintOM18.00** फाइलमध्येच line-by-line — **पूर्ण फाइल copy/replace करू नका** |
+| **No external project** | **इतर कोणत्याही folder/repo/path चा reference किंवा copy करू नका** — फक्त ElintOM18.00 codebase |
+
+**Allowed minimal additions (syntax/compat only):**
+
+- `isset()` / `!empty()` / `is_array()` guards **before** existing line runs (same result when data present)
+- `?? ''` / `?? 0` only where PHP 8.5 undefined-index/null would fatal — **same value as before when key exists**
+- `#[\AllowDynamicProperties]` on class line (PHP 8.2+ dynamic property deprecation)
+- Missing **view/file restore** — **फक्त** जेव्हा controller आधीच `load->view()` / `require` करतो आणि file absent मुळे 500 fatal (type `restore` — **नवीन feature नाही**)
+
+**Forbidden during upgrade:**
+
+- `unset()` / comment-out / remove `if` branch to “fix” test
+- Rename `$inv` → `$invoice`, `getSales` → `get_sales`, etc.
+- Replace working ElintOM code with shorter/different logic from another project
+- Delete “unused” or “duplicate” code without user explicit ask
+- Refactor, reorder methods, extract helpers, change SQL structure
+
+**If code was accidentally deleted in a prior session:** restore **original ElintOM18.00 logic** from git/history, then apply **syntax-only** fix on top — **foreign copy/substitute नाही**.
 
 ## Mindset (Vibe Coding — merged)
 
@@ -20,7 +50,7 @@ This is a **CodeIgniter 3.1.13** ElintPOS/SMA ERP upgrade (`phpupgrade`). Target
 | Code | Minimal diff only — match surrounding CI patterns |
 | Review | **Review every AI-generated line** before accepting (see below) |
 | Test | Run relevant `upgrade/phase4_*` scripts; module not complete without deep-links |
-| Deploy | Do not commit unless user asks; fixes log updated same session |
+| Deploy | Module ✅ complete → commit per `php-module-commit-gate.mdc`; otherwise commit only when user asks |
 
 **AI is pair programmer, not architect** — AI generates fixes; you (PM/user) own business logic and architectural decisions. **No logic change** stands.
 
@@ -43,6 +73,7 @@ Before finishing any task, verify:
 
 ## Non-Negotiable
 
+- **Syntax-only upgrade** — see **ElintOM18.00 — Syntax Only** above: no delete, no rename, patch in place.
 - **Do NOT change business logic** — sales, POS, payments, calculations, DB queries, workflows stay identical.
 - **Minimal diff only** — fix PHP 8.5 compatibility; no refactor, no cleanup, no "improvements" unless asked.
 - **Missing view/asset** — if controller already calls `load->view('module/foo')` and `foo.php` is absent (500 fatal), restore a minimal view matching existing `$data` — **not** a new feature.
@@ -50,7 +81,7 @@ Before finishing any task, verify:
 - **Performance** — see `php-performance-core.mdc`: hot screens/AJAX **< 1s**, no over-engineering.
 - **Module complete** — see `php-module-complete-gate.mdc`: per-module screen + deep submit + **deep-link** tests; only test modules already upgraded.
 - **Preserve behavior** — same inputs → same outputs, same screens, same API responses.
-- **Do not commit** unless the user explicitly asks.
+- **Do not commit** unless the user explicitly asks — **except** module ✅ complete → `php-module-commit-gate.mdc`
 - **Always use subagents (Task tool)** for every upgrade task — do not work solo on multi-step or module-wide jobs.
 
 ## Subagent Usage (Required)
@@ -66,7 +97,7 @@ Use Cursor **Task** subagents on every PHP upgrade task:
 
 **Rules for subagents:**
 - Launch subagents **in parallel** when tasks are independent (e.g. explore POS + explore Sales simultaneously).
-- Give each subagent full context: module name, screen, PHP 8.5, **no logic change**.
+- Give each subagent full context: module name, screen, PHP 8.5, **syntax-only — no delete, no rename, no logic change, patch ElintOM18.00 in place**.
 - Parent agent synthesizes subagent results — do not skip subagents for "quick" fixes across multiple files.
 - For any module from `upgrade/PHP_UPGRADE_PLAN.md`, use `explore` first to map affected files before editing.
 
@@ -96,6 +127,7 @@ Follow `.cursor/rules/php-security-gate.mdc` — pre-dev scan + PM checklist. Re
 
 ## Architecture (do not alter)
 
+- **Workspace:** `ElintOM18.00/` only — **इतर path/folder चा reference, copy, किंवा diff करू नका**
 - Entry: `index.php` | App: `app/` | Views: `themes/default/views/`
 - DB: subdomain-based in `app/config/database.php`, prefix `sma_`
 - Autoload: session, database, parser, sma

@@ -3,27 +3,29 @@ description: Module-wise deep-link tests required; only test modules already upg
 alwaysApply: true
 ---
 
-# Module Complete Gate — phpupgrade
+# Module Complete Gate — ElintOM18.00 PHP Upgrade
 
 **Never mark a module ✅ complete** from list/index screens alone.
+
+**Upgrade method:** Module fixes = **syntax-only** on ElintOM18.00 files (no delete, no rename, no whole-file copy). See `php-upgrade-core.mdc` § ElintOM18.00 — Syntax Only. **इतर project/path चा reference नाही.**
 
 ## Scope — Which Modules to Test
 
 Test **only modules already started** in this upgrade (fixes + `upgrade/phase4_*` scripts exist). Do **not** run deep-link sweeps on untouched modules from `upgrade/PHP_UPGRADE_PLAN.md`.
 
-| Module | Status (2026-07-07) | Deep-link script |
+| Module | Status (2026-07-11) | Deep-link script |
 |--------|---------------------|------------------|
-| 1 Auth | Upgraded — deep-links PASS | `upgrade/phase4_auth_links_test.php` |
-| 2 Welcome | Upgraded — deep-links PASS | `upgrade/phase4_welcome_links_test.php` |
-| 3 POS | Upgraded — deep-links PASS | `upgrade/phase4_pos_links_test.php` |
-| 4 Sales | Upgraded — deep-links PASS | `upgrade/phase4_sales_links_test.php` |
-| 5 Products | Upgraded — deep-links PASS | `upgrade/phase4_products_links_test.php` |
-| 6 Purchases | Upgraded — module complete | `upgrade/phase4_purchases_links_test.php` + `upgrade/phase4_purchases_return_deep_test.php` |
-| 7 Reports | Upgraded — module complete | `upgrade/phase4_reports_links_test.php` + `upgrade/phase4_reports_deep_test.php` |
-| 8 Customers | Upgraded — module complete | `upgrade/phase4_customers_links_test.php` |
-| 9 Suppliers & Billers | Upgraded — module complete | `upgrade/phase4_suppliers_billers_links_test.php` |
-| 10 Quotes | Upgraded — module complete | `upgrade/phase4_quotes_links_test.php` |
-| 11 Transfers | Upgraded — module complete | `upgrade/phase4_transfers_links_test.php` |
+| 1 Auth | Upgraded — module complete | `upgrade/phase4_auth_links_test.php` |
+| 2 Welcome | Upgraded — module complete | `upgrade/phase4_welcome_links_test.php` |
+| 3 POS | **Not done** — retest required | `upgrade/phase4_pos_links_test.php` |
+| 4 Sales | **Not done** — retest required | `upgrade/phase4_sales_links_test.php` |
+| 5 Products | **Not done** — retest required | `upgrade/phase4_products_links_test.php` |
+| 6 Purchases | **Not done** — retest required | `upgrade/phase4_purchases_links_test.php` + `upgrade/phase4_purchases_return_deep_test.php` |
+| 7 Reports | **Not done** — retest required | `upgrade/phase4_reports_links_test.php` + `upgrade/phase4_reports_deep_test.php` |
+| 8 Customers | **Not done** — retest required | `upgrade/phase4_customers_links_test.php` |
+| 9 Suppliers & Billers | **Not done** — retest required | `upgrade/phase4_suppliers_billers_links_test.php` |
+| 10 Quotes | **Not done** — retest required | `upgrade/phase4_quotes_links_test.php` |
+| 11 Transfers | **Not done** — retest required | `upgrade/phase4_transfers_links_test.php` |
 | 12+ | Not started | Test **after** module scan + fixes |
 
 When a **new module** is upgraded, add it to this table and create its `phase4_{name}_links_test.php` before claiming complete.
@@ -41,10 +43,11 @@ When a **new module** is upgraded, add it to this table and create its `phase4_{
 5. **Grep** — PHP 8.5 patterns below on that module's controller + views.
 6. **Plan** — update `upgrade/PHP_UPGRADE_PLAN.md` fix table + testing log.
 7. **Fixes log** — append **Old → New** rows to `upgrade/PHP_UPGRADE_FIXES_LOG.md` per `php-upgrade-fixes-log.mdc`.
+8. **Commit** — module ✅ complete झाल्यावर **त्याच session मध्ये** scoped git commit — see `php-module-commit-gate.mdc` (one module = one commit).
 
 ## When User Says "test" / "deep check"
 
-- Run **all existing** `phase4_*` scripts for **upgraded modules only** (1–7 today).
+- Run **all existing** `phase4_*` scripts for modules with fixes + test scripts (1–11 — all **not done** until retest passes).
 - If deep-link script missing for an upgraded module, **create it first**, then run.
 - Report per module: screen / deep / deep-links pass counts.
 

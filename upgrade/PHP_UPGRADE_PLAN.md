@@ -134,8 +134,8 @@
 
 | Area | Status | Notes |
 |------|--------|-------|
-| **Module 1 — Auth** | **✅ Module complete** | Screen 10/10 + deep-links 5/5 (2026-07-11 ElintOM18.00) |
-| **Module 2 — Welcome** | **⏳ Deep-links PASS** | `phase4_welcome_links_test.php` 4/4; screen/deep retest pending |
+| **Module 1 — Auth** | **✅ Module complete** | Screen 10/10 + deep-links 5/5 (2026-07-11 ElintOM18.00 retest) |
+| **Module 2 — Welcome** | **✅ Module complete** | Deep-links 4/4 + dashboard screen via auth test (2026-07-11 retest) |
 | **Module 3 — POS** | **⏳ Not done** | Retest: screen + deep + deep-links |
 | **Module 4 — Sales** | **⏳ Not done** | Retest: screen + deep + deep-links |
 | **Module 5 — Products** | **⏳ Not done** | Retest: screen + deep + stock + deep-links |
@@ -289,7 +289,7 @@ php phase4_suppliers_billers_links_test.php Admin "Admin@554"
 
 ## 5. MODULE 1 — Auth & Users
 
-**Module status:** ⏳ Not done — retest required (2026-07-11)
+**Module status:** ✅ Module complete (screen 10/10 + deep-links 5/5 — 2026-07-11 retest)
 
 | # | Submodule Group | Submodule | Controller | Screen Path | Priority | Test After Upgrade |
 |---|-----------------|-----------|------------|-------------|----------|-------------------|
@@ -309,7 +309,7 @@ php phase4_suppliers_billers_links_test.php Admin "Admin@554"
 
 ## 6. MODULE 2 — Dashboard & Welcome
 
-**Module status:** ⏳ Not done — retest required (2026-07-11)
+**Module status:** ✅ Module complete (deep-links 4/4 + dashboard screen — 2026-07-11 retest)
 
 | # | Submodule Group | Submodule | Controller | Screen Path | Priority | Test After Upgrade |
 |---|-----------------|-----------|------------|-------------|----------|-------------------|

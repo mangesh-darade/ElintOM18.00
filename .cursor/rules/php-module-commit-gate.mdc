@@ -1,0 +1,50 @@
+---
+description: Commit immediately when a module passes complete gate (screen + deep + deep-links)
+alwaysApply: true
+---
+
+# Module Commit Gate — ElintOM18.00 PHP Upgrade
+
+**जेव्हा एक module ✅ complete होतो, त्याच session मध्ये commit करा.** User ने विचारल्याशिवाय Phase commit (1/2/3) mix करू नका.
+
+## Trigger
+
+Module **✅ complete** = `php-module-complete-gate.mdc` सर्व pass:
+- Screen (`phase4_{module}_test.php`) — जर script असेल
+- Deep submit (`phase4_{module}_deep_test.php`) — जर script असेल
+- Deep-links (`phase4_{module}_links_test.php`) — **mandatory**
+- Stock/special — जर applicable
+
+## Commit workflow (required)
+
+1. **Update docs** — `MODULE_STATUS.txt`, `PHP_UPGRADE_PLAN.md`, `PHP_UPGRADE_FIXES_LOG.md` (त्या module साठी)
+2. **Update gate table** — `php-module-complete-gate.mdc` मध्ये module row → complete
+3. **Stage scoped files only:**
+   - `app/` fixes for **that module** (controller, model, views)
+   - `upgrade/phase4_{module}_*.php` tests for that module
+   - Shared test change (`phase4_test_lib.php`) — फक्त जर त्या module commit साठी लागले
+   - Upgrade docs for that module
+4. **Commit** — one module per commit; message format:
+
+```
+Module N {Name}: certified complete on PHP 8.5.
+
+Screen X/X, deep Y/Y, deep-links Z/Z on ElintOM18.00.
+```
+
+5. **Do not push** unless user asks.
+6. **Do not commit** `.bak` files, unrelated modules, or WIP from other modules.
+
+## Examples
+
+| Event | Action |
+|-------|--------|
+| Auth screen 10/10 + links 5/5 | Commit Module 1 only |
+| Welcome links 4/4 | Commit Module 2 only |
+| POS screen + deep + links all green | Commit Module 3 only |
+
+## Never bundle
+
+- ❌ Multiple completed modules in one commit (unless user explicitly asks)
+- ❌ Phase 1/2/3 framework commits with module certification
+- ❌ `database.php` credentials in commit without review
