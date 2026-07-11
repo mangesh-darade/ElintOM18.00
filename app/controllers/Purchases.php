@@ -3145,7 +3145,11 @@ class Purchases extends MY_Controller {
             $id = $this->input->get('id');
         }
         $this->data['error'] = (validation_errors()) ? validation_errors() : $this->session->flashdata('error');
-        $inv = $this->purchases_model->getReturnByID($id);
+        $inv = $this->purchases_model->getPurchaseByID($id);
+        if (!$inv) {
+            $this->session->set_flashdata('error', lang("purchase_x_action"));
+            redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('purchases'));
+        }
         if (!$this->session->userdata('view_right')) {
             $this->sma->view_rights($inv->created_by);
         }
@@ -3155,7 +3159,10 @@ class Purchases extends MY_Controller {
         $this->data['user'] = $this->site->getUser($inv->created_by);
         $this->data['warehouse'] = $this->site->getWarehouseByID($inv->warehouse_id);
         $this->data['inv'] = $inv;
-        $this->data['rows'] = $this->purchases_model->getAllReturnItems($id);
+        $this->data['rows'] = $this->purchases_model->getAllPurchaseItems($id);
+        if (!$this->data['rows']) {
+            $this->data['rows'] = array();
+        }
         $this->data['purchase'] = $this->purchases_model->getPurchaseByID($inv->purchase_id);
         $this->load->view($this->theme . 'purchases/view_return', $this->data);
     }

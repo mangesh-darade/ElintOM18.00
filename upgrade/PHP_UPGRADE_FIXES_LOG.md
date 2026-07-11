@@ -571,8 +571,8 @@ $codes = is_array($post_codes) ? array_values($post_codes) : array();
 
 ## Module 6 — Purchases
 
-**Tests:** `phase4_purchases_test.php` (13/13), `phase4_purchases_links_test.php` (20/20), `phase4_purchases_deep_test.php` (6/6), `phase4_purchases_return_deep_test.php` (7/7)  
-**Status:** ⏳ Not done — retest required
+**Tests:** `phase4_purchases_test.php` **13/13**; `phase4_purchases_deep_test.php` **6/6**; `phase4_purchases_return_deep_test.php` **7/7**; `phase4_purchases_links_test.php` **20/20** PASS (2026-07-11 retest)  
+**Status:** ✅ Module complete
 
 | # | File | Old | New | Type |
 |---|------|-----|-----|------|
@@ -587,6 +587,7 @@ $codes = is_array($post_codes) ? array_values($post_codes) : array();
 | 6.9 | `Purchases.php` | Payment methods false objects | Null guards | guard |
 | 6.10 | `purchases/view_return.php` | **File missing** → 500 | Restored minimal view | restore |
 | 6.11 | `purchases/view.php`, etc. | `foreach ($rows)` on false | P2 | guard |
+| 6.12 | `Purchases.php` | `view_return()` `getReturnByID` → missing `sma_return_purchases` | `getPurchaseByID` + `getAllPurchaseItems` | guard |
 
 #### 6.5 `Purchases.php` — wrong model for return rows
 
@@ -612,6 +613,47 @@ for ($i = 0; $i < sizeof($_POST['product']); $i++) {
 $product_count = isset($_POST['product']) ? sizeof($_POST['product']) : 0;
 for ($i = 0; $i < $product_count; $i++) {
 ```
+
+#### 6.6 `Purchases.php` — view_return false ID guard
+
+**Old code:**
+```php
+$inv = $this->purchases_model->getReturnByID($id);
+if (!$this->session->userdata('view_right')) {
+    $this->sma->view_rights($inv->created_by);
+}
+```
+
+**New code:**
+```php
+$inv = $this->purchases_model->getPurchaseByID($id);
+if (!$inv) {
+    $this->session->set_flashdata('error', lang("purchase_x_action"));
+    redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('purchases'));
+}
+if (!$this->session->userdata('view_right')) {
+    $this->sma->view_rights($inv->created_by);
+}
+```
+
+#### 6.12 `Purchases.php` — view_return wrong table (return_purchases missing)
+
+**Old code:**
+```php
+$inv = $this->purchases_model->getReturnByID($id);
+$this->data['rows'] = $this->purchases_model->getAllReturnItems($id);
+```
+
+**New code:**
+```php
+$inv = $this->purchases_model->getPurchaseByID($id);
+$this->data['rows'] = $this->purchases_model->getAllPurchaseItems($id);
+if (!$this->data['rows']) {
+    $this->data['rows'] = array();
+}
+```
+
+**Symptom:** `Error 1146: Table 'sma_return_purchases' doesn't exist` — ElintOM stores returns in `sma_purchases` via `addPurchase()`, not `return_purchases`.
 
 #### 6.10 `themes/default/views/purchases/view_return.php` — restored view
 
@@ -1225,11 +1267,12 @@ if($this->input->is_ajax_request()) {
 | 2026-07-07 | 10 | Module 10 Quotes — HTTP_REFERER, getQuoteByID guards, suggestions; tests 6/6 + 10/10 |
 | 2026-07-11 | P1+P2 | **ElintOM18.00** Phase 1 (AllowDynamicProperties, E_STRICT) + Phase 2 (Composer MPDF/Stripe/Google, PHPExcel/Zend/phpqrcode patches, mPDF shim) |
 | 2026-07-11 | P3 | `crypto_helper.php`, `Ccavenue.php` — mcrypt → OpenSSL AES-128-CBC; `phase3_smoke_test.php` 14/14 PASS |
+| 2026-07-11 | 6 | Module 6 Purchases — `view_return` use `getPurchaseByID` + restore view; screen 13/13 + deep 6/6 + return 7/7 + links 20/20 PASS |
 | 2026-07-11 | 5 | Module 5 Products — view/edit/pdf/print_barcodes PHP 8.5 guards; screen 10/10 + deep 8/8 + stock 11/11 + links 17/17 PASS |
 | 2026-07-11 | 4 | Module 4 Sales — screen 8/8 + deep 6/6 + deep-links 12/12 PASS on ElintOM18.00 |
 | 2026-07-11 | 3 | Module 3 POS — `Pos.php`/`today_sale.php` PHP 8.5 guards; screen 9/9 + deep 7/7 + deep-links 11/11 PASS |
 | 2026-07-11 | 1–11 | **Status reset** — all modules marked not done; fixes retained; retest required |
-| 2026-07-07 | 11 | Module 11 Transfers — HTTP_REFERER, getByID guards, model empty arrays; tests 10/10 + 12/12 |
+| 2026-07-11 | 6 | Module 6 Purchases — `view_return` uses `getPurchaseByID`/`getAllPurchaseItems` (not missing `return_purchases` table); restored `view_return.php`; return deep 7/7 + links 20/20 PASS |
 
 ---
 

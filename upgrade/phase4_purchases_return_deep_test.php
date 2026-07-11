@@ -7,7 +7,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', '1');
 require __DIR__ . '/phase4_test_lib.php';
 
-$base = 'http://localhost/phpupgrade';
+$base = 'http://localhost/ElintOM18.00';
 $identity = $argv[1] ?? '';
 $password = $argv[2] ?? '';
 $cookieFile = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'phpupgrade_purchases_return_cookies.txt';
@@ -88,7 +88,7 @@ if ($poId) {
 
         $sr = phase4_httpRequest("$base/purchases/return_purchase/$poId", $cookieFile, http_build_query($retPost), [
             'Content-Type: application/x-www-form-urlencoded',
-            'Referer: http://localhost/phpupgrade/purchases/return_purchase/' . $poId,
+            'Referer: http://localhost/ElintOM18.00/purchases/return_purchase/' . $poId,
         ]);
         $retOk = in_array($sr['code'], [302, 303], true) && stripos($sr['location'] ?? '', 'purchases') !== false;
         $detail = "HTTP {$sr['code']}";
