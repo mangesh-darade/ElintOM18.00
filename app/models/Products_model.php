@@ -123,7 +123,7 @@ class Products_model extends CI_Model {
         return FALSE;
     }
 
-   public function getProductOptionsWithWH($pid, $GroupId='',$warehouse_ids)
+   public function getProductOptionsWithWH($pid, $GroupId='',$warehouse_ids = [])
     {
 		if($GroupId!='')
 			$this->db->where(array('product_variants.group_id' => $GroupId));

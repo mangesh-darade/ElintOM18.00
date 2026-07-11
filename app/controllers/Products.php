@@ -444,7 +444,8 @@ class Products extends MY_Controller {
                 $product = $this->products_model->getProductWithCategory($exppro[0]);
                 $unitname = $this->db->select('code')->where('id', $product->unit)->get('sma_units')->row()->code;
                 $product->price = $this->input->post('check_promo') ? ($product->promotion ? $product->promo_price : $product->price) : $product->price;
-                $colors = array_values($this->products_model->getProductOptionsByGroupId($pid, 2));
+                $product_colors = $this->products_model->getProductOptionsByGroupId($pid, 2);
+                $colors = is_array($product_colors) ? array_values($product_colors) : array();
                 if ($variants = $this->products_model->getProductOptionsByName($pid,$option_name)) {
                     foreach ($variants as $option) {
                         $all_variants = $this->products_model->getProductOptionsByGroupId($pid, 1);
@@ -603,7 +604,8 @@ class Products extends MY_Controller {
                 if ($product = $this->site->getProductByIDwithBatchAndWarehouse($product_id,$warehouse_ids)) {
                     $selected_variants = false;
                     $variants = $this->products_model->getProductOptionswithbatchAndWarehous($product->id,$warehouse_ids, 1);
-                    $colors = array_values($this->products_model->getProductOptionsByGroupId($product->id, 2));
+                    $product_colors = $this->products_model->getProductOptionsByGroupId($product->id, 2);
+                    $colors = is_array($product_colors) ? array_values($product_colors) : array();
                     $pr = [];
                     if (!empty($variants)) {
                         foreach ($variants as $variant) {
@@ -688,11 +690,13 @@ class Products extends MY_Controller {
                     foreach ($products as $row) {
 
                         // Color options (group_id = 2, from options table)
-                        $colors = array_values($this->products_model->getProductOptionsByGroupId($row->id, 2));
+                        $row_colors = $this->products_model->getProductOptionsByGroupId($row->id, 2);
+                        $colors = is_array($row_colors) ? array_values($row_colors) : array();
                         $color_name = (!empty($colors)) ? $colors[0]->name : '';
 
                         // Variants for this product (SIZE only, group_id = 1)
-                        $variants = array_values($this->products_model->getProductOptionsByGroupId($row->id, 1));
+                        $row_variants = $this->products_model->getProductOptionsByGroupId($row->id, 1);
+                        $variants = is_array($row_variants) ? array_values($row_variants) : array();
 
                         if ($variants) {
                             // One bcitems row PER VARIANT
@@ -2330,17 +2334,20 @@ class Products extends MY_Controller {
             $this->data['product_variants'] = $this->products_model->getProductOptionsByGroupId($id, 1);
             $this->data['combo_items'] = $product->type == 'combo' ? $this->products_model->getProductComboItems($product->id) : NULL;
             $this->data['combo_items'] = $product->type == 'Bundle' ? $this->products_model->getProductComboItems($product->id) : NULL;
-            foreach ($this->data['combo_items'] as $item) {
-                if ($item->variant_id != 0) {
-                    $item->product_name = $item->name;
-                    $options = $this->products_model->getProductVariantByID($item->variant_id);
-                    if ($options) {
-                        $item->id = $options->id;
-                        $item->variant_id = $options->id;
-                        $item->name = $options->name;
+            if (!empty($this->data['combo_items'])) {
+                foreach ($this->data['combo_items'] as $item) {
+                    if ($item->variant_id != 0) {
+                        $item->product_name = $item->name;
+                        $options = $this->products_model->getProductVariantByID($item->variant_id);
+                        if ($options) {
+                            $item->id = $options->id;
+                            $item->variant_id = $options->id;
+                            $item->name = $options->name;
+                        }
                     }
                 }
             }
+            $colorarray = array();
             $this->data['product_options'] = $id ? $this->products_model->getProductOptionsWithWH($id, 1) : NULL;
             $this->data['product_options_color'] = $id ? $this->products_model->getProductOptionsByGroupId($id, 2) : NULL;
             $this->data['product_options'] = $id ? $this->products_model->getProductOptionsWithWH($id) : NULL;
@@ -4090,6 +4097,13 @@ class Products extends MY_Controller {
     function view($id = NULL) {
         $this->sma->checkPermissions('index');
 
+        if ($this->Owner || $this->Admin) {
+            $warehouse_ids = [];
+        } else {
+            $user = $this->site->getUser();
+            $warehouseId = $user->warehouse_id;
+            $warehouse_ids = explode(",", $warehouseId);
+        }
         $pr_details = $this->products_model->getProductByID($id);
         if (!$id || !$pr_details) {
             $this->session->set_flashdata('error', lang('prduct_not_found'));
@@ -4112,7 +4126,7 @@ class Products extends MY_Controller {
         $this->data['popup_attributes'] = $this->popup_attributes;
         $this->data['warehouses'] = $this->products_model->getAllWarehousesWithPQ($id, $warehouse_ids);
         $this->data['suppliers'] = $this->products_model->getVendorWarehousesWithPQ($id, $warehouse_ids);
-        $this->data['options'] = $this->products_model->getProductOptionsWithWH($id, 1);
+        $this->data['options'] = $this->products_model->getProductOptionsWithWH($id, 1, $warehouse_ids);
         $this->data['variants'] = $this->products_model->getProductOptionsByGroupId($id, 1);
         $this->data['colors'] = $this->products_model->getProductOptionsByGroupId($id, 2);
         $this->data['sold'] = $this->products_model->getSoldQty($id);

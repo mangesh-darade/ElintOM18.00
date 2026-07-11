@@ -506,11 +506,15 @@ if (!empty($return_rows)) {
 
 ## Module 5 — Products & Inventory
 
-**Tests:** `phase4_products_test.php`, `phase4_products_deep_test.php`, `phase4_products_stock_deep_test.php`, `phase4_products_links_test.php` — **17/17** deep-links PASS  
-**Status:** ⏳ Not done — retest required
+**Tests:** `phase4_products_test.php` **10/10**; `phase4_products_deep_test.php` **8/8**; `phase4_products_stock_deep_test.php` **11/11**; `phase4_products_links_test.php` **17/17** PASS (2026-07-11 retest)  
+**Status:** ✅ Module complete
 
 | # | File | Old | New | Type |
 |---|------|-----|-----|------|
+| 5.15 | `Products_model.php` | `getProductOptionsWithWH()` 3rd arg required → ArgumentCountError on view/edit/pdf | `$warehouse_ids = []` default | guard |
+| 5.16 | `Products.php` `view()` | `$warehouse_ids` unset; options call missing 3rd arg | Init like `modal_view`; pass `$warehouse_ids` | guard |
+| 5.17 | `Products.php` `edit()` | `foreach ($combo_items)` when NULL | `if (!empty($combo_items))`; init `$colorarray` | guard |
+| 5.18 | `Products.php` `print_barcodes` | `array_values(false)` on no color variants (e.g. id 238) | `is_array` ? array_values : `[]` | guard |
 | 5.1 | `Products.php` | 41× bare `HTTP_REFERER` | P1 → `site_url('products')` | guard |
 | 5.2 | `Products.php` | duplicate product `->type` on false | Null guard | guard |
 | 5.3 | `Products.php` | `foreach` on empty `combo_items` | P2 | guard |
@@ -525,6 +529,18 @@ if (!empty($return_rows)) {
 | 5.12 | `Products_model.php` | `serial_no` undefined in `addAdjustment()` | `isset($_POST['serial_no'])` | guard |
 | 5.13 | `Products.php` | `array_values(false)` TypeError | `is_array` ? array_values : `[]` | guard |
 | 5.14 | `add_adjustment.php` | Bare `HTTP_REFERER` in view | P1 | guard |
+
+#### 5.15 `Products_model.php` — getProductOptionsWithWH ArgumentCountError
+
+**Old code:**
+```php
+public function getProductOptionsWithWH($pid, $GroupId='',$warehouse_ids)
+```
+
+**New code:**
+```php
+public function getProductOptionsWithWH($pid, $GroupId='',$warehouse_ids = [])
+```
 
 #### 5.7 `Products.php` — season_id NOT NULL
 
@@ -1209,6 +1225,7 @@ if($this->input->is_ajax_request()) {
 | 2026-07-07 | 10 | Module 10 Quotes — HTTP_REFERER, getQuoteByID guards, suggestions; tests 6/6 + 10/10 |
 | 2026-07-11 | P1+P2 | **ElintOM18.00** Phase 1 (AllowDynamicProperties, E_STRICT) + Phase 2 (Composer MPDF/Stripe/Google, PHPExcel/Zend/phpqrcode patches, mPDF shim) |
 | 2026-07-11 | P3 | `crypto_helper.php`, `Ccavenue.php` — mcrypt → OpenSSL AES-128-CBC; `phase3_smoke_test.php` 14/14 PASS |
+| 2026-07-11 | 5 | Module 5 Products — view/edit/pdf/print_barcodes PHP 8.5 guards; screen 10/10 + deep 8/8 + stock 11/11 + links 17/17 PASS |
 | 2026-07-11 | 4 | Module 4 Sales — screen 8/8 + deep 6/6 + deep-links 12/12 PASS on ElintOM18.00 |
 | 2026-07-11 | 3 | Module 3 POS — `Pos.php`/`today_sale.php` PHP 8.5 guards; screen 9/9 + deep 7/7 + deep-links 11/11 PASS |
 | 2026-07-11 | 1–11 | **Status reset** — all modules marked not done; fixes retained; retest required |

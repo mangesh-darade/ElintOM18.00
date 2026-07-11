@@ -6,7 +6,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
 
-$base = 'http://localhost/phpupgrade';
+$base = 'http://localhost/ElintOM18.00';
 $identity = $argv[1] ?? '';
 $password = $argv[2] ?? '';
 $cookieFile = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'phpupgrade_products_cookies.txt';

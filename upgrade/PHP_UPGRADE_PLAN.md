@@ -138,7 +138,7 @@
 | **Module 2 — Welcome** | **✅ Module complete** | Deep-links 4/4 + dashboard screen via auth test (2026-07-11 retest) |
 | **Module 3 — POS** | **✅ Module complete** | Screen 9/9 + deep 7/7 + deep-links 11/11 (2026-07-11 retest) |
 | **Module 4 — Sales** | **✅ Module complete** | Screen 8/8 + deep 6/6 + deep-links 12/12 (2026-07-11 retest) |
-| **Module 5 — Products** | **⏳ Not done** | Retest: screen + deep + stock + deep-links |
+| **Module 5 — Products** | **✅ Module complete** | Screen 10/10 + deep 8/8 + stock 11/11 + deep-links 17/17 (2026-07-11 retest) |
 | **Module 6 — Purchases** | **⏳ Not done** | Retest: screen + deep + return + deep-links |
 | **Module 7 — Reports** | **⏳ Not done** | Retest: screen + deep + deep-links |
 | **Module 8 — Customers** | **⏳ Not done** | Retest: screen + deep-links |
@@ -412,7 +412,7 @@ php phase4_suppliers_billers_links_test.php Admin "Admin@554"
 
 ## 9. MODULE 5 — Products & Inventory
 
-**Module status:** ⏳ Not done — retest required (2026-07-11)
+**Module status:** ✅ Module complete (screen 10/10 + deep 8/8 + stock 11/11 + deep-links 17/17 — 2026-07-11 retest)
 
 | # | Submodule Group | Submodule | Controller | Screen Path | Priority | Test After Upgrade |
 |---|-----------------|-----------|------------|-------------|----------|-------------------|
