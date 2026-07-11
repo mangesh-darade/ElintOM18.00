@@ -113,12 +113,12 @@ try {
 
 // HTTP endpoints
 $endpoints = [
-    'home' => 'http://localhost/phpupgrade/',
-    'login' => 'http://localhost/phpupgrade/login',
-    'auth_login' => 'http://localhost/phpupgrade/auth/login',
-    'forgot_password' => 'http://localhost/phpupgrade/forgot_password',
-    'welcome' => 'http://localhost/phpupgrade/welcome',
-    'pos' => 'http://localhost/phpupgrade/pos',
+    'home' => 'http://localhost/ElintOM18.00/',
+    'login' => 'http://localhost/ElintOM18.00/login',
+    'auth_login' => 'http://localhost/ElintOM18.00/auth/login',
+    'forgot_password' => 'http://localhost/ElintOM18.00/forgot_password',
+    'welcome' => 'http://localhost/ElintOM18.00/welcome',
+    'pos' => 'http://localhost/ElintOM18.00/pos',
 ];
 foreach ($endpoints as $name => $url) {
     $ctx = stream_context_create(['http' => ['timeout' => 15, 'ignore_errors' => true]]);

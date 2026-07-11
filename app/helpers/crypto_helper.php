@@ -6,15 +6,7 @@
 	{
 		$secretKey = hextobin(md5($key));
 		$initVector = pack("C*", 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f);
-	  	$openMode = mcrypt_module_open(MCRYPT_RIJNDAEL_128, '','cbc', '');
-	  	$blockSize = mcrypt_get_block_size(MCRYPT_RIJNDAEL_128, 'cbc');
-		$plainPad = pkcs5_pad($plainText, $blockSize);
-	  	if (mcrypt_generic_init($openMode, $secretKey, $initVector) != -1) 
-		{
-		      $encryptedText = mcrypt_generic($openMode, $plainPad);
-	      	      mcrypt_generic_deinit($openMode);
-		      			
-		} 
+		$encryptedText = openssl_encrypt($plainText, 'AES-128-CBC', $secretKey, OPENSSL_RAW_DATA, $initVector);
 		return bin2hex($encryptedText);
 	}
 
@@ -22,12 +14,8 @@
 	{
 		$secretKey = hextobin(md5($key));
 		$initVector = pack("C*", 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f);
-		$encryptedText=hextobin($encryptedText);
-	  	$openMode = mcrypt_module_open(MCRYPT_RIJNDAEL_128, '','cbc', '');
-		mcrypt_generic_init($openMode, $secretKey, $initVector);
-		$decryptedText = mdecrypt_generic($openMode, $encryptedText);
-		$decryptedText = rtrim($decryptedText, "\0");
-	 	mcrypt_generic_deinit($openMode);
+		$encryptedText = hextobin($encryptedText);
+		$decryptedText = openssl_decrypt($encryptedText, 'AES-128-CBC', $secretKey, OPENSSL_RAW_DATA, $initVector);
 		return $decryptedText;
 		
 	}

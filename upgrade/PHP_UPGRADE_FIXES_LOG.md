@@ -1,13 +1,13 @@
 # PHP 8.5 Upgrade — Fixes Log (Old code → New code)
 
-**Project:** `phpupgrade` (ElintPOS / SMA ERP, CodeIgniter 3.1.13)  
+**Project:** `ElintOM18.00` (ElintPOS / SMA ERP, CodeIgniter 3.1.13)  
 **Target PHP:** 8.5.x  
 **Purpose:** Every compatibility fix recorded with **Old code** and **New code** snippets.  
 **Plan reference:** `upgrade/PHP_UPGRADE_PLAN.md` (strategy, screens, test status)
 
-| Log updated | Modules complete in log |
-|-------------|-------------------------|
-| 2026-07-07 | 1–10 (+ Framework / Third-party batches) |
+| Log updated | Status |
+|-------------|--------|
+| 2026-07-11 | **Phase 1 + 2 complete**; **Phase 3 crypto** (`crypto_helper`, `Ccavenue`) OpenSSL fix; `phase3_smoke_test.php` **14/14 PASS** |
 
 ---
 
@@ -132,9 +132,11 @@ $_SERVER['HTTP_HOST']
 
 | # | File | Old | New | Type |
 |---|------|-----|-----|------|
-| F1 | `system/core/Controller.php`, `Model.php` | Dynamic properties deprecation/fatal | P4 | syntax |
-| F2 | `Session.php`, `PHP8SessionWrapper.php` | PHP 8 session incompatibilities | PHP 8 session wrapper | lib |
-| F3 | `compat/hash.php`, `mbstring.php` | Missing PHP 8 polyfills | Compat layer added | lib |
+| F1 | `system/core/Controller.php`, `Model.php` | Dynamic properties deprecation/fatal | `#[\AllowDynamicProperties]` | syntax |
+| F2 | `Session.php`, `PHP8SessionWrapper.php` | PHP 8 session incompatibilities | PHP 8 session wrapper (already present) | lib |
+| F3 | `compat/hash.php`, `mbstring.php` | Missing PHP 8 polyfills | Compat layer (CI default) | lib |
+| F4 | `index.php` | `E_STRICT` deprecated PHP 8.4+ | PHP 8.4+ branch without `E_STRICT` | syntax |
+| F5 | `system/core/Exceptions.php` | `E_STRICT` in levels map | Removed `E_STRICT` entry | syntax |
 
 #### F1 `system/core/Controller.php`
 
@@ -155,12 +157,12 @@ class CI_Controller {
 
 | # | Library | Old | New | Type |
 |---|---------|-----|-----|------|
-| T1 | MPDF | 6.0 fatal parse | 8.3.1 via Composer + legacy shim `MPDF/mpdf.php` | lib |
-| T2 | Stripe | 3.23.0 manual `init.php` | 16.6.0 Composer + adapter | lib |
-| T3 | Google API | 2.4.1 in `googlelogin/` | 2.19.4 via `third_party/autoload.php` | lib |
-| T4 | PHPExcel | Curly-brace offsets `$str{0}` | `$str[0]` (36 files) | syntax |
-| T5 | Zend Barcode | Curly-brace offsets; `Zend.php` parse error | 8 files patched | syntax |
-| T6 | phpqrcode | Required params before optional | Default `$back_color` / `$fore_color` | syntax |
+| T1 | MPDF | 6.0 fatal parse (`mpdf.php`) | 6.0 → `mpdf_legacy_6.php` preserved; new shim + Composer **8.3.1** | lib |
+| T2 | Stripe | 3.23.0 `stripe/init.php` | **16.6.0** Composer; `Stripe_payments.php` → `autoload.php` | lib |
+| T3 | Google API | 2.4.1 in `googlelogin/` | **2.19.4** via `third_party/autoload.php` (Composer) | lib |
+| T4 | PHPExcel | Curly-brace offsets `$str{0}` | `$str[0]` (**34 files**, 291 replacements) | syntax |
+| T5 | Zend Barcode | Curly-brace offsets; `Zend.php` parse error | **9 files** patched | syntax |
+| T6 | phpqrcode | Required params before optional | Default `$back_color` / `$fore_color` (**3 files**) | syntax |
 | T7 | Facebook SDK 5.0 | — | Unchanged (loads on 8.5) | — |
 
 #### T4 PHPExcel — curly-brace string offset
@@ -186,6 +188,8 @@ $char = $value[0];
 | C3 | `Ion_auth.php` | Undefined `$password` in email path | Null guard / init | guard |
 | C4 | 16 files (models/controllers) | Optional param before required | Trailing `= null` on optional params | syntax |
 | C5 | `Encrypt.php`, `crypto_helper.php`, etc. | mcrypt removed in PHP 8 | OpenSSL AES-128/256-CBC | lib |
+| C5.1 | `app/helpers/crypto_helper.php` | `mcrypt_module_open()` fatal | CCAvenue OpenSSL AES-128-CBC | lib |
+| C5.2 | `app/libraries/Ccavenue.php` | `mcrypt_module_open()` fatal | Same OpenSSL pattern as C5.1 | lib |
 | C6 | `Sma.php` | Dynamic properties; `&` typo | P4; `&` → `&&` | syntax |
 | C7 | `Pos.php`, `Pos_elite.php` | `end(explode())` illegal | P5 | syntax |
 
@@ -216,12 +220,43 @@ public function foo($required, $optional = null) {
 // OR: public function foo($optional = null, $required = null) {
 ```
 
+#### C5.1 `app/helpers/crypto_helper.php` — mcrypt → OpenSSL (CCAvenue kit)
+
+**Old code:**
+```php
+$openMode = mcrypt_module_open(MCRYPT_RIJNDAEL_128, '','cbc', '');
+$blockSize = mcrypt_get_block_size(MCRYPT_RIJNDAEL_128, 'cbc');
+$plainPad = pkcs5_pad($plainText, $blockSize);
+$encryptedText = mcrypt_generic($openMode, $plainPad);
+// decrypt: mdecrypt_generic + rtrim
+```
+
+**New code:**
+```php
+$encryptedText = openssl_encrypt($plainText, 'AES-128-CBC', $secretKey, OPENSSL_RAW_DATA, $initVector);
+// decrypt: openssl_decrypt(..., OPENSSL_RAW_DATA, $initVector)
+```
+
+#### C5.2 `app/libraries/Ccavenue.php` — same OpenSSL pattern as C5.1
+
+**Old code:**
+```php
+$openMode = mcrypt_module_open(MCRYPT_RIJNDAEL_128, '','cbc', '');
+$encryptedText = mcrypt_generic($openMode, $plainPad);
+```
+
+**New code:**
+```php
+$encryptedText = openssl_encrypt($plainText, 'AES-128-CBC', $secretKey, OPENSSL_RAW_DATA, $initVector);
+$decryptedText = openssl_decrypt($encryptedText, 'AES-128-CBC', $secretKey, OPENSSL_RAW_DATA, $initVector);
+```
+
 ---
 
 ## Module 1 — Auth & Users
 
 **Tests:** `phase4_auth_test.php`, `phase4_auth_links_test.php` — **5/5** deep-links PASS  
-**Status:** ✅ Module complete
+**Status:** ⏳ Not done — retest required
 
 | # | File | Old | New | Type |
 |---|------|-----|-----|------|
@@ -286,8 +321,8 @@ redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('
 
 ## Module 2 — Dashboard & Welcome
 
-**Tests:** `phase4_welcome_links_test.php` — **4/4** deep-links PASS  
-**Status:** ✅ Module complete
+**Tests:** `phase4_welcome_links_test.php` — **4/4** deep-links PASS (ElintOM18.00 retest 2026-07-11)  
+**Status:** ⏳ Deep-links PASS — screen/deep submit retest still required
 
 | # | File | Old | New | Type |
 |---|------|-----|-----|------|
@@ -340,8 +375,8 @@ public function getEvents() {
 
 ## Module 3 — POS
 
-**Tests:** `phase4_pos_test.php`, `phase4_pos_deep_test.php`, `phase4_pos_links_test.php` — **11/11** deep-links PASS  
-**Status:** ✅ Module complete
+**Tests:** `phase4_pos_test.php` **9/9** PASS; `phase4_pos_deep_test.php` **6/7** (view 500); `phase4_pos_links_test.php` **8/11** (view/modal 500)  
+**Status:** ⏳ Not done — `pos/view/{id}` HTTP 500 on ElintOM18.00 base URL (phpupgrade URL OK)
 
 | # | File | Old | New | Type |
 |---|------|-----|-----|------|
@@ -355,6 +390,11 @@ public function getEvents() {
 | 3.8 | `Pos.php` | `SellerName` / `source` undefined | isset guards | guard |
 | 3.9 | `today_sale.php` | `str_replace` on null refunds | Null guards | guard |
 | 3.10 | `Site.php` | `$where_clause['status']` undefined | `isset()` guard | guard |
+| 3.11 | `index.php` | `E_STRICT` in PHP 8.4+ `error_reporting` | PHP 8.4 branch without `E_STRICT` | syntax |
+| 3.12 | `MY_Controller.php`, `Sma.php`, `CI_Controller`, `CI_Model` | Dynamic properties deprecated | `#[\AllowDynamicProperties]` | lib |
+| 3.13 | `Pos.php` `view()` | `count($row_taxes_print)` / `foreach` on false | `!empty()` guards | guard |
+| 3.14 | `view.php` | Bare `$_SERVER['HTTP_REFERER']` in KOT block | `isset()` guard | guard |
+| 3.15 | `app/third_party/vendor` | Missing composer vendor tree | Copied from phpupgrade | restore |
 
 #### 3.1 `Pos.php` — HTTP_REFERER (representative; many occurrences)
 
@@ -400,7 +440,7 @@ $right_section = end($parts);
 ## Module 4 — Sales
 
 **Tests:** `phase4_sales_test.php`, `phase4_sales_deep_test.php`, `phase4_sales_links_test.php` — **12/12** deep-links; deep **6/6** PASS  
-**Status:** ✅ Module complete
+**Status:** ⏳ Not done — retest required
 
 | # | File | Old | New | Type |
 |---|------|-----|-----|------|
@@ -463,7 +503,7 @@ if (!empty($return_rows)) {
 ## Module 5 — Products & Inventory
 
 **Tests:** `phase4_products_test.php`, `phase4_products_deep_test.php`, `phase4_products_stock_deep_test.php`, `phase4_products_links_test.php` — **17/17** deep-links PASS  
-**Status:** ✅ Module complete
+**Status:** ⏳ Not done — retest required
 
 | # | File | Old | New | Type |
 |---|------|-----|-----|------|
@@ -512,7 +552,7 @@ $codes = is_array($post_codes) ? array_values($post_codes) : array();
 ## Module 6 — Purchases
 
 **Tests:** `phase4_purchases_test.php` (13/13), `phase4_purchases_links_test.php` (20/20), `phase4_purchases_deep_test.php` (6/6), `phase4_purchases_return_deep_test.php` (7/7)  
-**Status:** ✅ Module complete
+**Status:** ⏳ Not done — retest required
 
 | # | File | Old | New | Type |
 |---|------|-----|-----|------|
@@ -574,7 +614,7 @@ for ($i = 0; $i < $product_count; $i++) {
 ## Module 7 — Reports
 
 **Tests:** `phase4_reports_test.php` (~69/71 screens), `phase4_reports_links_test.php` (~22), `phase4_reports_deep_test.php` (**39/50** AJAX)  
-**Status:** ✅ Upgraded (full screen sweep; deep AJAX mostly green)  
+**Status:** ⏳ Not done — retest required  
 **Not touched:** `Reports_new.php`
 
 | # | File | Old | New | Type |
@@ -824,7 +864,7 @@ function phase4_extractCsrf($html) {
 ## Module 8 — Customers (CRM)
 
 **Tests:** `phase4_customers_test.php` (**10/10**), `phase4_customers_links_test.php` (**19/19**) PASS  
-**Status:** ✅ Module complete  
+**Status:** ⏳ Not done — retest required  
 **Model:** `companies_model.php` (no `Customers_model.php`)
 
 | # | File | Old | New | Type |
@@ -903,7 +943,7 @@ $this->data['biller'] = $this->site->getCompanyByID($this->Settings->default_bil
 ## Module 9 — Suppliers & Billers
 
 **Tests:** `phase4_suppliers_billers_test.php` (**10/10**), `phase4_suppliers_billers_links_test.php` (**14/14**) PASS  
-**Status:** ✅ Module complete  
+**Status:** ⏳ Not done — retest required  
 **Controllers:** `Suppliers.php`, `Billers.php` — shared `companies_model.php`
 
 | # | File | Old | New | Type |
@@ -976,7 +1016,7 @@ return array();
 ## Module 10 — Quotes
 
 **Tests:** `phase4_quotes_test.php` (**6/6**), `phase4_quotes_links_test.php` (**10/10**) PASS  
-**Status:** ✅ Module complete  
+**Status:** ⏳ Not done — retest required  
 **Controllers:** `Quotes.php` — `Quotes_model.php`
 
 | # | File | Old | New | Type |
@@ -1039,7 +1079,7 @@ if (!$this->Settings->overselling) {
 ## Module 11 — Transfers
 
 **Tests:** `phase4_transfers_test.php` (**10/10**), `phase4_transfers_links_test.php` (**12/12**) PASS  
-**Status:** ✅ Module complete (PRIMARY `Transfers.php` only; `Transfersnew.php` deferred)  
+**Status:** ⏳ Not done — retest required (PRIMARY `Transfers.php` only; `Transfersnew.php` deferred)  
 **Controllers:** `Transfers.php` — `Transfers_model.php`
 
 | # | File | Old | New | Type |
@@ -1163,6 +1203,10 @@ if($this->input->is_ajax_request()) {
 | 2026-07-07 | 8 | Module 8 Customers — guards + companies_model getGiftCard; tests 10/10 + 19/19 |
 | 2026-07-07 | 9 | Module 9 Suppliers & Billers — HTTP_REFERER, getCompanyByID guards; tests 10/10 + 14/14 |
 | 2026-07-07 | 10 | Module 10 Quotes — HTTP_REFERER, getQuoteByID guards, suggestions; tests 6/6 + 10/10 |
+| 2026-07-11 | P1+P2 | **ElintOM18.00** Phase 1 (AllowDynamicProperties, E_STRICT) + Phase 2 (Composer MPDF/Stripe/Google, PHPExcel/Zend/phpqrcode patches, mPDF shim) |
+| 2026-07-11 | P3 | `crypto_helper.php`, `Ccavenue.php` — mcrypt → OpenSSL AES-128-CBC; `phase3_smoke_test.php` 14/14 PASS |
+| 2026-07-11 | 2 | Welcome — ported phpupgrade fixes to ElintOM18.00; deep-links 4/4 PASS on PHP 8.5 |
+| 2026-07-11 | 1–11 | **Status reset** — all modules marked not done; fixes retained; retest required |
 | 2026-07-07 | 11 | Module 11 Transfers — HTTP_REFERER, getByID guards, model empty arrays; tests 10/10 + 12/12 |
 
 ---

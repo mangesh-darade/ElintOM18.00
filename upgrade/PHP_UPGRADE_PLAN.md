@@ -1,4 +1,4 @@
-# PHP Upgrade Plan — `phpupgrade` Project
+# PHP Upgrade Plan — ElintOM18.00
 
 | Item | Value |
 |------|-------|
@@ -9,7 +9,7 @@
 | Total Screens | ~900+ |
 | Total Files | ~21,900 |
 | Timezone | Asia/Kolkata |
-| DB (localhost) | `sitadmin_phpupgarde` (prefix: `sma_`) |
+| DB (localhost) | Per `app/config/database.php` in ElintOM18.00 (prefix: `sma_`) |
 
 ---
 
@@ -17,8 +17,8 @@
 
 | Phase | Scope | काय करायचे | Priority | Risk | Status |
 |-------|-------|------------|----------|------|--------|
-| Phase 1 | `system/` | CI 3.1.13 + PHP 8 session wrappers | Critical | Low | Done |
-| Phase 2 | `app/third_party/` | MPDF, PHPExcel, Stripe, Google SDK upgrade | Critical | High | Done |
+| Phase 1 | `system/` | CI 3.1.13 + PHP 8 session wrappers | Critical | Low | **Done** (ElintOM18.00 2026-07-11) |
+| Phase 2 | `app/third_party/` | MPDF, PHPExcel, Stripe, Google SDK upgrade | Critical | High | **Done** (ElintOM18.00 2026-07-11) |
 | Phase 3 | `app/` | Controllers, Models, `libraries/Sma.php` | High | Medium | In Progress |
 | Phase 4 | All modules | Module-wise screen testing | Medium | — | **In Progress** |
 
@@ -28,11 +28,13 @@
 
 | # | Submodule | Files | PHP 8 Action | Status |
 |---|-----------|-------|--------------|--------|
-| 1 | Core Bootstrap | `CodeIgniter.php`, `Common.php`, `Router.php` | CI 3.1.13 | Done |
-| 2 | Session | `Session.php`, `PHP8SessionWrapper.php` | PHP 8 wrapper | Done |
+| 1 | Core Bootstrap | `CodeIgniter.php`, `Common.php`, `Router.php` | CI 3.1.13 | **Done** |
+| 2 | Session | `Session.php`, `PHP8SessionWrapper.php` | PHP 8 wrapper | **Done** |
 | 3 | Database | `mysqli_driver.php`, `DB_query_builder.php` | Test all queries | Test |
 | 4 | Security/Input | `Security.php`, `Input.php` | Null coalescing fixes | Test |
-| 5 | Compat Layer | `compat/hash.php`, `mbstring.php` | PHP 8 polyfills | Done |
+| 5 | Compat Layer | `compat/hash.php`, `mbstring.php` | PHP 8 polyfills | **Done** |
+| 6 | Dynamic props | `Controller.php`, `Model.php` | `#[\AllowDynamicProperties]` | **Done** (2026-07-11) |
+| 7 | Error reporting | `index.php`, `Exceptions.php` | PHP 8.4+ `E_STRICT` removed | **Done** (2026-07-11) |
 
 ---
 
@@ -122,22 +124,30 @@
 | Area | Files | Fix |
 |------|-------|-----|
 | mcrypt → OpenSSL | `Encrypt.php`, `crypto_helper.php`, `Ccavenue.php`, `Paytm.php`, `Apicrypter.php` | AES-128/256-CBC via OpenSSL |
+| **crypto_helper + Ccavenue** | `crypto_helper.php`, `Ccavenue.php` | **Done** 2026-07-11 — CCAvenue OpenSSL kit pattern; `phase3_smoke_test.php` **14/14 PASS** |
 | Sma library | `Sma.php` | `#[\AllowDynamicProperties]`, `&` → `&&` |
 | POS | `Pos.php`, `Pos_elite.php` | `end(explode())` → temp variable |
 
 #### Batch 3 — In Progress (Phase 4 screen testing)
 
+**Status reset 2026-07-11:** Modules 1–11 marked **not done** — PHP fixes remain; full retest required before marking complete.
+
 | Area | Status | Notes |
 |------|--------|-------|
-| **Module 1 — Auth** | **✅ Deep-links PASS** | 5/5 — profile, forgot password |
-| **Module 2 — Welcome** | **✅ Deep-links PASS** | 4/4 — dashboard, promotions, language |
-| **Module 3 — POS** | **✅ Deep-links PASS** | 11/11 — view, suspend resume, register modals |
-| **Module 4 — Sales** | **✅ Deep-links PASS** | 12/12 — view/edit/pdf/payments/return |
-| **Module 5 — Products** | **✅ Deep-links PASS** | 17/17 — print_barcodes/{id}, adjustments, stock count |
-| Remaining controllers | Pending | Full module scan during Phase 4 |
-| **Module 6 — Purchases** | **✅ Module complete** | Screen 13 + links 20+ + add + return submit |
+| **Module 1 — Auth** | **✅ Module complete** | Screen 10/10 + deep-links 5/5 (2026-07-11 ElintOM18.00) |
+| **Module 2 — Welcome** | **⏳ Deep-links PASS** | `phase4_welcome_links_test.php` 4/4; screen/deep retest pending |
+| **Module 3 — POS** | **⏳ Not done** | Retest: screen + deep + deep-links |
+| **Module 4 — Sales** | **⏳ Not done** | Retest: screen + deep + deep-links |
+| **Module 5 — Products** | **⏳ Not done** | Retest: screen + deep + stock + deep-links |
+| **Module 6 — Purchases** | **⏳ Not done** | Retest: screen + deep + return + deep-links |
+| **Module 7 — Reports** | **⏳ Not done** | Retest: screen + deep + deep-links |
+| **Module 8 — Customers** | **⏳ Not done** | Retest: screen + deep-links |
+| **Module 9 — Suppliers & Billers** | **⏳ Not done** | Retest: screen + deep-links |
+| **Module 10 — Quotes** | **⏳ Not done** | Retest: screen + deep-links |
+| **Module 11 — Transfers** | **⏳ Not done** | Retest: screen + deep-links |
+| Remaining controllers (12–24) | Pending | Full module scan during Phase 4 |
 
-#### Phase 4 — Module Testing Log (2026-07-07)
+#### Phase 4 — Module Testing Log (last run 2026-07-07; status reset 2026-07-11 — pending retest)
 
 | Module | Screen | Load | Form/AJAX | Notes |
 |--------|--------|------|-----------|-------|
@@ -212,35 +222,35 @@ php phase4_suppliers_billers_links_test.php Admin "Admin@554"
 
 **Module 4 fixes (Sales scan):** — [`PHP_UPGRADE_FIXES_LOG.md`](PHP_UPGRADE_FIXES_LOG.md) §Module 4
 
-**Module 4 deep test:** `phase4_sales_deep_test.php` — 6/6 PASS (suggestions → pending sale submit → view)
+**Module 4 deep test (last run — not certified):** `phase4_sales_deep_test.php` — 6/6 PASS (suggestions → pending sale submit → view)
 
 **Module 5 fixes (Products scan):** — [`PHP_UPGRADE_FIXES_LOG.md`](PHP_UPGRADE_FIXES_LOG.md) §Module 5
 
-**Module 5 stock deep test:** `phase4_products_stock_deep_test.php` — 11/11 PASS (qa_suggestions ~700–980ms, adjustment +1 OK)
+**Module 5 stock deep test (last run — not certified):** `phase4_products_stock_deep_test.php` — 11/11 PASS (qa_suggestions ~700–980ms, adjustment +1 OK)
 
 **Module 6 fixes (Purchases scan):** — [`PHP_UPGRADE_FIXES_LOG.md`](PHP_UPGRADE_FIXES_LOG.md) §Module 6
 
-**Module 6 tests:** screen 13/13, deep-links 20/20, add deep 6/6, return deep 7/7 PASS
+**Module 6 tests (last run — not certified):** screen 13/13, deep-links 20/20, add deep 6/6, return deep 7/7 PASS
 
 **Module 7 fixes (Reports scan):** — [`PHP_UPGRADE_FIXES_LOG.md`](PHP_UPGRADE_FIXES_LOG.md) §Module 7
 
-**Module 7 tests:** screens ~69/71; deep-links ~22; deep AJAX 39/50 (see fixes log for open items)
+**Module 7 tests (last run — not certified):** screens ~69/71; deep-links ~22; deep AJAX 39/50 (see fixes log for open items)
 
 **Module 8 fixes (Customers scan):** — [`PHP_UPGRADE_FIXES_LOG.md`](PHP_UPGRADE_FIXES_LOG.md) §Module 8
 
-**Module 8 tests:** screen 10/10, deep-links 19/19 PASS
+**Module 8 tests (last run — not certified):** screen 10/10, deep-links 19/19 PASS
 
 **Module 9 fixes (Suppliers & Billers):** — [`PHP_UPGRADE_FIXES_LOG.md`](PHP_UPGRADE_FIXES_LOG.md) §Module 9
 
-**Module 9 tests:** screen 10/10, deep-links 14/14 PASS
+**Module 9 tests (last run — not certified):** screen 10/10, deep-links 14/14 PASS
 
 **Module 10 fixes (Quotes):** — [`PHP_UPGRADE_FIXES_LOG.md`](PHP_UPGRADE_FIXES_LOG.md) §Module 10
 
-**Module 10 tests:** screen 6/6, deep-links 10/10 PASS
+**Module 10 tests (last run — not certified):** screen 6/6, deep-links 10/10 PASS
 
 **Module 11 fixes (Transfers):** — [`PHP_UPGRADE_FIXES_LOG.md`](PHP_UPGRADE_FIXES_LOG.md) §Module 11
 
-**Module 11 tests:** screen 10/10, deep-links 12/12 PASS (`Transfersnew.php` deferred)
+**Module 11 tests (last run — not certified):** screen 10/10, deep-links 12/12 PASS (`Transfersnew.php` deferred)
 
 **Stock/timing note:** Adjustment screen uses `async:false` on `product_list` + `qa_suggestions` in JS (`adjustments.js`) — causes UI “stuck” feel on large warehouses; server paths OK under 1s locally.
 
@@ -279,35 +289,41 @@ php phase4_suppliers_billers_links_test.php Admin "Admin@554"
 
 ## 5. MODULE 1 — Auth & Users
 
+**Module status:** ⏳ Not done — retest required (2026-07-11)
+
 | # | Submodule Group | Submodule | Controller | Screen Path | Priority | Test After Upgrade |
 |---|-----------------|-----------|------------|-------------|----------|-------------------|
-| 1 | Login | Login | Auth | `auth/login.php` | P1 | ✅ Login PASS — redirects to POS |
-| 2 | Login | Register | Auth | `auth/register.php` | P1 | ✅ Guest load OK |
-| 3 | Password | Forgot Password | Auth | `auth/reset_password.php` | P1 | ✅ Load PASS |
-| 4 | Password | Mobile Forgot OTP | Auth | `auth/verify_forgot_password_otp.php` | P1 | ⏳ OTP flow not tested |
-| 5 | Password | Mobile Reset | Auth | `auth/reset_password_mobile.php` | P1 | ⏳ Session flow not tested |
-| 6 | Password | Change Password | Auth | `auth/change_password.php` | P1 | ✅ Form on profile — POST save pending |
-| 7 | Profile | Profile | Auth | `auth/profile.php` | P1 | ✅ Load PASS — edit save pending |
-| 8 | Users | Create User | Auth | `auth/create_user.php` | P1 | ✅ Load PASS — submit pending |
-| 9 | Users | Deactivate User | Auth | `auth/deactivate_user.php` | P1 | ⏳ Not tested |
-| 10 | Users | User List | Auth | `auth/index.php` | P1 | ✅ `/auth/users` PASS — DataTables pending |
-| 11 | Users | Logout | Auth | redirect | P1 | ⏳ Route OK — not exercised |
+| 1 | Login | Login | Auth | `auth/login.php` | P1 | ⏳ Not done — retest required |
+| 2 | Login | Register | Auth | `auth/register.php` | P1 | ⏳ Not done — retest required |
+| 3 | Password | Forgot Password | Auth | `auth/reset_password.php` | P1 | ⏳ Not done — retest required |
+| 4 | Password | Mobile Forgot OTP | Auth | `auth/verify_forgot_password_otp.php` | P1 | ⏳ Not done — retest required |
+| 5 | Password | Mobile Reset | Auth | `auth/reset_password_mobile.php` | P1 | ⏳ Not done — retest required |
+| 6 | Password | Change Password | Auth | `auth/change_password.php` | P1 | ⏳ Not done — retest required |
+| 7 | Profile | Profile | Auth | `auth/profile.php` | P1 | ⏳ Not done — retest required |
+| 8 | Users | Create User | Auth | `auth/create_user.php` | P1 | ⏳ Not done — retest required |
+| 9 | Users | Deactivate User | Auth | `auth/deactivate_user.php` | P1 | ⏳ Not done — retest required |
+| 10 | Users | User List | Auth | `auth/index.php` | P1 | ⏳ Not done — retest required |
+| 11 | Users | Logout | Auth | redirect | P1 | ⏳ Not done — retest required |
 
 ---
 
 ## 6. MODULE 2 — Dashboard & Welcome
 
+**Module status:** ⏳ Not done — retest required (2026-07-11)
+
 | # | Submodule Group | Submodule | Controller | Screen Path | Priority | Test After Upgrade |
 |---|-----------------|-----------|------------|-------------|----------|-------------------|
-| 1 | Dashboard | Dashboard | Welcome | `dashboard.php` | P1 | ✅ Load PASS (logged-in) |
-| 2 | Dashboard | Best Sellers | Welcome | `best_sellers.php` | P1 | ✅ Widget on dashboard |
-| 3 | Dashboard | Calendar | Welcome | `calendar.php` | P1 | ⏳ May be Reports route |
-| 4 | Menu | Admin Menu | Welcome | `admin_access_menu.php` | P1 | ✅ Renders in header |
-| 5 | Menu | User Menu | Welcome | `user_access_menu.php` | P1 | ✅ Renders in header |
+| 1 | Dashboard | Dashboard | Welcome | `dashboard.php` | P1 | ⏳ Not done — retest required |
+| 2 | Dashboard | Best Sellers | Welcome | `best_sellers.php` | P1 | ⏳ Not done — retest required |
+| 3 | Dashboard | Calendar | Welcome | `calendar.php` | P1 | ⏳ Not done — retest required |
+| 4 | Menu | Admin Menu | Welcome | `admin_access_menu.php` | P1 | ⏳ Not done — retest required |
+| 5 | Menu | User Menu | Welcome | `user_access_menu.php` | P1 | ⏳ Not done — retest required |
 
 ---
 
 ## 7. MODULE 3 — POS (Point of Sale)
+
+**Module status:** ⏳ Not done — retest required (2026-07-11)
 
 | # | Submodule Group | Submodule | Controller | Screen Path | Priority | Test After Upgrade |
 |---|-----------------|-----------|------------|-------------|----------|-------------------|
@@ -348,6 +364,8 @@ php phase4_suppliers_billers_links_test.php Admin "Admin@554"
 ---
 
 ## 8. MODULE 4 — Sales
+
+**Module status:** ⏳ Not done — retest required (2026-07-11)
 
 | # | Submodule Group | Submodule | Controller | Screen Path | Priority | Test After Upgrade |
 |---|-----------------|-----------|------------|-------------|----------|-------------------|
@@ -394,6 +412,8 @@ php phase4_suppliers_billers_links_test.php Admin "Admin@554"
 
 ## 9. MODULE 5 — Products & Inventory
 
+**Module status:** ⏳ Not done — retest required (2026-07-11)
+
 | # | Submodule Group | Submodule | Controller | Screen Path | Priority | Test After Upgrade |
 |---|-----------------|-----------|------------|-------------|----------|-------------------|
 | 1 | Products | Product List | Products | `products/index.php` | P1 | DataTables list |
@@ -429,6 +449,8 @@ php phase4_suppliers_billers_links_test.php Admin "Admin@554"
 
 ## 10. MODULE 6 — Purchases
 
+**Module status:** ⏳ Not done — retest required (2026-07-11)
+
 | # | Submodule Group | Submodule | Controller | Screen Path | Priority | Test After Upgrade |
 |---|-----------------|-----------|------------|-------------|----------|-------------------|
 | 1 | Purchases | Purchase List | Purchases | `purchases/index.php` | P2 | Listing |
@@ -457,6 +479,8 @@ php phase4_suppliers_billers_links_test.php Admin "Admin@554"
 ---
 
 ## 11. MODULE 7 — Reports
+
+**Module status:** ⏳ Not done — retest required (2026-07-11)
 
 | # | Submodule Group | Submodule | Controller | Screen Path | Priority | Test After Upgrade |
 |---|-----------------|-----------|------------|-------------|----------|-------------------|
@@ -521,6 +545,8 @@ php phase4_suppliers_billers_links_test.php Admin "Admin@554"
 
 ## 12. MODULE 8 — Customers (CRM)
 
+**Module status:** ⏳ Not done — retest required (2026-07-11)
+
 | # | Submodule Group | Submodule | Controller | Screen Path | Priority | Test After Upgrade |
 |---|-----------------|-----------|------------|-------------|----------|-------------------|
 | 1 | Customers | Customer List | Customers | `customers/index.php` | P2 | Listing |
@@ -546,6 +572,8 @@ php phase4_suppliers_billers_links_test.php Admin "Admin@554"
 
 ## 13. MODULE 9 — Suppliers & Billers
 
+**Module status:** ⏳ Not done — retest required (2026-07-11)
+
 | # | Submodule Group | Submodule | Controller | Screen Path | Priority | Test After Upgrade |
 |---|-----------------|-----------|------------|-------------|----------|-------------------|
 | 1 | Suppliers | Supplier List | Suppliers | `suppliers/index.php` | P3 | Listing |
@@ -559,6 +587,8 @@ php phase4_suppliers_billers_links_test.php Admin "Admin@554"
 ---
 
 ## 14. MODULE 10 — Quotes
+
+**Module status:** ⏳ Not done — retest required (2026-07-11)
 
 | # | Submodule Group | Submodule | Controller | Screen Path | Priority | Test After Upgrade |
 |---|-----------------|-----------|------------|-------------|----------|-------------------|
@@ -574,6 +604,8 @@ php phase4_suppliers_billers_links_test.php Admin "Admin@554"
 ---
 
 ## 15. MODULE 11 — Transfers
+
+**Module status:** ⏳ Not done — retest required (2026-07-11)
 
 | # | Submodule Group | Submodule | Controller | Screen Path | Priority | Test After Upgrade |
 |---|-----------------|-----------|------------|-------------|----------|-------------------|

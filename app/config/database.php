@@ -69,7 +69,7 @@ switch ($subdomain) {
 			'hostname' => 'localhost',
 			'username' => 'root',
 			'password' => '',
-			'database' => 'ElintOM_DineIn_Dev',
+			'database' => 'sitadmin_phpupgarde',
 			'dbdriver' => 'mysqli',
 			'dbprefix' => 'sma_',
 			'pconnect' => FALSE,
