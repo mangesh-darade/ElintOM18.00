@@ -151,7 +151,8 @@
 | **Module 15 — Webshop Settings** | **✅ Module complete** | Screen 7/7, deep-links 4/4 |
 | **Module 16 — Eshop** | **✅ Module complete** | Screen 14/14, deep-links 10/10 |
 | **Module 17 — Shop** | **✅ Module complete** | Screen 10/10, deep-links 9/9 |
-| Remaining controllers (18–24) | Pending | Full module scan during Phase 4 |
+| **Module 18 — System Settings** | **✅ Module complete** | Screen 15/15, deep-links 18/18 |
+| Remaining controllers (19–24) | Pending | Full module scan during Phase 4 |
 
 #### Phase 4 — Module Testing Log (last run 2026-07-07; status reset 2026-07-11 — pending retest)
 
@@ -282,6 +283,10 @@ php phase4_suppliers_billers_links_test.php Admin "Admin@554"
 
 **Module 17 tests (certified 2026-07-12):** screen **10/10**, deep-links **9/9** (guest storefront T1/T2; `active_eshop` on test DB)
 
+**Module 18 fixes (System Settings):** — [`PHP_UPGRADE_FIXES_LOG.md`](PHP_UPGRADE_FIXES_LOG.md) §Module 18
+
+**Module 18 tests (certified 2026-07-12):** screen **15/15**, deep-links **18/18** (Owner login; P1 settings screens + edit_* / permissions / group_product_prices)
+
 **Stock/timing note:** Adjustment screen uses `async:false` on `product_list` + `qa_suggestions` in JS (`adjustments.js`) — causes UI “stuck” feel on large warehouses; server paths OK under 1s locally.
 
 ---
@@ -307,7 +312,7 @@ php phase4_suppliers_billers_links_test.php Admin "Admin@554"
 | 15 | Webshop Settings | `Webshop_settings.php` | 36 | P3 | CMS, page builder | — |
 | 16 | Eshop (Mobile API) | `Eshop.php`, `Eshop_admin.php`, `Eshop_api.php` | 10 | P2 | JSON API, mobile app | — |
 | 17 | Shop | `Shop.php` | 88 | P3 | T1/T2 templates | — |
-| 18 | System Settings | `System_settings.php` | 85 | P1 | Import, permissions | — |
+| 18 | System Settings | `System_settings.php` | 85 | P1 | Import, permissions | ✅ screen 15/15 + links 18/18 |
 | 19 | Attendance | `Attendance.php` | 6 | P3 | Kiosk, geolocation | — |
 | 20 | Leads (CRM) | `Leads.php` | 7 | P3 | — | — |
 | 21 | Service Requests | `Service_requests.php` | 3 | P3 | MPDF PDF | — |
@@ -772,6 +777,8 @@ php phase4_suppliers_billers_links_test.php Admin "Admin@554"
 ---
 
 ## 22. MODULE 18 — System Settings
+
+**Module status:** ✅ Module complete (screen 15/15 + deep-links 18/18 — 2026-07-12)
 
 | # | Submodule Group | Submodule | Controller | Screen Path | Priority | Test After Upgrade |
 |---|-----------------|-----------|------------|-------------|----------|-------------------|

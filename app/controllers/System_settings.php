@@ -417,7 +417,7 @@ class system_settings extends MY_Controller {
                 if (!$this->upload->do_upload('site_logo')) {
                     $error = $this->upload->display_errors();
                     $this->session->set_flashdata('error', $error);
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                 }
                 $site_logo = $this->upload->file_name;
                 $this->db->update('settings', array('logo' => $site_logo), array('setting_id' => 1));
@@ -437,7 +437,7 @@ class system_settings extends MY_Controller {
                 if (!$this->upload->do_upload('login_logo')) {
                     $error = $this->upload->display_errors();
                     $this->session->set_flashdata('error', $error);
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                 }
                 $login_logo = $this->upload->file_name;
                 $this->db->update('settings', array('logo2' => $login_logo), array('setting_id' => 1));
@@ -457,7 +457,7 @@ class system_settings extends MY_Controller {
                 if (!$this->upload->do_upload('biller_logo')) {
                     $error = $this->upload->display_errors();
                     $this->session->set_flashdata('error', $error);
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                 }
                 $photo = $this->upload->file_name;
             }
@@ -476,7 +476,7 @@ class system_settings extends MY_Controller {
                 if (!$this->upload->do_upload('webshop_logo')) {
                     $error = $this->upload->display_errors();
                     $this->session->set_flashdata('error', $error);
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                 }
                 $photo = $this->upload->file_name;
                
@@ -498,7 +498,7 @@ class system_settings extends MY_Controller {
                 if (!$this->upload->do_upload('webshop_favicon')) {
                     $error = $this->upload->display_errors();
                     $this->session->set_flashdata('error', $error);
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                 }
                 $photo = $this->upload->file_name;
                 
@@ -508,10 +508,10 @@ class system_settings extends MY_Controller {
              
 
             $this->session->set_flashdata('message', lang('logo_uploaded'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
         } elseif ($this->input->post('upload_logo')) {
             $this->session->set_flashdata('error', validation_errors());
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
         } else {
             $this->data['error'] = validation_errors() ? validation_errors() : $this->session->flashdata('error');
             $this->data['modal_js'] = $this->site->modal_js();
@@ -543,7 +543,7 @@ class system_settings extends MY_Controller {
     public function updates() {
         if (DEMO) {
             $this->session->set_flashdata('warning', lang('disabled_in_demo'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
         }
         if (!$this->Owner) {
             $this->session->set_flashdata('error', lang('access_denied'));
@@ -569,7 +569,7 @@ class system_settings extends MY_Controller {
     public function install_update($file, $m_version, $version) {
         if (DEMO) {
             $this->session->set_flashdata('warning', lang('disabled_in_demo'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
         }
         if (!$this->Owner) {
             $this->session->set_flashdata('error', lang('access_denied'));
@@ -594,7 +594,7 @@ class system_settings extends MY_Controller {
     public function backups() {
         if (DEMO) {
             $this->session->set_flashdata('warning', lang('disabled_in_demo'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
         }
         if (!$this->Owner) {
             $this->session->set_flashdata('error', lang('access_denied'));
@@ -629,7 +629,7 @@ class system_settings extends MY_Controller {
     public function backup_database() {
         if (DEMO) {
             $this->session->set_flashdata('warning', lang('disabled_in_demo'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
         }
         if (!$this->Owner) {
             $this->session->set_flashdata('error', lang('access_denied'));
@@ -671,7 +671,7 @@ class system_settings extends MY_Controller {
     public function restore_database($dbfile) {
         if (DEMO) {
             $this->session->set_flashdata('warning', lang('disabled_in_demo'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
         }
         if (!$this->Owner) {
             $this->session->set_flashdata('error', lang('access_denied'));
@@ -765,7 +765,7 @@ class system_settings extends MY_Controller {
     public function download_database($dbfile) {
         if (DEMO) {
             $this->session->set_flashdata('warning', lang('disabled_in_demo'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
         }
         if (!$this->Owner) {
             $this->session->set_flashdata('error', lang('access_denied'));
@@ -789,7 +789,7 @@ class system_settings extends MY_Controller {
     public function delete_database($dbfile) {
         if (DEMO) {
             $this->session->set_flashdata('warning', lang('disabled_in_demo'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
         }
         if (!$this->Owner) {
             $this->session->set_flashdata('error', lang('access_denied'));
@@ -804,7 +804,7 @@ class system_settings extends MY_Controller {
     public function delete_backup($zipfile) {
         if (DEMO) {
             $this->session->set_flashdata('warning', lang('disabled_in_demo'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
         }
         if (!$this->Owner) {
             $this->session->set_flashdata('error', lang('access_denied'));
@@ -1409,7 +1409,7 @@ class system_settings extends MY_Controller {
                         $this->settings_model->deleteCurrency($id);
                     }
                     $this->session->set_flashdata('message', lang("currencies_deleted"));
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                 }
 
                 if ($this->input->post('form_action') == 'export_excel' || $this->input->post('form_action') == 'export_pdf') {
@@ -1461,15 +1461,15 @@ class system_settings extends MY_Controller {
                         return $objWriter->save('php://output');
                     }
 
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                 }
             } else {
                 $this->session->set_flashdata('error', lang("no_record_selected"));
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
             }
         } else {
             $this->session->set_flashdata('error', validation_errors());
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
         }
     }
 
@@ -1550,7 +1550,7 @@ class system_settings extends MY_Controller {
                 if (!$this->upload->do_upload()) {
                     $error = $this->upload->display_errors();
                     $this->session->set_flashdata('error', $error);
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                 }
                 $photo = $this->upload->file_name;
                 $data['image'] = $photo;
@@ -1651,7 +1651,7 @@ class system_settings extends MY_Controller {
     //             if (!$this->upload->do_upload()) {
     //                 $error = $this->upload->display_errors();
     //                 $this->session->set_flashdata('error', $error);
-    //                 redirect($_SERVER["HTTP_REFERER"]);
+    //                 redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
     //             }
     //             $photo = $this->upload->file_name;
     //             $data['image'] = $photo;
@@ -1783,7 +1783,7 @@ class system_settings extends MY_Controller {
                 if (!$this->upload->do_upload()) {
                     $error = $this->upload->display_errors();
                     $this->session->set_flashdata('error', $error);
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                 }
                 $photo = $this->upload->file_name;
                 $data['image'] = $photo;
@@ -1897,7 +1897,7 @@ class system_settings extends MY_Controller {
         if ($this->form_validation->run() == TRUE) {
             if ($this->input->post('form_action') == 'submitButton') {
                 $this->session->set_flashdata('message', lang("Rank Update Successfully"));
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
             }
           
             if (!empty($_POST['Checkbox'])) {
@@ -1907,7 +1907,7 @@ class system_settings extends MY_Controller {
                         $this->settings_model->deleteCategory($id);
                     }
                     $this->session->set_flashdata('message', lang("categories_deleted"));
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                 }
 
                 if ($this->input->post('form_action') == 'export_excel' || $this->input->post('form_action') == 'export_pdf') {
@@ -1979,15 +1979,15 @@ class system_settings extends MY_Controller {
                         return $objWriter->save('php://output');
                     }
 
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                 }
             } else {
                 $this->session->set_flashdata('error', lang("no_record_selected"));
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
             }
         } else {
             $this->session->set_flashdata('error', validation_errors());
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
         }
     }
 
@@ -2208,7 +2208,7 @@ class system_settings extends MY_Controller {
                         $this->settings_model->deleteTaxRate($id);
                     }
                     $this->session->set_flashdata('message', lang("tax_rates_deleted"));
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                 }
 
                 if ($this->input->post('form_action') == 'export_excel' || $this->input->post('form_action') == 'export_pdf') {
@@ -2268,15 +2268,15 @@ class system_settings extends MY_Controller {
                         return $objWriter->save('php://output');
                     }
 
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                 }
             } else {
                 $this->session->set_flashdata('error', lang("no_record_selected"));
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
             }
         } else {
             $this->session->set_flashdata('error', validation_errors());
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
         }
     }
 
@@ -2400,7 +2400,7 @@ class system_settings extends MY_Controller {
                         $this->settings_model->deleteCustomerGroup($id);
                     }
                     $this->session->set_flashdata('message', lang("customer_groups_deleted"));
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                 }
 
                 if ($this->input->post('form_action') == 'export_excel' || $this->input->post('form_action') == 'export_pdf') {
@@ -2449,15 +2449,15 @@ class system_settings extends MY_Controller {
                         return $objWriter->save('php://output');
                     }
 
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                 }
             } else {
                 $this->session->set_flashdata('error', lang("no_customer_group_selected"));
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
             }
         } else {
             $this->session->set_flashdata('error', validation_errors());
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
         }
     }
 
@@ -2779,7 +2779,7 @@ class system_settings extends MY_Controller {
                 die();
             }
             $this->session->set_flashdata('error', lang("Warehouses can't be deleted because it is already used in transactions."));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
         }else{
             $this->sma->storeDeletedData('warehouses', 'id', $id);
             if ($this->settings_model->deleteWarehouse($id)) {
@@ -2788,7 +2788,7 @@ class system_settings extends MY_Controller {
                     die();
                 }
                 $this->session->set_flashdata('message', lang('warehouse_deleted'));
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
             }
         }
     }
@@ -2808,7 +2808,7 @@ class system_settings extends MY_Controller {
                                 die();
                             }
                             $this->session->set_flashdata('error', lang("Warehouses can't be deleted because it is already used in transactions."));
-                            redirect($_SERVER["HTTP_REFERER"]);
+                            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                         }else{
                             $this->sma->storeDeletedData('warehouses', 'id', $id);
                             if ($this->settings_model->deleteWarehouse($id)) {
@@ -2817,7 +2817,7 @@ class system_settings extends MY_Controller {
                                     die();
                                 }
                                 $this->session->set_flashdata('message', lang('warehouse_deleted'));
-                                redirect($_SERVER["HTTP_REFERER"]);
+                                redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                             }
                         }
                     }
@@ -2881,15 +2881,15 @@ class system_settings extends MY_Controller {
                         return $objWriter->save('php://output');
                     }
 
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                 }
             } else {
                 $this->session->set_flashdata('error', lang("no_warehouse_selected"));
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
             }
         } else {
             $this->session->set_flashdata('error', validation_errors());
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
         }
     }
 
@@ -3160,7 +3160,7 @@ class system_settings extends MY_Controller {
                         $this->settings_model->deleteExpenseCategory($id);
                     }
                     $this->session->set_flashdata('message', lang("categories_deleted"));
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                 }
 
                 if ($this->input->post('form_action') == 'export_excel' || $this->input->post('form_action') == 'export_pdf') {
@@ -3223,15 +3223,15 @@ class system_settings extends MY_Controller {
                         return $objWriter->save('php://output');
                     }
 
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                 }
             } else {
                 $this->session->set_flashdata('error', lang("no_record_selected"));
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
             }
         } else {
             $this->session->set_flashdata('error', validation_errors());
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
         }
     }
     // old function of import category (11-6-2025)
@@ -3382,6 +3382,9 @@ class system_settings extends MY_Controller {
                     fclose($handle);
                 }
 
+                if (!is_array($arrResult)) {
+                    $arrResult = array();
+                }
                 // 🔧 FIX 5: Ensure CSV has at least 2 lines (header + data)
                 if (count($arrResult) < 2) {
                     $this->session->set_flashdata('error', 'CSV file appears empty or invalid.');
@@ -3393,6 +3396,9 @@ class system_settings extends MY_Controller {
                 $final = array();
 
                 foreach ($arrResult as $key => $value) {
+                    if (!is_array($value)) {
+                        continue;
+                    }
                     if (count(array_filter($value)) == 0) continue;
                     $final[] = array_combine($keys, $value);
                 }
@@ -3654,6 +3660,9 @@ class system_settings extends MY_Controller {
                 $keys = array('code', 'name', 'parent_code');
                 $final = array();
                 foreach ($arrResult as $key => $value) {
+                    if (!is_array($value)) {
+                        continue;
+                    }
                     if (count($value) == 2) {
                         $value[] = '';
                     }
@@ -3910,7 +3919,7 @@ class system_settings extends MY_Controller {
                         $this->settings_model->deleteUnit($id);
                     }
                     $this->session->set_flashdata('message', lang("units_deleted"));
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                 }
 
                 if ($this->input->post('form_action') == 'export_excel' || $this->input->post('form_action') == 'export_pdf') {
@@ -3972,15 +3981,15 @@ class system_settings extends MY_Controller {
                         return $objWriter->save('php://output');
                     }
 
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                 }
             } else {
                 $this->session->set_flashdata('error', lang("no_record_selected"));
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
             }
         } else {
             $this->session->set_flashdata('error', validation_errors());
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
         }
     }
 
@@ -4010,7 +4019,7 @@ class system_settings extends MY_Controller {
             $data = array('name' => $this->input->post('name'), 'type'=>  $this->input->post('type'));
         } elseif ($this->input->post('add_price_group')) {
             $this->session->set_flashdata('error', validation_errors());
-            return redirect($_SERVER['HTTP_REFERER']);
+            return redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
         }
 
         if ($this->form_validation->run() == TRUE && $this->settings_model->addPriceGroup($data)) {
@@ -4025,7 +4034,7 @@ class system_settings extends MY_Controller {
 
             $this->sma->setUserActionLog($DataLog);
             $this->session->set_flashdata('message', lang("price_group_added"));
-            return redirect($_SERVER['HTTP_REFERER']);
+            return redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
         } else {
             $this->data['error'] = (validation_errors() ? validation_errors() : $this->session->flashdata('error'));
 
@@ -4042,7 +4051,7 @@ class system_settings extends MY_Controller {
         $pg_details = $this->settings_model->getPriceGroupByID($id);
         if (empty($pg_details)) {
             $this->session->set_flashdata('error', lang('Price Group not found'));
-           return redirect($_SERVER['HTTP_REFERER']);
+           return redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
         }
         if ($this->input->post('name') != $pg_details->name) {
             $this->form_validation->set_rules('name', lang("group_name"), 'is_unique[price_groups.name]');
@@ -4052,7 +4061,7 @@ class system_settings extends MY_Controller {
             $data = array('name' => $this->input->post('name'));
         } elseif ($this->input->post('edit_price_group')) {
             $this->session->set_flashdata('error', validation_errors());
-           return redirect($_SERVER['HTTP_REFERER']);
+           return redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
         }
 
         if ($this->form_validation->run() == TRUE && $this->settings_model->updatePriceGroup($id, $data)) {
@@ -4067,7 +4076,7 @@ class system_settings extends MY_Controller {
 
             $this->sma->setUserActionLog($DataLog);
             $this->session->set_flashdata('message', lang("price_group_updated"));
-           return redirect($_SERVER['HTTP_REFERER']);
+           return redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
         } else {
             $this->data['error'] = (validation_errors() ? validation_errors() : $this->session->flashdata('error'));
 
@@ -4112,7 +4121,7 @@ class system_settings extends MY_Controller {
                         $this->settings_model->setProductPriceForPriceGroup($id, $group_id, $this->input->post('price' . $id));
                     }
                     $this->session->set_flashdata('message', lang("products_group_price_updated"));
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                 } elseif ($this->input->post('form_action') == 'delete') {
 
                     foreach ($_POST['val'] as $id) {
@@ -4129,7 +4138,7 @@ class system_settings extends MY_Controller {
                         $this->settings_model->deleteProductGroupPrice($id, $group_id);
                     }
                     $this->session->set_flashdata('message', lang("products_group_price_deleted"));
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                 } elseif ($this->input->post('form_action') == 'export_excel' || $this->input->post('form_action') == 'export_pdf') {
 
                     $this->load->library('excel');
@@ -4183,15 +4192,15 @@ class system_settings extends MY_Controller {
                         return $objWriter->save('php://output');
                     }
 
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                 }
             } else {
                 $this->session->set_flashdata('error', lang("no_price_group_selected"));
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
             }
         } else {
             $this->session->set_flashdata('error', validation_errors());
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
         }
     }
 
@@ -4354,7 +4363,7 @@ class system_settings extends MY_Controller {
                 if (!$this->upload->do_upload()) {
                     $error = $this->upload->display_errors();
                     $this->session->set_flashdata('error', $error);
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                 }
                 $photo = $this->upload->file_name;
                 $data['image'] = $photo;
@@ -4428,7 +4437,7 @@ class system_settings extends MY_Controller {
                 if (!$this->upload->do_upload()) {
                     $error = $this->upload->display_errors();
                     $this->session->set_flashdata('error', $error);
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                 }
                 $photo = $this->upload->file_name;
                 $data['image'] = $photo;
@@ -4522,6 +4531,9 @@ class system_settings extends MY_Controller {
                 $keys = array('name', 'code', 'image');
                 $final = array();
                 foreach ($arrResult as $key => $value) {
+                    if (!is_array($value)) {
+                        continue;
+                    }
                     $final[] = array_combine($keys, $value);
                 }
 
@@ -4578,7 +4590,7 @@ class system_settings extends MY_Controller {
                         $this->settings_model->deleteBrand($id);
                     }
                     $this->session->set_flashdata('message', lang("brands_deleted"));
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                 }
 
                 if ($this->input->post('form_action') == 'export_excel' || $this->input->post('form_action') == 'export_pdf') {
@@ -4635,15 +4647,15 @@ class system_settings extends MY_Controller {
                         return $objWriter->save('php://output');
                     }
 
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                 }
             } else {
                 $this->session->set_flashdata('error', lang("no_record_selected"));
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
             }
         } else {
             $this->session->set_flashdata('error', validation_errors());
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
         }
     }
 
@@ -5103,10 +5115,10 @@ class system_settings extends MY_Controller {
                     $this->sma->setUserActionLog($DataLog);
                     if ($this->db->affected_rows()) {
                         $this->session->set_flashdata('message', lang('Offer delete successfully'));
-                        return redirect($_SERVER['HTTP_REFERER']);
+                        return redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                     } else {
                         $this->session->set_flashdata('error', lang('Offer not deleted  please try again '));
-                        return redirect($_SERVER['HTTP_REFERER']);
+                        return redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                     }
                     break;
 
@@ -5156,19 +5168,19 @@ class system_settings extends MY_Controller {
                     $this->db->where('id', $id)->update('sma_offers', $field);
                     if ($this->db->affected_rows()) {
                         $this->session->set_flashdata('message', lang('Offer status update successfully'));
-                        return redirect($_SERVER['HTTP_REFERER']);
+                        return redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                     } else {
                         $this->session->set_flashdata('error', lang('Offer not update  please try again '));
-                        return redirect($_SERVER['HTTP_REFERER']);
+                        return redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                     }
                     break;
 
                 default :
-                    return redirect($_SERVER['HTTP_REFERER']);
+                    return redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                     break;
             }
         } else {
-            return redirect($_SERVER['HTTP_REFERER']);
+            return redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
         }
     }
 
@@ -5534,7 +5546,7 @@ class system_settings extends MY_Controller {
     public function user_group_actions() {
         if (!$this->Owner && !$this->GP['bulk_actions']) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
         }
 
         $this->form_validation->set_rules('form_action', lang("form_action"), 'required');
@@ -5559,7 +5571,7 @@ class system_settings extends MY_Controller {
                         $this->settings_model->deleteGroup($id);
                     }
                     $this->session->set_flashdata('message', $this->lang->line("User_group_deleted_successfully"));
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                 }
 
                 if ($this->input->post('form_action') == 'export_excel' || $this->input->post('form_action') == 'export_pdf') {
@@ -5617,15 +5629,15 @@ class system_settings extends MY_Controller {
                         return $objWriter->save('php://output');
                     }
 
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                 }
             } else {
                 $this->session->set_flashdata('error', $this->lang->line("No_user_group_selected"));
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
             }
         } else {
             $this->session->set_flashdata('error', validation_errors());
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
         }
     }
 
@@ -5658,8 +5670,10 @@ class system_settings extends MY_Controller {
     public function manage_barcode() {
 
         if ($_POST) {
+            $barcodedata = array();
             if ($this->input->post('barcode_type') == 'dynamic') {
 
+                if (!empty($_POST['manage_barcode']) && is_array($_POST['manage_barcode'])) {
                 foreach ($_POST['manage_barcode'] as $key => $barcode) {
 
                     $getbarcode = explode("~", $barcode);
@@ -5671,6 +5685,7 @@ class system_settings extends MY_Controller {
                         'font_size' => isset($_POST[$getbarcode[0] . '_size']) ? $_POST[$getbarcode[0] . '_size'] : NULL,
                         'display' => isset($_POST[$getbarcode[0] . '_display']) ? $_POST[$getbarcode[0] . '_display'] : NULL,
                     );
+                }
                 }
 
                 $result = $this->settings_model->storeManagebarcode($barcodedata);
@@ -5685,6 +5700,7 @@ class system_settings extends MY_Controller {
                     return redirect('system_settings/manage_barcode');
                 }
             } else if ($this->input->post('barcode_type') == 'dynamic2') {
+                if (!empty($_POST['manage_barcode_dynamic2']) && is_array($_POST['manage_barcode_dynamic2'])) {
                 foreach ($_POST['manage_barcode_dynamic2'] as $key => $barcode) {
 
                     $getbarcode = explode("~", $barcode);
@@ -5696,6 +5712,7 @@ class system_settings extends MY_Controller {
                         'font_size' => isset($_POST[$getbarcode[0] . '_size']) ? $_POST[$getbarcode[0] . '_size'] : NULL,
                         'display' => isset($_POST[$getbarcode[0] . '_display']) ? $_POST[$getbarcode[0] . '_display'] : NULL,
                     );
+                }
                 }
 
                 $result = $this->settings_model->storeManagebarcode($barcodedata);
@@ -5712,6 +5729,7 @@ class system_settings extends MY_Controller {
                     return redirect('system_settings/manage_barcode');
                 }
             } else if ($this->input->post('barcode_type') == 'sidebyside') {
+                if (!empty($_POST['manage_side_barcode']) && is_array($_POST['manage_side_barcode'])) {
                 foreach ($_POST['manage_side_barcode'] as $key => $barcode) {
 
                     $getbarcode = explode("~", $barcode);
@@ -5723,6 +5741,7 @@ class system_settings extends MY_Controller {
                         'font_size' => isset($_POST[$getbarcode[0] . '_size']) ? $_POST[$getbarcode[0] . '_size'] : NULL,
                         'display' => isset($_POST[$getbarcode[0] . '_display']) ? $_POST[$getbarcode[0] . '_display'] : NULL,
                     );
+                }
                 }
 
                 $result = $this->settings_model->storeManagebarcode($barcodedata);
@@ -6111,10 +6130,10 @@ class system_settings extends MY_Controller {
 
                              $this->sma->setUserActionLog($DataLog);
                              $this->session->set_flashdata('message', lang('Coupon has been deleted successfully'));
-                             return redirect($_SERVER['HTTP_REFERER']);
+                             return redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                         }else{
                              $this->session->set_flashdata('error', lang('Coupon not deleted  please try again '));
-                             return redirect($_SERVER['HTTP_REFERER']);
+                             return redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                         }    
                     break;
 
@@ -6151,19 +6170,19 @@ class system_settings extends MY_Controller {
                     $this->db->where('id', $id)->update('sma_discount_coupons', $field);
                     if ($this->db->affected_rows()) {
                         $this->session->set_flashdata('message', lang('Coupon status update successfully'));
-                        return redirect($_SERVER['HTTP_REFERER']);
+                        return redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                     } else {
                         $this->session->set_flashdata('error', lang('Coupon not update  please try again '));
-                        return redirect($_SERVER['HTTP_REFERER']);
+                        return redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                     }
                     break;
 
                 default :
-                    return redirect($_SERVER['HTTP_REFERER']);
+                    return redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
                     break;
             }
         } else {
-            return redirect($_SERVER['HTTP_REFERER']);
+            return redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
         }
     }
 
@@ -6252,10 +6271,10 @@ class system_settings extends MY_Controller {
             $this->db->where(['setting_id' => '1'])->update('sma_settings',['barcode_a4_page_dynamic' => $dataField]);
             if($this->db->affected_rows()){
                   $this->session->set_flashdata('message', lang('A4 page dynamic has been update successfully'));
-                  return redirect($_SERVER['HTTP_REFERER']);
+                  return redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
             }else{
                 $this->session->set_flashdata('error', lang('A4 page dynamic not update, please try again '));
-                return redirect($_SERVER['HTTP_REFERER']);
+                return redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
             }
         }else{ 
            $this->load->view($this->theme . 'settings/print_barcode_paper_size', $this->data);  

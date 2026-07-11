@@ -24,6 +24,9 @@
     .styleselect{width:200px;}
     </style>
     <?php 
+           $manageB = array();
+           $manageB2 = array();
+           $manageBside = array();
            $barcode_field = [
                'site'    => 'Site Name',
                'barcode'=> 'Barcode Image',
@@ -82,7 +85,7 @@
             
         </div>
         <div class="box-content">
-             <?php echo form_open("system_settings/manage_barcode"); $manageB = array(); ?>
+             <?php echo form_open("system_settings/manage_barcode"); ?>
             <div class="row">
                 <div class="col-sm-3">
                     <div class="form-group">
@@ -122,6 +125,7 @@
                             <ul id="SortMe" class="Nodot">
                                 <?php
                                     if($Settings->barcode_type=='dynamic'){
+                                        if (!empty($managebarcode)) {
                                         foreach($managebarcode as $key=> $manage_barcode){ 
                                         $manageB[] = $manage_barcode->name_key;
                                         ?>
@@ -159,11 +163,12 @@
                                         </li>
 
                                     <?php } 
+                                        }
                                     }    
                                 ?>
                                 <?php 
                                
-                                foreach($barcode_field as $key => $barcodefield){ ++$keyval; 
+                                foreach($barcode_field as $key => $barcodefield){ ++$keyval;
                                    
                                    if(!in_array($key,$manageB)){ ?>
                                     
@@ -232,6 +237,7 @@
                             <ul id="SortMe2" class="Nodot">
                                 <?php
                                     if($Settings->barcode_type=='dynamic2'){
+                                        if (!empty($managebarcode)) {
                                         foreach($managebarcode as $key=> $manage_barcode2){ 
                                         $manageB2[] = $manage_barcode2->name_key;
                                         ?>
@@ -269,11 +275,12 @@
                                         </li>
 
                                     <?php } 
+                                    }
                                     }    
                                 ?>
                                 <?php 
                                
-                                foreach($barcode_field2 as $key2 => $barcodefield2){ ++$keyval; 
+                                foreach($barcode_field2 as $key2 => $barcodefield2){ ++$keyval;
                                    
                                    if(!in_array($key2,$manageB2)){ ?>
                                     
@@ -340,6 +347,7 @@
                     <ul id="Sortside" class="Nodot">
                         <?php
                             if($Settings->barcode_type=='sidebyside'){
+                                if (!empty($managebarcode)) {
                                 foreach($managebarcode as $key=> $manage_barcode_side){ 
                                         $manageBside[] = $manage_barcode_side->name_key;
                                         ?>
@@ -375,6 +383,7 @@
                                         </li>
 
                             <?php } 
+                            }
                             }
                         ?>
                         

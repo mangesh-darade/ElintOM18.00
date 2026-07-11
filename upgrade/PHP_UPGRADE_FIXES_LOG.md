@@ -1678,7 +1678,54 @@ if (isset($_SESSION['cart']) && is_array($_SESSION['cart']) && count($_SESSION['
 
 ---
 
-## Test scripts index (Modules 1–17)
+## Module 18 — System Settings
+
+**Tests:** `phase4_system_settings_test.php` (**15/15**), `phase4_system_settings_links_test.php` (**18/18**) PASS  
+**Status:** ✅ Module complete — fixes applied + retest 2026-07-12  
+**Controllers:** `System_settings.php` — `settings/manage_barcode.php` view
+
+| # | File | Old | New | Type |
+|---|------|-----|-----|------|
+| 18.1 | `System_settings.php` | unguarded `HTTP_REFERER` redirects (~86×) | `isset` + fallback `system_settings` (P3) | guard |
+| 18.2 | `System_settings.php` | `manage_barcode()` foreach on missing POST arrays | Init `$barcodedata`; `!empty` + `is_array` guards | guard |
+| 18.3 | `System_settings.php` | `import_categories` `count($arrResult)` on non-array | `is_array` guard before count; skip non-array rows | guard |
+| 18.4 | `System_settings.php` | `import_expense_categories`/`import_brands` foreach on bad CSV rows | `is_array` continue before `count`/`array_combine` | guard |
+| 18.5 | `settings/manage_barcode.php` | `$manageB2`/`$manageBside` undefined → `in_array` TypeError | Init arrays; `!empty($managebarcode)` foreach guards | guard |
+| 18.6 | `phase4_system_settings_*.php` | — | Screen + deep-link scripts | test |
+
+#### 18.1 `System_settings.php` — HTTP_REFERER (representative)
+
+**Old code:**
+```php
+redirect($_SERVER["HTTP_REFERER"]);
+```
+
+**New code:**
+```php
+redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'system_settings');
+```
+
+#### 18.5 `settings/manage_barcode.php` — undefined manage arrays
+
+**Old code:**
+```php
+foreach($barcode_field2 as $key2 => $barcodefield2){
+    if(!in_array($key2,$manageB2)){
+```
+
+**New code:**
+```php
+$manageB = array();
+$manageB2 = array();
+$manageBside = array();
+// ...
+foreach($barcode_field2 as $key2 => $barcodefield2){
+    if(!in_array($key2,$manageB2)){
+```
+
+---
+
+## Test scripts index (Modules 1–18)
 
 | Module | Scripts |
 |--------|---------|
@@ -1696,6 +1743,7 @@ if (isset($_SESSION['cart']) && is_array($_SESSION['cart']) && count($_SESSION['
 | 15 Webshop Settings | `phase4_webshop_settings_test.php`, `phase4_webshop_settings_links_test.php` |
 | 16 Eshop | `phase4_eshop_test.php`, `phase4_eshop_links_test.php` |
 | 17 Shop | `phase4_shop_test.php`, `phase4_shop_links_test.php` |
+| 18 System Settings | `phase4_system_settings_test.php`, `phase4_system_settings_links_test.php` |
 | Shared | `phase4_test_lib.php` |
 
 **Run:** `cd upgrade && php phase4_<module>_*.php Admin "Admin@554"`
@@ -1730,6 +1778,7 @@ if (isset($_SESSION['cart']) && is_array($_SESSION['cart']) && count($_SESSION['
 | 2026-07-12 | 15 | Module 15 Webshop Settings **certified complete** — getWebshopSettings/sections/custom_pages/elements guards; screen **7/7**, links **4/4** |
 | 2026-07-12 | 16 | Module 16 Eshop **certified complete** — API foreach guards, getCategoryProducts arg, product_details/legacy API; screen **14/14**, links **10/10** |
 | 2026-07-12 | 17 | Module 17 Shop **certified complete** — constructor outlets/cart/tax/orderDetails guards; screen **10/10**, links **9/9** |
+| 2026-07-12 | 18 | Module 18 System Settings **certified complete** — HTTP_REFERER, manage_barcode/import guards, manage_barcode view; screen **15/15**, links **18/18** |
 
 ---
 
