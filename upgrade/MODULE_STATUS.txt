@@ -12,7 +12,7 @@ PHASE OVERVIEW
 Phase 1  Framework (system/)           DONE (ElintOM18.00 2026-07-11)
 Phase 2  Third party (MPDF, Stripe...) DONE (ElintOM18.00 2026-07-11)
 Phase 3  App core (Sma, crypto, etc.)   IN PROGRESS (base fixes done)
-Phase 4  Module screen + deep testing   IN PROGRESS (3 of 24 complete)
+Phase 4  Module screen + deep testing   IN PROGRESS (4 of 24 complete)
 
 NOTE: Modules 1–11 status reset 2026-07-11 — fixes applied; completion
       requires fresh screen + deep + deep-links retest.
@@ -27,7 +27,7 @@ MODULES 1–11 — NOT DONE (retest required)
 2   Dashboard/Welcome   Welcome.php                COMPLETE — deep-links 4/4 + dashboard via auth test (2026-07-11)
 3   POS                 Pos, Pos_elite, Pos2,      COMPLETE — screen 9/9 + deep 7/7 + deep-links 11/11 (2026-07-11)
                         Pos_sun
-4   Sales               Sales.php                  NOT DONE — retest required
+4   Sales               Sales.php                  COMPLETE — screen 8/8 + deep 6/6 + deep-links 12/12 (2026-07-11)
 5   Products            Products.php               NOT DONE — retest required
 6   Purchases           Purchases.php              NOT DONE — retest required
 7   Reports             Reports.php                NOT DONE — retest required
@@ -82,9 +82,9 @@ c:\wamp64\bin\php\php8.5.0\php.exe phase4_transfers_links_test.php Admin "Admin@
 ================================================================================
 SUMMARY
 ================================================================================
-Complete  : 3 modules (Auth, Welcome, POS)
-In progress (fixes only, not certified): 8 modules (4–11)
+Complete  : 4 modules (Auth, Welcome, POS, Sales)
+In progress (fixes only, not certified): 7 modules (5–11)
 Pending   : 13 modules (12–24)
-Progress  : 3 / 24 modules certified complete
+Progress  : 4 / 24 modules certified complete
 
 ================================================================================

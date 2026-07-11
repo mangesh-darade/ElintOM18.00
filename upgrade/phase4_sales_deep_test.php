@@ -6,7 +6,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
 
-$base = 'http://localhost/phpupgrade';
+$base = 'http://localhost/ElintOM18.00';
 $identity = $argv[1] ?? '';
 $password = $argv[2] ?? '';
 $cookieFile = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'phpupgrade_sales_deep_cookies.txt';
@@ -30,7 +30,7 @@ function httpRequest($url, $cookieFile, $post = null, $headers = [])
 {
     global $ua;
     $ch = curl_init($url);
-    $hdr = array_merge(['User-Agent: ' . $ua, 'Referer: http://localhost/phpupgrade/sales/add'], $headers);
+    $hdr = array_merge(['User-Agent: ' . $ua, 'Referer: http://localhost/ElintOM18.00/sales/add'], $headers);
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_FOLLOWLOCATION => false,

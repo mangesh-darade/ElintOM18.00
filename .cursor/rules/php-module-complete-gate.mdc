@@ -18,7 +18,7 @@ Test **only modules already started** in this upgrade (fixes + `upgrade/phase4_*
 | 1 Auth | Upgraded — module complete | `upgrade/phase4_auth_links_test.php` |
 | 2 Welcome | Upgraded — module complete | `upgrade/phase4_welcome_links_test.php` |
 | 3 POS | **✅ Module complete** | `upgrade/phase4_pos_links_test.php` |
-| 4 Sales | **Not done** — retest required | `upgrade/phase4_sales_links_test.php` |
+| 4 Sales | **✅ Module complete** | `upgrade/phase4_sales_links_test.php` |
 | 5 Products | **Not done** — retest required | `upgrade/phase4_products_links_test.php` |
 | 6 Purchases | **Not done** — retest required | `upgrade/phase4_purchases_links_test.php` + `upgrade/phase4_purchases_return_deep_test.php` |
 | 7 Reports | **Not done** — retest required | `upgrade/phase4_reports_links_test.php` + `upgrade/phase4_reports_deep_test.php` |

@@ -443,8 +443,8 @@ $right_section = end($parts);
 
 ## Module 4 — Sales
 
-**Tests:** `phase4_sales_test.php`, `phase4_sales_deep_test.php`, `phase4_sales_links_test.php` — **12/12** deep-links; deep **6/6** PASS  
-**Status:** ⏳ Not done — retest required
+**Tests:** `phase4_sales_test.php` **8/8**; `phase4_sales_deep_test.php` **6/6**; `phase4_sales_links_test.php` **12/12** PASS (2026-07-11 ElintOM18.00 retest)  
+**Status:** ✅ Module complete
 
 | # | File | Old | New | Type |
 |---|------|-----|-----|------|
@@ -1209,6 +1209,7 @@ if($this->input->is_ajax_request()) {
 | 2026-07-07 | 10 | Module 10 Quotes — HTTP_REFERER, getQuoteByID guards, suggestions; tests 6/6 + 10/10 |
 | 2026-07-11 | P1+P2 | **ElintOM18.00** Phase 1 (AllowDynamicProperties, E_STRICT) + Phase 2 (Composer MPDF/Stripe/Google, PHPExcel/Zend/phpqrcode patches, mPDF shim) |
 | 2026-07-11 | P3 | `crypto_helper.php`, `Ccavenue.php` — mcrypt → OpenSSL AES-128-CBC; `phase3_smoke_test.php` 14/14 PASS |
+| 2026-07-11 | 4 | Module 4 Sales — screen 8/8 + deep 6/6 + deep-links 12/12 PASS on ElintOM18.00 |
 | 2026-07-11 | 3 | Module 3 POS — `Pos.php`/`today_sale.php` PHP 8.5 guards; screen 9/9 + deep 7/7 + deep-links 11/11 PASS |
 | 2026-07-11 | 1–11 | **Status reset** — all modules marked not done; fixes retained; retest required |
 | 2026-07-07 | 11 | Module 11 Transfers — HTTP_REFERER, getByID guards, model empty arrays; tests 10/10 + 12/12 |
