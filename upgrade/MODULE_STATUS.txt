@@ -12,13 +12,10 @@ PHASE OVERVIEW
 Phase 1  Framework (system/)           DONE (ElintOM18.00 2026-07-11)
 Phase 2  Third party (MPDF, Stripe...) DONE (ElintOM18.00 2026-07-11)
 Phase 3  App core (Sma, crypto, etc.)   IN PROGRESS (base fixes done)
-Phase 4  Module screen + deep testing   IN PROGRESS (11 of 24 complete)
-
-NOTE: Modules 1–11 status reset 2026-07-11 — fixes applied; completion
-      requires fresh screen + deep + deep-links retest.
+Phase 4  Module screen + deep testing   IN PROGRESS (12 of 24 complete)
 
 ================================================================================
-MODULES 1–11 — NOT DONE (retest required)
+MODULES 1–12 — COMPLETE
 ================================================================================
 
 #   Module              Controller(s)              Status
@@ -35,17 +32,14 @@ MODULES 1–11 — NOT DONE (retest required)
 9   Suppliers & Billers Suppliers.php, Billers.php COMPLETE — screen 10/10 + links 14/14 (2026-07-11)
 10  Quotes              Quotes.php                 COMPLETE — screen 6/6 + links 10/10 (2026-07-11)
 11  Transfers           Transfers.php              COMPLETE — screen 10/10 + links 12/12 (2026-07-11)
-
-Test scripts exist for all 11 modules (phase4_*). Run full retest before
-marking any module complete.
+12  Restaurant          Restaurant_Order_Taking.php COMPLETE — screen 10/10 + links 10/10 (2026-07-11)
 
 ================================================================================
-PENDING MODULES (12–24) — NOT STARTED
+PENDING MODULES (13–24) — NOT STARTED
 ================================================================================
 
 #   Module              Controller(s)              Screens  Priority
 --  ------------------  -------------------------  -------  --------
-12  Restaurant          Restaurant_Order_Taking.php  11       P2
 13  Production Unit     Production_Unit.php,         21       P3
                         Bill_of_material.php
 14  Webshop             Webshop.php                  170      P2
@@ -64,27 +58,15 @@ PENDING MODULES (12–24) — NOT STARTED
 24  Other Modules       Various                      50+      P2-P4
 
 ================================================================================
-RETEST MODULES 1–11 (when ready)
+RESTAURANT TEST DB (first-time setup)
 ================================================================================
-cd c:\wamp64\www\ElintOM18.00\upgrade
-c:\wamp64\bin\php\php8.5.0\php.exe phase4_auth_links_test.php Admin "Admin@554"
-c:\wamp64\bin\php\php8.5.0\php.exe phase4_welcome_links_test.php Admin "Admin@554"
-c:\wamp64\bin\php\php8.5.0\php.exe phase4_pos_links_test.php Admin "Admin@554"
-c:\wamp64\bin\php\php8.5.0\php.exe phase4_sales_links_test.php Admin "Admin@554"
-c:\wamp64\bin\php\php8.5.0\php.exe phase4_products_links_test.php Admin "Admin@554"
-c:\wamp64\bin\php\php8.5.0\php.exe phase4_purchases_links_test.php Admin "Admin@554"
-c:\wamp64\bin\php\php8.5.0\php.exe phase4_reports_links_test.php Admin "Admin@554"
-c:\wamp64\bin\php\php8.5.0\php.exe phase4_customers_links_test.php Admin "Admin@554"
-c:\wamp64\bin\php\php8.5.0\php.exe phase4_suppliers_billers_links_test.php Admin "Admin@554"
-c:\wamp64\bin\php\php8.5.0\php.exe phase4_quotes_links_test.php Admin "Admin@554"
-c:\wamp64\bin\php\php8.5.0\php.exe phase4_transfers_links_test.php Admin "Admin@554"
+c:\wamp64\bin\php\php8.5.0\php.exe upgrade\restaurant_bootstrap_db.php
 
 ================================================================================
 SUMMARY
 ================================================================================
-Complete  : 9 modules (Auth, Welcome, POS, Sales, Products, Purchases, Reports, Customers, Suppliers & Billers)
-In progress (fixes only, not certified): 2 modules (10–11)
-Pending   : 13 modules (12–24)
-Progress  : 9 / 24 modules certified complete
+Complete  : 12 modules (Auth through Restaurant)
+Pending   : 12 modules (13–24)
+Progress  : 12 / 24 modules certified complete
 
 ================================================================================

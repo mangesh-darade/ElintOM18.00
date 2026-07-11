@@ -3,17 +3,18 @@
 $savings = 0;
 //modifie name of product
 
+if (!empty($rows) && is_array($rows)) {
 foreach ($rows as $key => $val) {
     $Color = '';
     if (!empty($val->shade_id)) {
         $options_color = $this->pos_model->getProductOptionsByShapeId($val->shade_id, $val->product_id, COLOR);
-        $Color = $options_color[0]->name;
+        $Color = (!empty($options_color) && isset($options_color[0])) ? $options_color[0]->name : '';
     }
     if (!empty($val->option_id)) {
         $item_note = (empty($val->note)) ? '' : ": " . $val->note;
 
 
-        $variant = ($default_printer->show_product_size_color) ? '  (' . $val->variant . ' - ' . $Color . $item_note . ')' : '';
+        $variant = (!empty($default_printer) && $default_printer->show_product_size_color) ? '  (' . $val->variant . ' - ' . $Color . $item_note . ')' : '';
 
         $rows[$key]->product_name = $val->product_name . $variant;
 
@@ -27,19 +28,20 @@ foreach ($rows as $key => $val) {
         $savings += ($val->mrp - $val->unit_price ) * $val->quantity;
     }
 }//end foreach
+}
 // return rows
 if(is_array($return_rows)) {
     foreach ($return_rows as $key => $val) {
     $Color = '';
     if (!empty($val->shade_id)) {
         $options_color = $this->pos_model->getProductOptionsByShapeId($val->shade_id, $val->product_id, COLOR);
-        $Color = $options_color[0]->name;
+        $Color = (!empty($options_color) && isset($options_color[0])) ? $options_color[0]->name : '';
     }
     if (!empty($val->option_id)) {
         $item_note = (empty($val->note)) ? '' : ": " . $val->note;
 
 
-        $variant = ($default_printer->show_product_size_color) ? '  (' . $val->variant . ' - ' . $Color . $item_note . ')' : '';
+        $variant = (!empty($default_printer) && $default_printer->show_product_size_color) ? '  (' . $val->variant . ' - ' . $Color . $item_note . ')' : '';
 
         $return_rows[$key]->product_name = $val->product_name . $variant;
 
@@ -571,6 +573,7 @@ if ($modal) {
                     $r = 1;
                     $category = 0;
                     $tax_summary = array();
+                    if (!empty($rows) && is_array($rows)) {
                     foreach ($rows as $row) {
                         if (isset($tax_summary[$row->tax_code])) {
                             $tax_summary[$row->tax_code]['items'] += $row->quantity;
@@ -604,6 +607,7 @@ if ($modal) {
                             }
                             $r++;
                         }
+                    }
                     }
                     ?>
                     <?php echo $resOutput; ?>
@@ -888,7 +892,7 @@ if ($modal) {
                     <?php endif; ?>
                     <span class="col-xs-12">
                         <?php
-                        $lasturl = explode("/", $_SERVER['HTTP_REFERER']);
+                        $lasturl = isset($_SERVER['HTTP_REFERER']) ? explode("/", $_SERVER['HTTP_REFERER']) : array();
 
                         $last_segment = sizeof($lasturl) - 1;
 
@@ -1071,6 +1075,7 @@ if ($modal) {
                                        receipt += "<?= printLine(lang("date") . ": " . date($dateFormats['php_ldate'], strtotime($inv->date)), null, null, $pos_settings->char_per_line) ?>" + "\n\n";
                                        receipt += "<?php
         $r = 1;
+        if (!empty($rows) && is_array($rows)) {
         foreach ($rows as $row):
             ?>";
                                            receipt += "<?= "#" . $r . " "; ?>";
@@ -1079,6 +1084,7 @@ if ($modal) {
                                            receipt += "<?php
             $r++;
         endforeach;
+        }
         ?>";
         <?php if ($return_rows) { ?>
                                            receipt += "\n" + "<?= lang('returned_items'); ?>" + "\n";
@@ -1239,7 +1245,7 @@ if ($modal) {
     <?php
     /* ------ For checking Print/notPrint Button updated by SW 21/01/2017 --------------- */
     
-    $_print = $_SESSION['print_type'];
+    $_print = isset($_SESSION['print_type']) ? $_SESSION['print_type'] : '';
     if (!$pos_settings->java_applet && isset($_SESSION['print_type']) && $_SESSION['print_type'] == 'print'):
         unset($_SESSION['print_type']);
         ?>
@@ -1253,9 +1259,9 @@ if ($modal) {
                 <?php
 
                  if ($Settings->pos_type == 'restaurant') {
-                     $redirect = $_SESSION['Sales'] ? 'Sales' : 'pos';
+                     $redirect = (isset($_SESSION['Sales']) && $_SESSION['Sales']) ? 'Sales' : 'pos';
                  }else{
-                     $redirect = $_SESSION['Sales'] ? 'Sales' : 'pos';
+                     $redirect = (isset($_SESSION['Sales']) && $_SESSION['Sales']) ? 'Sales' : 'pos';
                  }
                 unset($_SESSION['Sales']);
                 ?>		
@@ -1277,9 +1283,10 @@ if ($modal) {
 
    
 <?php 
-    if($_SERVER['HTTP_REFERER'] == base_url('pos')){
+    if(isset($_SERVER['HTTP_REFERER']) && $_SERVER['HTTP_REFERER'] == base_url('pos')){
         $category = array();
         $category_Array = explode(",", $pos_settings->categorys);
+        if (!empty($rows)) {
         foreach($rows as $kay_category =>  $rowItems){ 
               if($pos_settings->print_all_category) { 
                   if($category[$rowItems->category_id] ==$rowItems->category_id ){
@@ -1296,6 +1303,7 @@ if ($modal) {
                     }
                 }     
               }
+        }
         }
 
        // Manage Category According Print
@@ -1324,7 +1332,7 @@ if ($modal) {
             <table  id="orderTable_<?= $key ?>" style="width: 100%;border-collapse: collapse;text-align: left;" > 
                 <tbody>
                     <tr>
-                        <th colspan="2" style="text-align: center;"><?= $rows[0]->category_name ?></th> 
+                        <th colspan="2" style="text-align: center;"><?= !empty($rows[0]) ? $rows[0]->category_name : '' ?></th> 
                     </tr>
                     <tr>
                         <th > Items </th>

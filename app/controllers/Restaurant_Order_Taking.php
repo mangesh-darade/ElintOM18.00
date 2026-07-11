@@ -677,6 +677,7 @@ class Restaurant_Order_Taking extends MY_Controller
             if ($guest_id) {
                 // increment guest count on order
                 $order = $this->Restaurant_Order_Taking_model->get_order_minimal($order_id);
+                if (!$order) { echo json_encode(['status' => 'error', 'message' => 'Order not found']); return; }
                 $this->Restaurant_Order_Taking_model->update_order($order_id, ['guest_count' => ((int)$order->guest_count)+1]);
                 echo json_encode(['status' => 'success', 'guest_id' => $guest_id]);
             } else {
@@ -696,6 +697,7 @@ class Restaurant_Order_Taking extends MY_Controller
             if ($this->Restaurant_Order_Taking_model->delete_guest_if_no_items($guest->id)) {
                 // decrement guest count on order
                 $order = $this->Restaurant_Order_Taking_model->get_order_minimal($order_id);
+                if (!$order) { echo json_encode(['status' => 'error', 'message' => 'Order not found']); return; }
                 $new_count = max(0, ((int)$order->guest_count)-1);
                 $this->Restaurant_Order_Taking_model->update_order($order_id, ['guest_count' => $new_count]);
                 echo json_encode(['status' => 'success']);
@@ -1275,8 +1277,8 @@ class Restaurant_Order_Taking extends MY_Controller
             show_404();
         }
 
-        if (!empty($this->data['default_printer']->tax_classification_view)) {
-            $inv->rows_tax = $this->sales_model->getAllTaxItems($sale_id, $inv->return_id);
+        if (!empty($this->data['default_printer']) && $this->data['default_printer']->tax_classification_view) {
+            $inv->rows_tax = $this->sales_model->getAllTaxItems($sale_id, (isset($inv->return_id) ? $inv->return_id : null));
         }
 
         $isGstSale = $this->site->isGstSale($sale_id);
@@ -1286,9 +1288,12 @@ class Restaurant_Order_Taking extends MY_Controller
             $this->sma->view_rights($inv->created_by, true);
         }
 
-        $rows = $this->pos_model->getAllInvoiceItems($sale_id);
+        $rows = $this->pos_model->getAllInvoiceItems($sale_id) ?: array();
         $biller = $this->pos_model->getCompanyByID($inv->biller_id);
         $customer = $this->pos_model->getCompanyByID($inv->customer_id);
+        if (!$biller || !$customer) {
+            show_404();
+        }
         $payments = $this->pos_model->getInvoicePayments($sale_id);
         $pos_settings = $this->pos_model->getSetting();
         unset($pos_settings->pos_theme);
@@ -1348,14 +1353,14 @@ class Restaurant_Order_Taking extends MY_Controller
             $shipping_details_raw = $this->orders_model->getShipingAdress($inv->shipping_address_id);
             $billing_details_raw = $this->orders_model->getShipingAdress($inv->billing_address_id);
             $shipping_details = (object) array(
-                'shipping_name'  => isset($shipping_details_raw->address_name) ? $shipping_details_raw->address_name : '',
-                'shipping_phone' => isset($shipping_details_raw->phone) ? $shipping_details_raw->phone : '',
-                'shipping_email' => isset($shipping_details_raw->email_id) ? $shipping_details_raw->email_id : '',
-                'shipping_addr'  => isset($shipping_details_raw) ? trim($shipping_details_raw->line1 . ' ' . $shipping_details_raw->line2 . ' ' . $shipping_details_raw->city . ' ' . $shipping_details_raw->state . ' ' . $shipping_details_raw->country . ' ' . $shipping_details_raw->postal_code) : '',
-                'billing_name'   => isset($billing_details_raw->address_name) ? $billing_details_raw->address_name : '',
-                'billing_phone'  => isset($billing_details_raw->phone) ? $billing_details_raw->phone : '',
-                'billing_email'  => isset($billing_details_raw->email_id) ? $billing_details_raw->email_id : '',
-                'billing_addr'   => isset($billing_details_raw) ? trim($billing_details_raw->line1 . ' ' . $billing_details_raw->line2 . ' ' . $billing_details_raw->city . ' ' . $billing_details_raw->state . ' ' . $billing_details_raw->country . ' ' . $billing_details_raw->postal_code) : '',
+                'shipping_name'  => ($shipping_details_raw && isset($shipping_details_raw->address_name)) ? $shipping_details_raw->address_name : '',
+                'shipping_phone' => ($shipping_details_raw && isset($shipping_details_raw->phone)) ? $shipping_details_raw->phone : '',
+                'shipping_email' => ($shipping_details_raw && isset($shipping_details_raw->email_id)) ? $shipping_details_raw->email_id : '',
+                'shipping_addr'  => ($shipping_details_raw) ? trim($shipping_details_raw->line1 . ' ' . $shipping_details_raw->line2 . ' ' . $shipping_details_raw->city . ' ' . $shipping_details_raw->state . ' ' . $shipping_details_raw->country . ' ' . $shipping_details_raw->postal_code) : '',
+                'billing_name'   => ($billing_details_raw && isset($billing_details_raw->address_name)) ? $billing_details_raw->address_name : '',
+                'billing_phone'  => ($billing_details_raw && isset($billing_details_raw->phone)) ? $billing_details_raw->phone : '',
+                'billing_email'  => ($billing_details_raw && isset($billing_details_raw->email_id)) ? $billing_details_raw->email_id : '',
+                'billing_addr'   => ($billing_details_raw) ? trim($billing_details_raw->line1 . ' ' . $billing_details_raw->line2 . ' ' . $billing_details_raw->city . ' ' . $billing_details_raw->state . ' ' . $billing_details_raw->country . ' ' . $billing_details_raw->postal_code) : '',
             );
         } else {
             $shipping_details = null;

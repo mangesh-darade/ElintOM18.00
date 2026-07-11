@@ -145,7 +145,8 @@
 | **Module 9 — Suppliers & Billers** | **✅ Module complete** | Screen 10/10, deep-links 14/14 |
 | **Module 10 — Quotes** | **✅ Module complete** | Screen 6/6, deep-links 10/10 |
 | **Module 11 — Transfers** | **✅ Module complete** | Screen 10/10, deep-links 12/12 |
-| Remaining controllers (12–24) | Pending | Full module scan during Phase 4 |
+| **Module 12 — Restaurant** | **✅ Module complete** | Screen 10/10, deep-links 10/10 |
+| Remaining controllers (13–24) | Pending | Full module scan during Phase 4 |
 
 #### Phase 4 — Module Testing Log (last run 2026-07-07; status reset 2026-07-11 — pending retest)
 
@@ -251,6 +252,10 @@ php phase4_suppliers_billers_links_test.php Admin "Admin@554"
 **Module 11 fixes (Transfers):** — [`PHP_UPGRADE_FIXES_LOG.md`](PHP_UPGRADE_FIXES_LOG.md) §Module 11
 
 **Module 11 tests (certified 2026-07-11):** screen 10/10, deep-links 12/12 PASS (`Transfersnew.php` deferred)
+
+**Module 12 fixes (Restaurant):** — [`PHP_UPGRADE_FIXES_LOG.md`](PHP_UPGRADE_FIXES_LOG.md) §Module 12
+
+**Module 12 tests (certified 2026-07-11):** screen **10/10**, deep-links **10/10** — `restaurant_bootstrap_db.php` seeds `sma_res_*` for test DB
 
 **Stock/timing note:** Adjustment screen uses `async:false` on `product_list` + `qa_suggestions` in JS (`adjustments.js`) — causes UI “stuck” feel on large warehouses; server paths OK under 1s locally.
 

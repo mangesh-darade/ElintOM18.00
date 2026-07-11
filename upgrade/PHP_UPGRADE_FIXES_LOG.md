@@ -1380,7 +1380,62 @@ if($this->input->is_ajax_request()) {
 
 ---
 
-## Test scripts index (Modules 1–11)
+## Module 12 — Restaurant
+
+**Tests:** `phase4_restaurant_test.php` (**10/10**), `phase4_restaurant_links_test.php` (**10/10**) PASS  
+**Status:** ✅ Module complete — fixes applied + retest 2026-07-11  
+**Controllers:** `Restaurant_Order_Taking.php` — `Restaurant_Order_Taking_model.php` (model returns `[]` on empty — no changes)
+
+| # | File | Old | New | Type |
+|---|------|-----|-----|------|
+| 12.1 | `restaurant/kitchen_view.php` | Missing view (500 on `kitchen_view/{id}`) | Restored minimal KDS view | restore |
+| 12.2 | `Restaurant_Order_Taking.php` | `getAllInvoiceItems()` false | `?: array()` | guard |
+| 12.3 | `Restaurant_Order_Taking.php` | `$default_printer->tax_classification_view` when printer false | `!empty($default_printer) &&` guard; `return_id` isset | guard |
+| 12.4 | `Restaurant_Order_Taking.php` | `getCompanyByID` false before view | `show_404()` if biller/customer missing | guard |
+| 12.5 | `Restaurant_Order_Taking.php` | `getShipingAdress` false → property on false | `$raw && isset(...)` guards | guard |
+| 12.6 | `Restaurant_Order_Taking.php` | `get_order_minimal` false in guest count AJAX | JSON error return before `->guest_count` | guard |
+| 12.7 | `restaurant/pos_invoice.php` | `foreach ($rows)` / `$rows[0]` unguarded in POS category print | `!empty($rows)` + `!empty($rows[0])` | guard |
+| 12.8 | `restaurant/pos_invoice.php` | `$options_color[0]`, `$default_printer`, HTTP_REFERER | isset/!empty guards (top of view) | guard |
+| 12.9 | `restaurant_bootstrap_db.php` | `sma_res_*` tables missing in test DB | Minimal schema + seed section/table/order | db-env |
+| 12.10 | `phase4_restaurant_*.php` | — | Screen + deep-link scripts; CSRF from `tables/1` | test |
+| 12.11 | `phase4_test_lib.php` | `phase4_extractCsrf` missed restaurant JS tokens | Match `CSRF_TOKEN_HASH` + `ci-csrf-hash` meta | test |
+
+#### 12.2 `Restaurant_Order_Taking.php` — getAllInvoiceItems
+
+**Old code:**
+```php
+$rows = $this->pos_model->getAllInvoiceItems($sale_id);
+```
+
+**New code:**
+```php
+$rows = $this->pos_model->getAllInvoiceItems($sale_id) ?: array();
+```
+
+#### 12.6 `Restaurant_Order_Taking.php` — increase_guest get_order_minimal
+
+**Old code:**
+```php
+$order = $this->Restaurant_Order_Taking_model->get_order_minimal($order_id);
+$this->Restaurant_Order_Taking_model->update_order($order_id, ['guest_count' => ((int)$order->guest_count)+1]);
+```
+
+**New code:**
+```php
+$order = $this->Restaurant_Order_Taking_model->get_order_minimal($order_id);
+if (!$order) { echo json_encode(['status' => 'error', 'message' => 'Order not found']); return; }
+$this->Restaurant_Order_Taking_model->update_order($order_id, ['guest_count' => ((int)$order->guest_count)+1]);
+```
+
+#### 12.1 `restaurant/kitchen_view.php` — restore missing view
+
+**Old code:** *(file absent — controller `load->view('restaurant/kitchen_view')` fatal)*
+
+**New code:** Minimal kitchen ticket view with guarded `foreach ($items)`.
+
+---
+
+## Test scripts index (Modules 1–12)
 
 | Module | Scripts |
 |--------|---------|
@@ -1394,7 +1449,7 @@ if($this->input->is_ajax_request()) {
 | 8 Customers | `phase4_customers_test.php`, `phase4_customers_links_test.php` |
 | 9 Suppliers & Billers | `phase4_suppliers_billers_test.php`, `phase4_suppliers_billers_links_test.php` |
 | 10 Quotes | `phase4_quotes_test.php`, `phase4_quotes_links_test.php` |
-| 11 Transfers | `phase4_transfers_test.php`, `phase4_transfers_links_test.php` |
+| 12 Restaurant | `phase4_restaurant_test.php`, `phase4_restaurant_links_test.php` |
 | Shared | `phase4_test_lib.php` |
 
 **Run:** `cd upgrade && php phase4_<module>_*.php Admin "Admin@554"`
@@ -1423,6 +1478,7 @@ if($this->input->is_ajax_request()) {
 | 2026-07-11 | 9 | Module 9 Suppliers & Billers **certified complete** — HTTP_REFERER, getCompanyByID guards, suggestions `return array()`; screen **10/10**, links **14/14** |
 | 2026-07-11 | 10 | Module 10 Quotes **certified complete** — HTTP_REFERER, getQuoteByID guards, suggestions; screen **6/6**, links **10/10** |
 | 2026-07-11 | 11 | Module 11 Transfers **certified complete** — HTTP_REFERER, getTransferByID/Request guards, suggestions; screen **10/10**, links **12/12** |
+| 2026-07-11 | 12 | Module 12 Restaurant **certified complete** — kitchen_view restore, invoice/guest guards, test DB bootstrap; screen **10/10**, links **10/10** |
 
 ---
 

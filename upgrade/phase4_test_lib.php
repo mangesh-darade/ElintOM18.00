@@ -114,6 +114,15 @@ if (!function_exists('phase4_check')) {
         if (preg_match('/"name":\s*"token",\s*"value":\s*"([^"]+)"/', $html, $m)) {
             return $m[1];
         }
+        if (preg_match('/CSRF_TOKEN_HASH\s*=\s*[\'"]([^\'"]+)[\'"]/', $html, $m)) {
+            return $m[1];
+        }
+        if (preg_match('/meta\s+name="ci-csrf-hash"\s+content="([^"]+)"/', $html, $m)) {
+            return $m[1];
+        }
+        if (preg_match('/get_csrf_hash\(\)\s*;\s*\?>\s*[\'"]([^\'"]+)[\'"]/', $html, $m)) {
+            return $m[1];
+        }
         return null;
     }
 
