@@ -16,7 +16,7 @@ class Customers extends MY_Controller {
         }
         if ($this->Customer || $this->Supplier) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('customers'));
         }
         $this->lang->load('customers', $this->Settings->user_language);
         $this->load->library('form_validation');
@@ -33,6 +33,7 @@ class Customers extends MY_Controller {
         $this->data['action'] = $action;
         $this->data['country'] = $this->site->getCountry();
         $this->data['settings'] = $this->site->get_setting();
+        $this->data['biller'] = $this->site->getCompanyByID($this->Settings->default_biller);
         $bc = array(array('link' => base_url(), 'page' => lang('home')), array('link' => '#', 'page' => lang('customers')));
         $meta = array('page_title' => lang('customers'), 'bc' => $bc);
         $this->page_construct('customers/index', $meta, $this->data);
@@ -92,6 +93,10 @@ class Customers extends MY_Controller {
         $this->sma->checkPermissions('index', true);
         $this->data['error'] = (validation_errors()) ? validation_errors() : $this->session->flashdata('error');
         $this->data['customer'] = $this->companies_model->getCompanyByID($id);
+        if (!$this->data['customer']) {
+            $this->session->set_flashdata('error', lang('customer_not_found'));
+            redirect(site_url('customers'));
+        }
         $cfields = $this->site->getCustomeFieldsLabel('customer');
         $this->data['custome_fields'] = $cfields['customer'];
         $this->load->view($this->theme . 'customers/view', $this->data);
@@ -101,7 +106,7 @@ class Customers extends MY_Controller {
 
         $auto_customer_number = $this->isAutoCustomerNumberEnabled();
         if (!$this->applyAutoCustomerPhoneForAdd($auto_customer_number)) {
-            return redirect($_SERVER['HTTP_REFERER'] ?: 'customers');
+            return redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('customers'));
         }
 
         // $this->form_validation->set_rules('cf1', lang("PAN_Card"), 'is_unique[companies.cf1]');
@@ -160,11 +165,11 @@ class Customers extends MY_Controller {
 
             $customer_group_id = $this->input->post('customer_group');
             $cg = $this->site->getCustomerGroupByID($customer_group_id);
-            $customer_group_name = $cg->name;
+            $customer_group_name = ($cg && isset($cg->name)) ? $cg->name : '';
 
             $price_group_id = $this->input->post('price_group') ? $this->input->post('price_group') : NULL;
             $pg = $this->site->getPriceGroupByID($this->input->post('price_group'));
-            $price_group_name = $this->input->post('price_group') ? $pg->name : NULL;
+            $price_group_name = ($this->input->post('price_group') && $pg && isset($pg->name)) ? $pg->name : NULL;
 
             $data = [
                 'name' => $this->input->post('name'),
@@ -203,7 +208,7 @@ class Customers extends MY_Controller {
             $this->appendIsSystemGeneratedToCustomerData($data, $auto_customer_number);
         } elseif ($this->input->post('add_customer')) {
             $this->session->set_flashdata('error', validation_errors());
-            return redirect($_SERVER['HTTP_REFERER']);
+            return redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('customers'));
         }
 
         if ($this->form_validation->run() == true && $cid = $this->companies_model->addCompany($data, $synch_customer_data)) {
@@ -220,11 +225,12 @@ class Customers extends MY_Controller {
                 return redirect($redirect_url);
             }
 
-            return redirect($_SERVER['HTTP_REFERER']);
+            return redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('customers'));
         } else {
             $this->data['error'] = (validation_errors() ? validation_errors() : $this->session->flashdata('error'));
             $this->data['modal_js'] = $this->site->modal_js();
-            $this->data['customer_groups'] = $this->companies_model->getAllCustomerGroups();
+            $customer_groups = $this->companies_model->getAllCustomerGroups();
+            $this->data['customer_groups'] = $customer_groups ? $customer_groups : array();
             $this->data['states'] = $this->site->getAllStates();
             $this->data['price_groups'] = $this->companies_model->getAllPriceGroups();
             $this->data['country'] = $this->site->getCountry();
@@ -246,8 +252,10 @@ class Customers extends MY_Controller {
                 $warehouse_ids = explode(',', $user->warehouse_id);
                 $first_warehouse_id = trim($warehouse_ids[0]);
                 $warehouseArr = $this->site->getWarehouseByID($first_warehouse_id);
-                $warehouse = reset($warehouseArr);
-                $biller_details = $this->site->getCompanyByID($warehouse->primary_biller_id);
+                $warehouse = is_array($warehouseArr) ? reset($warehouseArr) : false;
+                $biller_details = ($warehouse && !empty($warehouse->primary_biller_id))
+                    ? $this->site->getCompanyByID($warehouse->primary_biller_id)
+                    : $this->site->getCompanyByID($this->Settings->default_biller);
             }
             $this->data['biller'] = $biller_details;
             $country = (isset($_POST['country']) ? $_POST['country'] : $biller_details->country);
@@ -264,7 +272,7 @@ class Customers extends MY_Controller {
 
         $auto_customer_number = $this->isAutoCustomerNumberEnabled();
         if (!$this->applyAutoCustomerPhoneForAdd($auto_customer_number)) {
-            return redirect($_SERVER['HTTP_REFERER'] ?: 'customers');
+            return redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('customers'));
         }
 
         // $this->form_validation->set_rules('cf1', lang("PAN_Card"), 'is_unique[companies.cf1]');
@@ -333,11 +341,11 @@ class Customers extends MY_Controller {
 
             $customer_group_id = $this->input->post('customer_group');
             $cg = $this->site->getCustomerGroupByID($customer_group_id);
-            $customer_group_name = $cg->name;
+            $customer_group_name = ($cg && isset($cg->name)) ? $cg->name : '';
 
             $price_group_id = $this->input->post('price_group') ? $this->input->post('price_group') : NULL;
             $pg = $this->site->getPriceGroupByID($this->input->post('price_group'));
-            $price_group_name = $this->input->post('price_group') ? $pg->name : NULL;
+            $price_group_name = ($this->input->post('price_group') && $pg && isset($pg->name)) ? $pg->name : NULL;
 
             $data = [
                 'name' => $this->input->post('name'),
@@ -386,11 +394,11 @@ class Customers extends MY_Controller {
             $address_validation = $this->validateCustomerAddressRows($this->postedAddressRows());
             if ($address_validation !== true) {
                 $this->session->set_flashdata('error', $address_validation);
-                return redirect($_SERVER['HTTP_REFERER']);
+                return redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('customers'));
             }
         } elseif ($this->input->post('add_customer')) {
             $this->session->set_flashdata('error', validation_errors());
-            return redirect($_SERVER['HTTP_REFERER']);
+            return redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('customers'));
         }
 
         if ($this->form_validation->run() == true && $cid = $this->companies_model->addCompany($data, $synch_customer_data)) {
@@ -420,7 +428,8 @@ class Customers extends MY_Controller {
         } else {
             $this->data['error'] = (validation_errors() ? validation_errors() : $this->session->flashdata('error'));
             $this->data['modal_js'] = $this->site->modal_js();
-            $this->data['customer_groups'] = $this->companies_model->getAllCustomerGroups();
+            $customer_groups = $this->companies_model->getAllCustomerGroups();
+            $this->data['customer_groups'] = $customer_groups ? $customer_groups : array();
             $this->data['price_groups'] = $this->companies_model->getAllPriceGroups();
             $this->data['country'] = $this->site->getCountry();
             $this->data['settings'] = $this->site->get_setting();
@@ -442,8 +451,10 @@ class Customers extends MY_Controller {
                 $warehouse_ids = explode(',', $user->warehouse_id);
                 $first_warehouse_id = trim($warehouse_ids[0]);
                 $warehouseArr = $this->site->getWarehouseByID($first_warehouse_id);
-                $warehouse = reset($warehouseArr);
-                $biller_details = $this->site->getCompanyByID($warehouse->primary_biller_id);
+                $warehouse = is_array($warehouseArr) ? reset($warehouseArr) : false;
+                $biller_details = ($warehouse && !empty($warehouse->primary_biller_id))
+                    ? $this->site->getCompanyByID($warehouse->primary_biller_id)
+                    : $this->site->getCompanyByID($this->Settings->default_biller);
             }
             $this->data['biller'] = $biller_details;
             $country = (isset($_POST['country']) ? $_POST['country'] : $biller_details->country);
@@ -652,7 +663,12 @@ class Customers extends MY_Controller {
             $id = $this->input->get('id');
         }
         $company_details = $this->companies_model->getCompanyByID($id);
-        $original_value = $this->db->select('cf1')->where('id', $id)->get('sma_companies')->row()->cf1;
+        if (!$company_details) {
+            $this->session->set_flashdata('error', lang('customer_not_found'));
+            redirect(site_url('customers'));
+        }
+        $original_row = $this->db->select('cf1')->where('id', $id)->get('sma_companies')->row();
+        $original_value = $original_row ? $original_row->cf1 : '';
         if ($this->input->post('cf1') != $original_value) {
             $this->form_validation->set_rules('cf1', lang("PAN_Card"), 'is_unique[companies.cf1]');
         }
@@ -692,7 +708,7 @@ class Customers extends MY_Controller {
             $address_validation = $this->validateCustomerAddressRows($this->postedAddressRows());
             if ($address_validation !== true) {
                 $this->session->set_flashdata('error', $address_validation);
-                return redirect($_SERVER['HTTP_REFERER']);
+                return redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('customers'));
             }
 
             if ($this->input->post('country') == 'other' && $country != '') {
@@ -723,9 +739,9 @@ class Customers extends MY_Controller {
                 'name' => $this->input->post('name'),
                 'email' => $this->input->post('email'),
                 'customer_group_id' => $this->input->post('customer_group'),
-                'customer_group_name' => $cg->name,
+                'customer_group_name' => ($cg && isset($cg->name)) ? $cg->name : '',
                 'price_group_id' => $this->input->post('price_group') ? $this->input->post('price_group') : NULL,
-                'price_group_name' => $this->input->post('price_group') ? $pg->name : NULL,
+                'price_group_name' => ($this->input->post('price_group') && $pg && isset($pg->name)) ? $pg->name : NULL,
                 'company' => $company,
                 'address' => $company_address,
                 'vat_no' => $this->input->post('vat_no'),
@@ -767,7 +783,7 @@ class Customers extends MY_Controller {
             }
         } elseif ($this->input->post('edit_customer')) {
             $this->session->set_flashdata('error', validation_errors());
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('customers'));
         }
 
         if ($this->form_validation->run() == true && $this->companies_model->updateCompany($id, $data, $this->Settings->synch_customers)) {
@@ -788,7 +804,7 @@ class Customers extends MY_Controller {
             }
 
             $this->session->set_flashdata('message', lang("customer_updated"));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('customers'));
         } else {
             $this->data['phone'] = $company_details->phone;
             $this->data['relations'] = $this->pos_model->get_relations();
@@ -796,7 +812,8 @@ class Customers extends MY_Controller {
             $this->data['customer'] = $company_details;
             $this->data['error'] = (validation_errors() ? validation_errors() : $this->session->flashdata('error'));
             $this->data['modal_js'] = $this->site->modal_js();
-            $this->data['customer_groups'] = $this->companies_model->getAllCustomerGroups();
+            $customer_groups = $this->companies_model->getAllCustomerGroups();
+            $this->data['customer_groups'] = $customer_groups ? $customer_groups : array();
             $this->data['price_groups'] = $this->companies_model->getAllPriceGroups();
             $country = (isset($_POST['country']) ? $_POST['country'] : $company_details->country);
             $this->data['states'] = $this->site->getstates($country) ? $this->site->getstates($country) : array();
@@ -813,8 +830,10 @@ class Customers extends MY_Controller {
                 $warehouse_ids = explode(',', $user->warehouse_id);
                 $first_warehouse_id = trim($warehouse_ids[0]);
                 $warehouseArr = $this->site->getWarehouseByID($first_warehouse_id);
-                $warehouse = reset($warehouseArr);
-                $biller_details = $this->site->getCompanyByID($warehouse->primary_biller_id);
+                $warehouse = is_array($warehouseArr) ? reset($warehouseArr) : false;
+                $biller_details = ($warehouse && !empty($warehouse->primary_biller_id))
+                    ? $this->site->getCompanyByID($warehouse->primary_biller_id)
+                    : $this->site->getCompanyByID($this->Settings->default_biller);
             }
             $this->data['biller'] = $biller_details;
             $this->data['customer_addresses'] = $this->companies_model->getCompanyAddresses($id);
@@ -902,7 +921,7 @@ class Customers extends MY_Controller {
 
             if (DEMO) {
                 $this->session->set_flashdata('warning', lang("disabled_in_demo"));
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('customers'));
             }
 
             if (isset($_FILES["csv_file"])) /* if($_FILES['userfile']['size'] > 0) */ {
@@ -1296,6 +1315,10 @@ class Customers extends MY_Controller {
     public function getCustomer($id = NULL) {
         // $this->sma->checkPermissions('index');
         $row = $this->companies_model->getCompanyByID($id);
+        if (!$row) {
+            $this->sma->send_json(array());
+            return;
+        }
         if($row->name == 'Walk in Customer'){
             $this->sma->send_json(array(array('id' => $row->id, 'text' => ($row->company != '-' ? $row->name : $row->name), 'company_name' => $row->name)));
         }else{
@@ -1310,23 +1333,32 @@ class Customers extends MY_Controller {
     public function getCustomereshop($id = NULL) {
         // $this->sma->checkPermissions('index');
         $row = $this->companies_model->getCompanyByID($id);
+        if (!$row) {
+            $this->sma->send_json(array());
+            return;
+        }
         $this->sma->send_json(array(array('id' => $row->id, 'text' => $row->name, 'company_name' => $row->name)));
     }
 
     public function get_customer_details($id = NULL) {
-        $this->sma->send_json($this->companies_model->getCompanyByID($id));
+        $row = $this->companies_model->getCompanyByID($id);
+        $this->sma->send_json($row ? $row : array());
     }
 
     public function get_award_points($id = NULL) {
         $this->sma->checkPermissions('index');
         $row = $this->companies_model->getCompanyByID($id);
+        if (!$row) {
+            $this->sma->send_json(array('ca_points' => 0));
+            return;
+        }
         $this->sma->send_json(array('ca_points' => $row->award_points));
     }
 
     public function customer_actions() {
         if (!$this->Owner && !$this->GP['bulk_actions']) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('customers'));
         }
 
         $this->form_validation->set_rules('form_action', lang("form_action"), 'required');
@@ -1394,7 +1426,7 @@ class Customers extends MY_Controller {
                     } else {
                         $this->session->set_flashdata('message', lang("customers_deleted"));
                     }
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('customers'));
                 }
 
                 if ($this->input->post('form_action') == 'export_excel' || $this->input->post('form_action') == 'export_pdf') {
@@ -1492,15 +1524,15 @@ class Customers extends MY_Controller {
                         return $objWriter->save('php://output');
                     }
 
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('customers'));
                 }
             } else {
                 $this->session->set_flashdata('error', lang("no_customer_selected"));
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('customers'));
             }
         } else {
             $this->session->set_flashdata('error', validation_errors());
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('customers'));
         }
     }
 
@@ -1514,6 +1546,10 @@ class Customers extends MY_Controller {
         $this->data['error'] = (validation_errors() ? validation_errors() : $this->session->flashdata('error'));
         $this->data['modal_js'] = $this->site->modal_js();
         $this->data['company'] = $this->companies_model->getCompanyByID($company_id);
+        if (!$this->data['company']) {
+            $this->session->set_flashdata('error', lang('customer_not_found'));
+            redirect(site_url('customers'));
+        }
         $this->load->view($this->theme . 'customers/deposits', $this->data);
     }
 
@@ -1538,6 +1574,10 @@ class Customers extends MY_Controller {
             $company_id = $this->input->get('id');
         }
         $company = $this->companies_model->getCompanyByID($company_id);
+        if (!$company) {
+            $this->session->set_flashdata('error', lang('customer_not_found'));
+            redirect(site_url('customers'));
+        }
 
         if ($this->Owner || $this->Admin) {
             $this->form_validation->set_rules('date', lang("date"), 'required');
@@ -1586,7 +1626,7 @@ class Customers extends MY_Controller {
         } elseif ($this->input->post('add_deposit')) {
             $this->session->set_flashdata('error', validation_errors());
             //redirect('customers');
-            return redirect($_SERVER["HTTP_REFERER"]);
+            return redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('customers'));
         }
 
         if ($this->form_validation->run() == true && $deposit_id = $this->companies_model->addDeposit($data, $cdata)) {
@@ -1609,7 +1649,7 @@ class Customers extends MY_Controller {
                 'openingBalance' => $OpeningBalance,
             ];
 
-            return redirect($_SERVER["HTTP_REFERER"]);
+            return redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('customers'));
         } else {
             $this->data['error'] = (validation_errors() ? validation_errors() : $this->session->flashdata('error'));
             $this->data['modal_js'] = $this->site->modal_js();
@@ -1827,8 +1867,8 @@ class Customers extends MY_Controller {
         $retrun_option = $this->companies_model->getGiftCard($id);
         $depositBalance = $this->companies_model->getOPCLDeposit($id);
         $response = ['giftcard' => $retrun_option,
-            'opening_balance' => $depositBalance->opening_balance,
-            'closing_balance' => $depositBalance->closing_balance,
+            'opening_balance' => ($depositBalance && isset($depositBalance->opening_balance)) ? $depositBalance->opening_balance : 0,
+            'closing_balance' => ($depositBalance && isset($depositBalance->closing_balance)) ? $depositBalance->closing_balance : 0,
         ];
         echo json_encode($response);
     }
@@ -1899,7 +1939,7 @@ class Customers extends MY_Controller {
     }
 
     public function supplier_key_accept() {
-
+        $status = $this->input->post('status') ? $this->input->post('status') : $this->input->get('status');
         echo $this->companies_model->set_notification_order_status($status);
     }
 
@@ -1975,7 +2015,7 @@ class Customers extends MY_Controller {
 
             if (DEMO) {
                 $this->session->set_flashdata('warning', lang("disabled_in_demo"));
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('customers'));
             }
 
             if (isset($_FILES["deposit_file"])) /* if($_FILES['userfile']['size'] > 0) */ {

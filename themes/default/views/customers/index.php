@@ -154,7 +154,7 @@ $(document).ready(function() {
 
 });
 </script>
-<?php if ($Owner || $GP['bulk_actions']) {
+<?php if ($Owner || !empty($GP['bulk_actions'])) {
     echo form_open('customers/customer_actions', 'id="action-form"');
 } ?>
 <div class="box">
@@ -319,7 +319,7 @@ $(document).ready(function() {
         </div>
     </div>
 </div>
-<?php if ($Owner || $GP['bulk_actions']) { ?>
+<?php if ($Owner || !empty($GP['bulk_actions'])) { ?>
 <div style="display: none;">
     <input type="hidden" name="form_action" value="" id="form_action" />
     <?= form_submit('performAction', 'performAction', 'id="action-form-submit"') ?>
@@ -333,7 +333,7 @@ $(document).ready(function() {
 
 
 <?php 
-            if($_SESSION['Print_Deposite_Receipt']['status']=='1'){ 
+            if(!empty($_SESSION['Print_Deposite_Receipt']['status']) && $_SESSION['Print_Deposite_Receipt']['status']=='1'){ 
               $deposit_data =  $_SESSION['Print_Deposite_Receipt']['last_deposit'];
               $customerData = $_SESSION['Print_Deposite_Receipt']['customer_Details'];
               $opningBalance = $_SESSION['Print_Deposite_Receipt']['openingBalance'];

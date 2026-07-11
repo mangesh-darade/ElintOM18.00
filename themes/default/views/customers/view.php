@@ -1,4 +1,5 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
+<?php if (!empty($customer)) { ?>
 <div class="modal-dialog">
     <div class="modal-content">
         <div class="modal-header">
@@ -146,6 +147,7 @@
         </div>
     </div>
 </div>
+<?php } ?>
 <script type="text/javascript">
 function printCustomerViewModal(btn) {
     var $dialog = $(btn).closest('.modal-dialog');
