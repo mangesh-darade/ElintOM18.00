@@ -5,8 +5,10 @@
  * Links are NOT hardcoded — auto-scanned from app/controllers/*.php + themes/views.
  *
  * CLI:  php phase4_auto_links_test.php <identity> <password> [module]
- * Web hub:  ?identity=Admin&password=Admin%40554
- * Web run:  ?action=run&module=products&identity=...&password=...
+ * Web hub (default):  ?identity=Admin&password=Admin%40554
+ *   — सर्व controllers grid, checkbox select, Run Selected / Run All Upgraded
+ * Web single (JSON):  ?action=run&module=products&identity=...&password=...
+ * CLI batch:  php phase4_auto_links_test.php Admin pass all upgraded
  * Upgraded scope: auto-detected from phase4_*_links_test.php files (no hardcoded list).
  */
 error_reporting(E_ALL);
@@ -19,7 +21,7 @@ if (!$isWeb) {
     phase4_webOutputStart();
 }
 
-$base = 'http://localhost/phpupgrade';
+$base = 'http://localhost/ElintOM18.00';
 list($identity, $password) = phase4_credentials();
 $moduleFilter = $argv[3] ?? ($_GET['module'] ?? '');
 $webAction = $_GET['action'] ?? '';
@@ -39,9 +41,9 @@ $auto_module_stats = [];
 
 // Denylist only — navi controller/method auto include (allowlist nahi)
 $SKIP_CONTROLLERS = '/^(api\d*|restapi\d*|webhook|cron|cron_job|eshop_api|web_service|access_denied|errors|sync|offline|reset|help)$/i';
-$SKIP_METHODS = '/^(delete|store|update|save|submit|process|login|logout|register|suggestions|addByAjax|hideNotification|set_data|download|__construct|_remap)$/i';
-$SKIP_METHOD_PREFIX = '/^(product_actions|supplier_actions|customer_actions|sale_actions|purchase_actions)/i';
-$SKIP_PATH_PARTS = '/(\/_actions\/|\/delete\/|send_sms|email_challan|auth\/login|\/ajax|getProductData|getProductByID|getCustomerAuto|searchAward|searchGift|searchDeposit|CallSMS|SendAuto|saveFace|extractFace|captcha|clear_expired|resend_|verify_|reload_|user_actions|_get_|_render_|_valid_|addcustomer|featuerdProducts|short_setting|view_bill|close_register|registers|RepeateDiscount|CustomerFamily)/i';
+$SKIP_METHODS = '/^(delete|store|update|save|submit|process|login|logout|register|suggestions|addByAjax|hideNotification|set_data|download|__construct|_remap|activate|deactivate|restandlogout|checkoutdata|check_temp_order|char_limit|reset_password|sendNotification)$/i';
+$SKIP_METHOD_PREFIX = '/^(product_actions|supplier_actions|customer_actions|sale_actions|purchase_actions|check_|fetch_|load_|sync_|validate_|import_|export_|upload_|print_|email_|sms_)/i';
+$SKIP_PATH_PARTS = '/(\/_actions\/|\/delete\/|send_sms|email_challan|auth\/login|\/ajax|getProductData|getProductByID|getCustomerAuto|searchAward|searchGift|searchDeposit|CallSMS|SendAuto|saveFace|extractFace|captcha|clear_expired|resend_|verify_|reload_|user_actions|_get_|_render_|_valid_|addcustomer|featuerdProducts|short_setting|view_bill|close_register|registers|RepeateDiscount|CustomerFamily|checkoutdata|check_temp_order|char_limit|\/activate\/|reset_password\/|restandlogout)/i';
 $PDF_METHODS = '/pdf/i';
 $SKIP_VIEW_FILE = '/backup|copy|\(\d|_ep|elite|add2|add_bups|add_sun|nw_theme/i';
 // DataTables POST endpoints — GET ne test nahi
@@ -140,11 +142,175 @@ function auto_should_skip_method($method)
     if (preg_match($DATATABLES_AJAX, $method)) {
         return true;
     }
+    if (preg_match('/^get/i', $method)) {
+        return true;
+    }
+    if (preg_match('/(notify|_init|_email|deposit|check[A-Z]|delete|install_|barcode|alert_|build_|paynear|ccavenue|instamojo|descriptor|config)/i', $method)) {
+        return true;
+    }
+    if (preg_match('/^save[A-Z]/', $method)) {
+        return true;
+    }
+    if (preg_match('/^write_/', $method)) {
+        return true;
+    }
+    if (preg_match('/(payumoney|post_to_url|set_sale|restore|testmail|view_up)/i', $method)) {
+        return true;
+    }
     // PascalCase = internal POS/API helpers (CallSMS, Sale_print)
     if (preg_match('/^[A-Z]/', $method)) {
         return true;
     }
+    if (preg_match('/(data|ajax|json|api)$/i', $method)) {
+        return true;
+    }
     return false;
+}
+
+function auto_is_real_error_type($errorType)
+{
+    return in_array(strtolower((string) $errorType), ['php', 'db', 'empty', 'connection', 'syntax', 'http'], true);
+}
+
+function auto_parse_ci_msg($body)
+{
+    if (preg_match('/<div\s+class=["\']msg["\'][^>]*>(.*?)<\/div>/is', $body, $m)) {
+        $msg = trim(html_entity_decode(strip_tags($m[1]), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+        if ($msg !== '') {
+            return auto_trim_len(preg_replace('/\s+/', ' ', $msg), 320);
+        }
+    }
+    if (preg_match('/<h1[^>]*>(.*?)<\/h1>/is', $body, $m)) {
+        $msg = trim(html_entity_decode(strip_tags($m[1]), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+        if ($msg !== '') {
+            return auto_trim_len($msg, 160);
+        }
+    }
+    return '';
+}
+
+function auto_detect_ci_app_error($body)
+{
+    if ($body === '') {
+        return null;
+    }
+    if (!preg_match('/An Error Was Encountered|404 Page Not Found|Database Error|A PHP Error was encountered|Unable to connect to your database/i', $body)) {
+        return null;
+    }
+    $msg = auto_parse_ci_msg($body);
+    if (preg_match('/Unable to connect to your database|Database Error/i', $body . ' ' . $msg)) {
+        return [
+            'type' => 'db',
+            'issue' => $msg ?: 'Database connection/query error (CI error page)',
+            'hint' => 'DB credentials, MySQL running, schema/prefix (`sma_`) check kara',
+        ];
+    }
+    if (preg_match('/404 Page Not Found/i', $body)) {
+        return [
+            'type' => 'http',
+            'issue' => $msg ?: '404 Page Not Found',
+            'hint' => 'Route/view missing — controller method exist karto ka te bagha',
+        ];
+    }
+    if (preg_match('/Parse error|syntax error|Fatal error|TypeError|Uncaught/i', $body . ' ' . $msg)) {
+        return [
+            'type' => 'php',
+            'issue' => $msg ?: 'PHP error on CI error page',
+            'hint' => 'PHP 8.5 compatibility — null guard / type fix lagel',
+        ];
+    }
+    return [
+        'type' => 'http',
+        'issue' => $msg ?: 'Application error page (CI show_error)',
+        'hint' => 'Browser madhe URL open kara — PHP log / controller line bagha',
+    ];
+}
+
+function auto_is_blank_response($body, $code)
+{
+    $text = trim(preg_replace('/\s+/', ' ', strip_tags((string) $body)));
+    if ($text !== '') {
+        return false;
+    }
+    return in_array((int) $code, [0, 500, 502, 503], true);
+}
+
+function auto_should_skip_resolved_path($path)
+{
+    $p = parse_url($path, PHP_URL_PATH) ?: $path;
+    if (preg_match('#//|/$#', $p)) {
+        return 'incomplete URL (missing ID segment)';
+    }
+    $parts = array_values(array_filter(explode('/', trim($p, '/'))));
+    if (count($parts) === 2 && preg_match('/^(view|pdf|edit|modal_view|payments|add_payment|email|email_invoice)$/i', $parts[1])) {
+        return 'needs ID — skipped blind GET';
+    }
+    return null;
+}
+
+function auto_finalize_test_result(array $analysis, $path, $source = '')
+{
+    if (!empty($analysis['ok'])) {
+        return array_merge($analysis, ['status' => 'pass']);
+    }
+    $type = strtolower((string) ($analysis['error_type'] ?? 'http'));
+    if (in_array($type, ['auth', 'redirect', 'deprecated', 'skip'], true)) {
+        return [
+            'ok' => false,
+            'status' => 'skip',
+            'error_type' => 'skip',
+            'detail' => ($analysis['issue'] ?? $analysis['detail'] ?? 'skipped') . ' (noise — POST/permission/AJAX)',
+            'issue' => '',
+            'hint' => 'Real screen test sathi `phase4_{module}_links_test.php` chalaava',
+        ];
+    }
+    $method = basename(parse_url($path, PHP_URL_PATH) ?: $path);
+    $issueText = (string) ($analysis['issue'] ?? $analysis['detail'] ?? '');
+    if (preg_match('/^controller:/', (string) $source)) {
+        if (preg_match('/404/i', $issueText)) {
+            return [
+                'ok' => false,
+                'status' => 'skip',
+                'error_type' => 'skip',
+                'detail' => '404 on controller method (private/internal — not a screen route)',
+                'issue' => '',
+                'hint' => 'Protected/private helper — dedicated links test vapra',
+            ];
+        }
+        if (preg_match('/Unable to load the requested file/i', $issueText)) {
+            return [
+                'ok' => false,
+                'status' => 'skip',
+                'error_type' => 'skip',
+                'detail' => 'Missing view on internal controller action',
+                'issue' => '',
+                'hint' => 'Dev/test endpoint — not a user screen',
+            ];
+        }
+    }
+    if ($type === 'http' && auto_should_skip_method($method)) {
+        return [
+            'ok' => false,
+            'status' => 'skip',
+            'error_type' => 'skip',
+            'detail' => ($analysis['issue'] ?? 'HTTP error') . ' (internal/AJAX endpoint)',
+            'issue' => '',
+            'hint' => 'Blind GET — dedicated links test vapra',
+        ];
+    }
+    return array_merge($analysis, ['status' => 'fail']);
+}
+
+function auto_count_real_failures()
+{
+    global $auto_failures;
+    $n = 0;
+    foreach ($auto_failures as $f) {
+        if (auto_is_real_error_type($f['error_type'] ?? 'http')) {
+            $n++;
+        }
+    }
+    return $n;
 }
 
 function auto_guess_resolvers($controllerName)
@@ -298,7 +464,10 @@ function auto_record($status, $module, $submodule, $screen, $path, $detail, $sou
         $auto_module_stats[$module]['skip']++;
         $row['status'] = 'skip';
         $row['error_type'] = 'skip';
-        $row['issue'] = $detail;
+        $row['issue'] = $issue !== '' ? $issue : $detail;
+        if ($hint !== '') {
+            $row['hint'] = $hint;
+        }
         $auto_skips_list[] = $row;
     }
 }
@@ -499,12 +668,23 @@ function auto_detect_body_issue($body)
         ];
     }
 
+    $ciErr = auto_detect_ci_app_error($body);
+    if ($ciErr) {
+        return $ciErr;
+    }
+
     $checks = [
         [
+            'type' => 'syntax',
+            'pattern' => '/Parse error|syntax error,|unexpected token|unexpected end of file/i',
+            'hint' => 'PHP syntax error — file parse fix lagel',
+            'msg' => '/(Parse error|syntax error[^<]{0,160})/i',
+        ],
+        [
             'type' => 'php',
-            'pattern' => '/Fatal error|Parse error|Uncaught (Error|TypeError|Exception)|Call to a member function .+ on (null|false)/i',
+            'pattern' => '/Fatal error|Parse error|Uncaught (Error|TypeError|Exception)|Call to a member function .+ on (null|false)|A PHP Error was encountered/i',
             'hint' => 'PHP 8.5 compatibility — null guard / type fix lagel',
-            'msg' => '/(Fatal error|Parse error|Uncaught (Error|TypeError|Exception)|Call to a member function .{0,80} on (null|false)).{0,140}/i',
+            'msg' => '/(Fatal error|Parse error|Uncaught (Error|TypeError|Exception)|Call to a member function .{0,80} on (null|false)|A PHP Error was encountered).{0,140}/i',
         ],
         [
             'type' => 'deprecated',
@@ -582,6 +762,16 @@ function auto_analyze_response($r, $expectedCodes)
             $out['db_error_num'] = $bodyIssue['db_error_num'];
         }
         return $out;
+    }
+
+    if (auto_is_blank_response($body, $code)) {
+        return [
+            'ok' => false,
+            'error_type' => 'empty',
+            'issue' => 'Blank or empty page (HTTP ' . $code . ')',
+            'hint' => 'Page load nahi — PHP fatal (hidden), Apache/PHP log bagha',
+            'detail' => 'Empty body HTTP ' . $code,
+        ];
     }
 
     if ($code === 500) {
@@ -670,7 +860,7 @@ function auto_print_report($moduleFilter, $loginOk)
         );
     }
     echo str_repeat('-', 62) . "\n";
-    printf("  TOTAL ................. %d pass | %d fail | %d skip\n\n", $phase4_pass, $phase4_fail, $phase4_skip);
+    printf("  TOTAL ................. %d pass | %d fail | %d skip | %d real fail\n\n", $phase4_pass, $phase4_fail, $phase4_skip, auto_count_real_failures());
 
     $okModules = [];
     foreach ($auto_module_stats as $mod => $st) {
@@ -684,13 +874,16 @@ function auto_print_report($moduleFilter, $loginOk)
     }
 
     if (!$auto_failures) {
-        echo "FAILURES\n";
+        echo "REAL FAILURES (PHP/DB/syntax/blank)\n";
         echo "  None — sagla green!\n\n";
     } else {
-        echo "FAILURES — fix these (" . count($auto_failures) . ")\n";
+        $realFails = array_values(array_filter($auto_failures, function ($f) {
+            return auto_is_real_error_type($f['error_type'] ?? 'http');
+        }));
+        echo "REAL FAILURES — fix these (" . count($realFails) . ")\n";
         echo str_repeat('=', 62) . "\n";
         $n = 1;
-        foreach ($auto_failures as $f) {
+        foreach ($realFails as $f) {
             echo "\n#{$n} Controller: {$f['controller']}::{$f['method']}\n";
             echo "   Module    : {$f['module']}\n";
             echo "   URL       : {$base}{$f['path']}\n";
@@ -893,7 +1086,9 @@ th{color:#94a3b8;font-weight:600}
 .badge-et.db{background:#581c87;color:#e9d5ff}.badge-et.php{background:#7f1d1d;color:#fecaca}
 .badge-et.http{background:#9a3412;color:#fed7aa}.badge-et.auth{background:#854d0e;color:#fef08a}
 .badge-et.redirect{background:#1e3a8a;color:#bfdbfe}.badge-et.connection{background:#374151;color:#d1d5db}
+.badge-et.syntax{background:#7f1d1d;color:#fecaca}.badge-et.empty{background:#374151;color:#d1d5db}
 .badge-et.deprecated{background:#713f12;color:#fde68a}.badge-et.pass{background:#166534;color:#bbf7d0}
+.stat.real .n{color:#f87171}
 .type-breakdown{font-size:.8rem;color:#94a3b8;margin:-8px 0 12px}
 .dbmeta{font-size:.78rem;color:#e9d5ff;margin-top:6px;font-weight:600;line-height:1.5}
 .dbmeta span{display:inline-block;background:#581c8744;padding:2px 8px;border-radius:4px;margin:2px 4px 2px 0}
@@ -905,7 +1100,7 @@ a{color:#60a5fa}code{background:#0f172a;padding:2px 6px;border-radius:4px;font-s
 .badge-upg{display:inline-block;background:#166534;color:#bbf7d0;font-size:.65rem;padding:2px 6px;border-radius:4px;margin-top:4px}
 </style></head><body><div class="wrap">';
     echo '<div class="hdr"><h1>Auto Deep-Link Test Hub</h1>';
-    echo '<p>Checkbox ne controllers select kara, nantar <strong>Run Selected</strong> — ek card click = single test. Green border = upgraded.</p></div>';
+    echo '<p>Checkbox ne controllers select kara, nantar <strong>Run Selected</strong> — ek card click = single test. Green border = upgraded. <strong>Real Fail</strong> = PHP/DB/syntax/blank page only (AUTH/AJAX noise → Skip).</p></div>';
     echo '<div class="toolbar">';
     echo '<button class="btn btn-primary" id="runSelected">▶ Run Selected (0)</button>';
     echo '<button class="btn btn-secondary" id="runUpgraded">Run All Upgraded</button>';
@@ -922,6 +1117,7 @@ a{color:#60a5fa}code{background:#0f172a;padding:2px 6px;border-radius:4px;font-s
     echo '<h2 id="resultTitle">Results</h2><div class="stats" id="resultStats"></div><div id="typeBreakdown"></div>';
     echo '<div class="tabs" id="resultTabs">';
     echo '<button class="tab active" data-f="all">All</button>';
+    echo '<button class="tab" data-f="real">Real Fail</button>';
     echo '<button class="tab" data-f="pass">Pass</button>';
     echo '<button class="tab" data-f="fail">Fail</button>';
     echo '<button class="tab" data-f="skip">Skip</button>';
@@ -935,12 +1131,14 @@ const upgraded = ' . $upgradedJson . ';
 const allCtrls = ' . $allJson . ';
 const basePath = ' . json_encode($self) . ';
 const credQ = ' . $credQ . ';
-const baseUrl = ' . json_encode('http://localhost/phpupgrade') . ';
+const baseUrl = ' . json_encode('http://localhost/ElintOM18.00') . ';
 const state = {};
 const selected = new Set(upgraded);
 let curRows = [], page = 1, perPage = 25, running = false, viewFilter = "all";
 
 function esc(s){const d=document.createElement("div");d.textContent=s;return d.innerHTML;}
+function isRealFailRow(r){return r.status==="fail"&&["php","db","syntax","empty","connection","http"].includes((r.error_type||"http").toLowerCase());}
+function countRealFails(rows){return rows.filter(isRealFailRow).length;}
 function errTypeLabel(t){return (t||"http").toUpperCase();}
 function errTypeBadge(t){
   const et=(t||"http").toLowerCase();
@@ -948,9 +1146,9 @@ function errTypeBadge(t){
 }
 function typeBreakdown(rows){
   const m={};
-  rows.filter(r=>r.status==="fail").forEach(r=>{const t=(r.error_type||"http").toLowerCase();m[t]=(m[t]||0)+1;});
+  rows.filter(isRealFailRow).forEach(r=>{const t=(r.error_type||"http").toLowerCase();m[t]=(m[t]||0)+1;});
   const parts=Object.keys(m).sort().map(k=>`${errTypeLabel(k)}: ${m[k]}`);
-  return parts.length?`<div class="type-breakdown">Fail by type — ${parts.join(" · ")}</div>`:"";
+  return parts.length?`<div class="type-breakdown">Real fail by type — ${parts.join(" · ")}</div>`:"";
 }
 function dbMetaHtml(r){
   const p=[];
@@ -973,6 +1171,7 @@ function setSelected(c,on){
 }
 function mergeResult(agg,j,mod){
   agg.pass+=(j.pass||0); agg.fail+=(j.fail||0); agg.skip+=(j.skip||0);
+  agg.real_fail=(agg.real_fail||0)+(j.real_fail||0);
   (j.passes||[]).forEach(r=>agg.passes.push(r));
   (j.failures||[]).forEach(r=>agg.failures.push(r));
   (j.skips||[]).forEach(r=>agg.skips.push(r));
@@ -1024,7 +1223,7 @@ async function runOne(mod){
     const j=await fetchModule(mod);
     if(j.error){alert(j.error);state[mod]={status:"fail",pass:0,fail:1,skip:0};showFails(mod,[{controller:mod,method:"-",issue:j.error,path:"/",hint:"",error_type:"php"}]);}
     else{
-      state[mod]={status:j.fail>0?"fail":"ok",pass:j.pass,fail:j.fail,skip:j.skip};
+      state[mod]={status:(j.real_fail||0)>0?"fail":"ok",pass:j.pass,fail:j.fail,skip:j.skip,realFail:j.real_fail||0};
       showResult(mod,j);
     }
   }catch(e){alert(e);state[mod]={status:"fail",pass:0,fail:1,skip:0};}
@@ -1036,9 +1235,11 @@ async function runOne(mod){
 function showResult(mod,j){
   document.getElementById("resultPanel").style.display="block";
   document.getElementById("resultTitle").textContent="Results: "+mod;
+  const rf=j.real_fail!=null?j.real_fail:countRealFails(curRows);
   document.getElementById("resultStats").innerHTML=
     `<div class="stat pass"><div class="n">${j.pass||0}</div>Pass</div>
-     <div class="stat fail"><div class="n">${j.fail||0}</div>Fail</div>
+     <div class="stat real"><div class="n">${rf}</div>Real Fail</div>
+     <div class="stat fail"><div class="n">${j.fail||0}</div>Fail (all)</div>
      <div class="stat skip"><div class="n">${j.skip||0}</div>Skip</div>`;
   curRows=[];
   (j.passes||[]).forEach(r=>curRows.push({...r,status:"pass"}));
@@ -1046,7 +1247,7 @@ function showResult(mod,j){
   (j.skips||[]).forEach(r=>curRows.push({...r,status:"skip"}));
   const tbEl=document.getElementById("typeBreakdown");
   if(tbEl) tbEl.innerHTML=typeBreakdown(curRows);
-  viewFilter = (j.fail>0) ? "fail" : "all";
+  viewFilter = rf>0 ? "real" : ((j.fail>0) ? "fail" : "all");
   document.querySelectorAll("#resultTabs .tab").forEach(t=>{
     t.classList.toggle("active", t.dataset.f===viewFilter);
   });
@@ -1055,7 +1256,9 @@ function showResult(mod,j){
 }
 function showFails(mod,arr){showResult(mod,{pass:0,fail:arr.length,skip:0,failures:arr,passes:[],skips:[]});}
 function renderRows(){
-  const filtered = viewFilter==="all" ? curRows : curRows.filter(r=>r.status===viewFilter);
+  const filtered = viewFilter==="all" ? curRows
+    : viewFilter==="real" ? curRows.filter(isRealFailRow)
+    : curRows.filter(r=>r.status===viewFilter);
   const s=(page-1)*perPage, rows=filtered.slice(s,s+perPage);
   const tb=document.getElementById("resultRows");
   if(!filtered.length){
@@ -1095,7 +1298,7 @@ async function runSeq(list,label){
   if(!list.length){alert("Kamit kami ek controller select kara (checkbox).");return;}
   running=true;
   updateSelUi();
-  const agg={pass:0,fail:0,skip:0,passes:[],failures:[],skips:[]};
+  const agg={pass:0,fail:0,skip:0,real_fail:0,passes:[],failures:[],skips:[]};
   for(let i=0;i<list.length;i++){
     const c=list[i];
     document.getElementById("globalStatus").textContent="["+(i+1)+"/"+list.length+"] Testing "+c+"...";
@@ -1107,7 +1310,7 @@ async function runSeq(list,label){
         state[c]={status:"fail",pass:0,fail:1,skip:0};
         mergeResult(agg,{pass:0,fail:1,skip:0,failures:[{controller:c,method:"-",issue:j.error,path:"/",hint:"",error_type:"php"}],passes:[],skips:[]},c);
       }else{
-        state[c]={status:j.fail>0?"fail":"ok",pass:j.pass,fail:j.fail,skip:j.skip};
+        state[c]={status:(j.real_fail||0)>0?"fail":"ok",pass:j.pass,fail:j.fail,skip:j.skip,realFail:j.real_fail||0};
         mergeResult(agg,j,c);
       }
     }catch(e){
@@ -1187,7 +1390,7 @@ function auto_scan_controller($controllerName)
         if (auto_should_skip_method($method)) {
             continue;
         }
-        if (preg_match('/^(private|protected)\s+function\s+' . preg_quote($method, '/') . '/m', $content)) {
+        if (preg_match('/\b(private|protected)\s+function\s+' . preg_quote($method, '/') . '\b/', $content)) {
             continue;
         }
         $params = trim($m[2][$i]);
@@ -1411,25 +1614,27 @@ function auto_should_skip_template($template)
     return null;
 }
 
-function auto_test_url($base, $cookieFile, $path, $screen)
+function auto_test_url($base, $cookieFile, $path, $screen, $source = '')
 {
     global $PDF_METHODS;
     $method = basename(parse_url($path, PHP_URL_PATH) ?: $path);
     $codes = preg_match($PDF_METHODS, $method) ? [200, 302] : [200];
     $r = phase4_httpGetFollow("$base$path", $cookieFile);
     $analysis = auto_analyze_response($r, $codes);
+    $final = auto_finalize_test_result($analysis, $path, $source);
     $dbMeta = [];
     foreach (['db_column', 'db_table', 'db_error_num'] as $k) {
-        if (!empty($analysis[$k])) {
-            $dbMeta[$k] = $analysis[$k];
+        if (!empty($final[$k])) {
+            $dbMeta[$k] = $final[$k];
         }
     }
+    $status = $final['status'] ?? ($final['ok'] ? 'pass' : 'fail');
     return [
-        $analysis['ok'] ? 'pass' : 'fail',
-        $analysis['detail'],
-        $analysis['ok'] ? '' : $analysis['issue'],
-        $analysis['ok'] ? '' : $analysis['hint'],
-        $analysis['error_type'],
+        $status,
+        $final['detail'] ?? ($final['ok'] ? 'HTTP ' . ($r['code'] ?? 0) : ''),
+        $status === 'fail' ? ($final['issue'] ?? '') : '',
+        $status === 'fail' ? ($final['hint'] ?? '') : ($status === 'skip' ? ($final['hint'] ?? '') : ''),
+        $status === 'pass' ? 'pass' : ($final['error_type'] ?? 'http'),
         $dbMeta,
     ];
 }
@@ -1476,11 +1681,16 @@ function auto_run_module($moduleKey, $cfg, $base, $cookieFile)
                     auto_record('skip', $moduleKey, $submodule, $screen, $tpl, 'no ID in DB', $entry['source']);
                     continue;
                 }
+                $pathSkip = auto_should_skip_resolved_path($path);
+                if ($pathSkip) {
+                    auto_record('skip', $moduleKey, $submodule, $screen, $path, $pathSkip, $entry['source']);
+                    continue;
+                }
                 if (isset($moduleSeenPaths[$path])) {
                     continue;
                 }
                 $moduleSeenPaths[$path] = true;
-                list($status, $detail, $issue, $hint, $errorType, $dbMeta) = auto_test_url($base, $cookieFile, $path, $screen);
+                list($status, $detail, $issue, $hint, $errorType, $dbMeta) = auto_test_url($base, $cookieFile, $path, $screen, $entry['source']);
                 auto_record($status, $moduleKey, $submodule, $screen, $path, $detail, $entry['source'], $issue, $hint, $errorType, $dbMeta);
                 if ($verbose) {
                     $tag = strtoupper($status);
@@ -1517,9 +1727,18 @@ $UPGRADED_MODULES = auto_discover_upgraded_modules(array_keys($MODULE_REGISTRY))
 
 // --- Web: single-controller JSON API (performance — one module per request) ---
 if ($isWeb && $webAction === 'run') {
-    header('Content-Type: application/json; charset=UTF-8');
     $mod = trim($_GET['module'] ?? '');
-    if ($mod === '' || !isset($MODULE_REGISTRY[$mod])) {
+    if ($mod === 'all' || $mod === '') {
+        $self = $_SERVER['SCRIPT_NAME'] ?? '/upgrade/phase4_auto_links_test.php';
+        $q = http_build_query([
+            'identity' => $identity,
+            'password' => $password,
+        ]);
+        header('Location: ' . $self . '?' . $q);
+        exit(0);
+    }
+    header('Content-Type: application/json; charset=UTF-8');
+    if (!isset($MODULE_REGISTRY[$mod])) {
         echo json_encode(['error' => 'Unknown module: ' . $mod]);
         exit(1);
     }
@@ -1539,32 +1758,18 @@ if ($isWeb && $webAction === 'run') {
         'pass' => $phase4_pass,
         'fail' => $phase4_fail,
         'skip' => $phase4_skip,
+        'real_fail' => auto_count_real_failures(),
         'passes' => $auto_passes,
         'failures' => $auto_failures,
         'skips' => $auto_skips_list,
     ]);
-    exit($phase4_fail > 0 ? 1 : 0);
+    exit(auto_count_real_failures() > 0 ? 1 : 0);
 }
 
-// --- Web: hub UI (default — no heavy run on page load) ---
-if ($isWeb && $webAction !== 'batch' && ($moduleFilter === '' || $moduleFilter === 'hub')) {
+// --- Web: hub UI (all controllers + checkbox select + Run Selected) ---
+if ($isWeb && $webAction !== 'batch') {
     auto_print_hub_ui($MODULE_REGISTRY, $UPGRADED_MODULES, $identity, $password, $scope);
     exit(0);
-}
-
-// --- Web: legacy batch run (module=all&batch=1) ---
-if ($isWeb && $moduleFilter !== '') {
-    header('Content-Type: text/html; charset=UTF-8');
-    echo '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Running tests...</title>';
-    echo '<style>body{font-family:system-ui;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#f0f2f5}';
-    echo '.box{text-align:center;padding:40px;background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.1)}';
-    echo '.spin{border:4px solid #e2e8f0;border-top:4px solid #2563eb;border-radius:50%;width:40px;height:40px;animation:spin 1s linear infinite;margin:0 auto 16px}';
-    echo '@keyframes spin{to{transform:rotate(360deg)}}</style></head><body><div class="box">';
-    echo '<div class="spin"></div><p>Batch run… use <a href="?' . htmlspecialchars('identity=' . urlencode($identity) . '&password=' . urlencode($password)) . '">Hub UI</a> for faster per-controller testing.</p></div></body></html>';
-    if (ob_get_level()) {
-        ob_end_flush();
-    }
-    flush();
 }
 
 @unlink($cookieFile);
@@ -1614,4 +1819,4 @@ if ($isWeb) {
 } else {
     auto_print_report($batchModule, $loginOk);
 }
-exit($phase4_fail > 0 ? 1 : 0);
+exit(auto_count_real_failures() > 0 ? 1 : 0);

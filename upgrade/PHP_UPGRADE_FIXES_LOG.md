@@ -2142,6 +2142,7 @@ $return = parent::line($line, FALSE);
 | 2026-07-12 | Shared | `MY_Lang.php` — cache pos_type labels per request; stop missing-key ERROR log spam on every page refresh |
 | 2026-07-12 | 3 | Module 3 POS return — `returnsale()` PHP 8.5 guards + scoped `remove_commas(..., 4)` in `returnsale()` only; `phase4_pos_return_deep_test.php` **8/8**, `phase4_pos_return_links_test.php` **14/14** |
 | 2026-07-12 | 25 | Module 25 CMS Admin Panel — schema tag-default tables, entity_faqs/leads/helpers restore; screen **7/7**, deep-links **43/43** |
+| 2026-07-12 | test | `phase4_auto_links_test.php` — accurate Real Fail detection (PHP/DB/syntax/CI error page/blank 500); AUTH/AJAX noise → Skip; hub **Real Fail** tab + stat |
 
 ---
 
