@@ -7,8 +7,8 @@ error_reporting(E_ALL);
 ini_set('display_errors', '1');
 
 $_SERVER['HTTP_HOST'] = 'localhost';
-$_SERVER['SCRIPT_NAME'] = '/phpupgrade/index.php';
-$_SERVER['REQUEST_URI'] = '/phpupgrade/';
+$_SERVER['SCRIPT_NAME'] = '/ElintOM18.00/index.php';
+$_SERVER['REQUEST_URI'] = '/ElintOM18.00/';
 $_SERVER['REQUEST_METHOD'] = 'GET';
 $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 $_SERVER['SERVER_NAME'] = 'localhost';

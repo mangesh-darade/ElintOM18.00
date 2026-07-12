@@ -4,7 +4,7 @@
 |------|-------|
 | Framework | CodeIgniter 3.1.13 |
 | Application | ElintPOS / SMA ERP |
-| **Fixes log** | **`PHP_UPGRADE_FIXES_LOG.md`** (Old → New, modules 1–9+) |
+| **Fixes log** | **`PHP_UPGRADE_FIXES_LOG.md`** (Old → New, modules 1–24) |
 | Total Controllers | ~75 |
 | Total Screens | ~900+ |
 | Total Files | ~21,900 |
@@ -19,8 +19,8 @@
 |-------|-------|------------|----------|------|--------|
 | Phase 1 | `system/` | CI 3.1.13 + PHP 8 session wrappers | Critical | Low | **Done** (ElintOM18.00 2026-07-11) |
 | Phase 2 | `app/third_party/` | MPDF, PHPExcel, Stripe, Google SDK upgrade | Critical | High | **Done** (ElintOM18.00 2026-07-11) |
-| Phase 3 | `app/` | Controllers, Models, `libraries/Sma.php` | High | Medium | In Progress |
-| Phase 4 | All modules | Module-wise screen testing | Medium | — | **In Progress** |
+| Phase 3 | `app/` | Controllers, Models, `libraries/Sma.php` | High | Medium | **Done** (modules 1–24 — 2026-07-12) |
+| Phase 4 | All modules | Module-wise screen testing | Medium | — | **Done** (24/24 certified — 2026-07-12) |
 
 ---
 
