@@ -1814,7 +1814,73 @@ $this->data['leads_type'] =  $this->Leads_model->getLeadTypes();
 
 ---
 
-## Test scripts index (Modules 1–21)
+## Module 22 — Urban Piper / Omnichannel
+
+**Tests:** `phase4_urban_piper_test.php` (**8/8**), `phase4_urban_piper_links_test.php` (**9/9**), `phase4_omnichannel_test.php` (**9/9**), `phase4_omnichannel_links_test.php` (**11/11**) PASS  
+**Status:** ✅ Module complete — fixes applied + retest 2026-07-12  
+**Controllers:** `Urban_piper.php`, `Omnichannel.php` — `Urban_piper_model.php` — restored `urbanpiper/add_delivery.php`, `urbanpiper/edit_delivery.php`
+
+| # | File | Old | New | Type |
+|---|------|-----|-----|------|
+| 22.1 | `Urban_piper.php` | `$setting->site_name`, `$apikey->api_key` on false | `isset` guards; `$this->upsetting = $apikey ? $apikey : ''` | guard |
+| 22.2 | `Urban_piper.php` | `$store[0]` without empty check in `set_store_id` | `!empty($store) && isset($store[0])` guard | guard |
+| 22.3 | `Urban_piper.php` | `$upOrders[$saleid]` without guard in `order_details` | early return "Order not found" | guard |
+| 22.4 | `Urban_piper.php` | `$_SERVER[HTTP_HOST]` bare constant | `isset($_SERVER['HTTP_HOST'])` guards (P1) | syntax |
+| 22.5 | `Urban_piper.php` | `redirect($_SERVER["HTTP_REFERER"])` | `isset` + fallback `urban_piper/orders` (P1) | guard |
+| 22.6 | `Omnichannel.php` | Same constructor / `set_store_id` / `order_details` patterns | Mirror Urban_piper guards | guard |
+| 22.7 | `Omnichannel.php` | `redirect($_SERVER["HTTP_REFERER"])` (~19×) | `isset` + fallback `Omnichannel` (P1) | guard |
+| 22.8 | `Omnichannel.php` | `$sale->sale_status` when `getwebshopInvoiceByID` false | `lang('sale_not_found')` + `$this->sma->md()` | guard |
+| 22.9 | `Urban_piper_model.php` | `getOrders()` undefined `$data`; `getStoreByReffId` `$get_data[0]` | init `$data = array()`; empty → `FALSE` | guard |
+| 22.10 | `Urban_piper_model.php` | `redirect($_SERVER["HTTP_REFERER"])` | `isset` + fallback `urban_piper/orders` | guard |
+| 22.11 | `urbanpiper/add_delivery.php`, `edit_delivery.php` | Missing — controller 500 | Restored from sales views; form → `Omnichannel/...` | restore |
+| 22.12 | `phase4_urban_piper_*.php`, `phase4_omnichannel_*.php` | — | Screen + deep-link test scripts | test |
+
+#### 22.1 `Urban_piper.php` — constructor API key guard
+
+**Old code:**
+```php
+$this->site_name = $setting->site_name;
+$this->api_key = $apikey->api_key;
+$this->upsetting = $apikey;
+```
+
+**New code:**
+```php
+$this->site_name = ($setting && isset($setting->site_name)) ? $setting->site_name : '';
+$this->api_key = ($apikey && isset($apikey->api_key)) ? $apikey->api_key : '';
+$this->upsetting = $apikey ? $apikey : '';
+```
+
+#### 22.3 `Urban_piper.php` — order_details missing order
+
+**Old code:**
+```php
+$upOrders = $this->UPM->getOrders($saleid);
+$upOrdersItems = $this->UPM->getOrderItems($saleid);
+```
+
+**New code:**
+```php
+$upOrders = $this->UPM->getOrders($saleid);
+if (empty($upOrders) || !isset($upOrders[$saleid])) {
+    echo '<div class="alert alert-danger">Order not found</div>';
+    return;
+}
+$upOrdersItems = $this->UPM->getOrderItems($saleid);
+```
+
+#### 22.11 `urbanpiper/add_delivery.php` — restore view
+
+**Old code:** *(file absent — 500 on `Omnichannel/add_delivery`)*
+
+**New code:**
+```php
+echo form_open_multipart("Omnichannel/add_delivery/" . $inv->id, $attrib);
+```
+
+---
+
+## Test scripts index (Modules 1–22)
 
 | Module | Scripts |
 |--------|---------|
@@ -1835,6 +1901,8 @@ $this->data['leads_type'] =  $this->Leads_model->getLeadTypes();
 | 18 System Settings | `phase4_system_settings_test.php`, `phase4_system_settings_links_test.php` |
 | 19 Attendance | `phase4_attendance_test.php`, `phase4_attendance_links_test.php` |
 | 20 Leads | `phase4_leads_test.php`, `phase4_leads_links_test.php` |
+| 21 Service Requests | `phase4_service_requests_test.php`, `phase4_service_requests_links_test.php` |
+| 22 Urban Piper / Omnichannel | `phase4_urban_piper_test.php`, `phase4_urban_piper_links_test.php`, `phase4_omnichannel_test.php`, `phase4_omnichannel_links_test.php` |
 | Shared | `phase4_test_lib.php` |
 
 **Run:** `cd upgrade && php phase4_<module>_*.php Admin "Admin@554"`
@@ -1872,6 +1940,8 @@ $this->data['leads_type'] =  $this->Leads_model->getLeadTypes();
 | 2026-07-12 | 18 | Module 18 System Settings **certified complete** — HTTP_REFERER, manage_barcode/import guards, manage_barcode view; screen **15/15**, links **18/18** |
 | 2026-07-12 | 19 | Module 19 Attendance **certified complete** — report/list_actions foreach guards, restore `edit_user` view; screen **4/4**, links **7/7** |
 | 2026-07-12 | 20 | Module 20 Leads **certified complete** — add empty `$leads`, getByID/modal guards, getLeadTypes array; screen **4/4**, links **8/8** |
+| 2026-07-12 | 21 | Module 21 Service Requests **certified complete** — mobile foreach + Settings guards; screen **5/5**, links **11/11** |
+| 2026-07-12 | 22 | Module 22 Urban Piper / Omnichannel **certified complete** — constructor/order guards, HTTP_REFERER, restore delivery views; UP **8/8** + **9/9**, OC **9/9** + **11/11** |
 
 ---
 

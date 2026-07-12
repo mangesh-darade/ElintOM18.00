@@ -12,10 +12,10 @@ PHASE OVERVIEW
 Phase 1  Framework (system/)           DONE (ElintOM18.00 2026-07-11)
 Phase 2  Third party (MPDF, Stripe...) DONE (ElintOM18.00 2026-07-11)
 Phase 3  App core (Sma, crypto, etc.)   IN PROGRESS (base fixes done)
-Phase 4  Module screen + deep testing   IN PROGRESS (21 of 24 complete)
+Phase 4  Module screen + deep testing   IN PROGRESS (22 of 24 complete)
 
 ================================================================================
-MODULES 1–20 — COMPLETE
+MODULES 1–21 — COMPLETE
 ================================================================================
 
 #   Module              Controller(s)              Status
@@ -43,16 +43,16 @@ MODULES 1–20 — COMPLETE
 18  System Settings     System_settings.php          COMPLETE — screen 15/15 + links 18/18 (2026-07-12)
 19  Attendance          Attendance.php               COMPLETE — screen 4/4 + links 7/7 (2026-07-12)
 20  Leads (CRM)         Leads.php                    COMPLETE — screen 4/4 + links 8/8 (2026-07-12)
+21  Service Requests    Service_requests.php         COMPLETE — screen 5/5 + links 11/11 (2026-07-12)
+22  Urban Piper /       Urban_piper.php,             COMPLETE — screen 8/8 + 9/9 UP links + 9/9 OC screen + 11/11 OC links (2026-07-12)
+    Omnichannel         Omnichannel.php
 
 ================================================================================
-PENDING MODULES (21–24) — NOT STARTED
+PENDING MODULES (23–24) — NOT STARTED
 ================================================================================
 
 #   Module              Controller(s)              Screens  Priority
 --  ------------------  -------------------------  -------  --------
-21  Service Requests    Service_requests.php         3        P3
-22  Urban Piper /       Urban_piper.php,             30       P3
-    Omnichannel         Omnichannel.php
 23  APIs (JSON)         Api3, Api4, ApiOwner,       0 UI     P2
                         Restapi5, Webhook, Whatsapp
 24  Other Modules       Various                      50+      P2-P4
@@ -60,8 +60,8 @@ PENDING MODULES (21–24) — NOT STARTED
 ================================================================================
 SUMMARY
 ================================================================================
-Complete  : 20 modules (Auth through Leads)
-Pending   : 4 modules (21–24)
-Progress  : 20 / 24 modules certified complete
+Complete  : 22 modules (Auth through Urban Piper / Omnichannel)
+Pending   : 2 modules (23–24)
+Progress  : 22 / 24 modules certified complete
 
 ================================================================================

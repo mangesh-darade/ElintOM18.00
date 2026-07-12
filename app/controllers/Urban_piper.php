@@ -33,12 +33,12 @@ class Urban_piper extends MY_Controller {
         $this->merchant_phone = isset($config->config['merchant_phone']) && !empty($config->config['merchant_phone']) ? $config->config['merchant_phone'] : null;
         $this->data['store_setting'] = $this->UPM->getrecords('sma_up_stores', '*', 'row');
         $setting = $this->UPM->check_dependancy('sma_settings', array('setting_id' => '1'), 'site_name');
-        $this->site_name = $setting->site_name;
+        $this->site_name = ($setting && isset($setting->site_name)) ? $setting->site_name : '';
 
         $apikey = $this->UPM->getrecords('sma_up_settings', '*', 'row', array('id' => '1', 'is_active' => '1'));
-        $this->api_key = $apikey->api_key;
+        $this->api_key = ($apikey && isset($apikey->api_key)) ? $apikey->api_key : '';
         
-        $this->upsetting = $apikey;
+        $this->upsetting = $apikey ? $apikey : '';
         $this->data['up_setting'] = $this->UPM->getrecords('sma_up_settings', '*', 'row');
 
         $this->upApiUrl = $config->config['UP_QUINT_URL'];
@@ -47,11 +47,14 @@ class Urban_piper extends MY_Controller {
     public function set_store_id($storeid) {
 
         $store = $this->UPM->getallstore($storeid);
+        if (!empty($store) && isset($store[0])) {
         $this->data['store'] = $store[0];
         $this->store_id = $storeid;
         $this->store_reff_id = $store[0]->ref_id;
 
         return $this->store_reff_id;
+        }
+        return '';
     }
 
     public function index() {
@@ -149,6 +152,10 @@ class Urban_piper extends MY_Controller {
     public function order_details($saleid) {
 
         $upOrders = $this->UPM->getOrders($saleid);
+        if (empty($upOrders) || !isset($upOrders[$saleid])) {
+            echo '<div class="alert alert-danger">Order not found</div>';
+            return;
+        }
 
         $upOrdersItems = $this->UPM->getOrderItems($saleid);
         $up_response = unserialize($upOrders[$saleid]->up_response);
@@ -423,7 +430,7 @@ class Urban_piper extends MY_Controller {
         $this->data['error'] = (validation_errors()) ? validation_errors() : $this->session->flashdata('error');
 
         if (isset($this->data['error'])) {
-            $error_url = "http://" . $_SERVER[HTTP_HOST] . $_SERVER[REQUEST_URI];
+            $error_url = "http://" . (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost') . (isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '');
             $logger = array($this->data['error'], $error_url);
             $this->pos_error_log($logger);
         }
@@ -3602,7 +3609,7 @@ exit;*/
             }
 
 //              
-            return redirect($_SERVER['HTTP_REFERER']);
+            return redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'urban_piper/orders');
         } else {
             $this->data['warehouses'] = $this->site->getAllWarehouses();
             $this->data['store_info'] = $this->UPM->getrecords('sma_up_stores', '*', 'row', array('id' => $id));
@@ -4205,7 +4212,7 @@ exit;*/
                 $post = $this->input->post();
                 if (!isset($post['val'])) {
                     $this->session->set_flashdata('errors', "Please Select Product");
-                    return redirect($_SERVER['HTTP_REFERER']);
+                    return redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'urban_piper/orders');
                 } else {
                     $platform = $this->input->post('paltfrom');
                     $action = $this->input->post('action');
@@ -4229,7 +4236,7 @@ exit;*/
                     } else {
                         $this->session->set_flashdata('errors', "Please try again");
                     }
-                    return redirect($_SERVER['HTTP_REFERER']);
+                    return redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'urban_piper/orders');
                 }
             } else {
 

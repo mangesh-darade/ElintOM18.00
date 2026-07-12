@@ -37,12 +37,12 @@ class Omnichannel extends MY_Controller {
         $this->merchant_phone = isset($config->config['merchant_phone']) && !empty($config->config['merchant_phone']) ? $config->config['merchant_phone'] : null;
         $this->data['store_setting'] = $this->UPM->getrecords('sma_up_stores', '*', 'row');
         $setting = $this->UPM->check_dependancy('sma_settings', array('setting_id' => '1'), 'site_name');
-        $this->site_name = $setting->site_name;
+        $this->site_name = ($setting && isset($setting->site_name)) ? $setting->site_name : '';
 
         $apikey = $this->UPM->getrecords('sma_up_settings', '*', 'row', array('id' => '1', 'is_active' => '1'));
-        $this->api_key = $apikey->api_key;
+        $this->api_key = ($apikey && isset($apikey->api_key)) ? $apikey->api_key : '';
         
-        $this->upsetting = $apikey;
+        $this->upsetting = $apikey ? $apikey : '';
         $this->data['up_setting'] = $this->UPM->getrecords('sma_up_settings', '*', 'row');
 
         $this->upApiUrl = $config->config['UP_QUINT_URL'];
@@ -72,11 +72,14 @@ class Omnichannel extends MY_Controller {
     public function set_store_id($storeid) {
 
         $store = $this->UPM->getallstore($storeid);
+        if (!empty($store) && isset($store[0])) {
         $this->data['store'] = $store[0];
         $this->store_id = $storeid;
         $this->store_reff_id = $store[0]->ref_id;
 
         return $this->store_reff_id;
+        }
+        return '';
     }
 
     public function index() {
@@ -112,6 +115,10 @@ class Omnichannel extends MY_Controller {
     public function order_details($saleid) {
 
         $upOrders = $this->UPM->getOrders($saleid);
+        if (empty($upOrders) || !isset($upOrders[$saleid])) {
+            echo '<div class="alert alert-danger">Order not found</div>';
+            return;
+        }
 
         $upOrdersItems = $this->UPM->getOrderItems($saleid);
         $up_response = unserialize($upOrders[$saleid]->up_response);
@@ -386,7 +393,7 @@ class Omnichannel extends MY_Controller {
         $this->data['error'] = (validation_errors()) ? validation_errors() : $this->session->flashdata('error');
 
         if (isset($this->data['error'])) {
-            $error_url = "http://" . $_SERVER[HTTP_HOST] . $_SERVER[REQUEST_URI];
+            $error_url = "http://" . (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost') . (isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '');
             $logger = array($this->data['error'], $error_url);
             $this->pos_error_log($logger);
         }
@@ -3565,7 +3572,7 @@ exit;*/
             }
 
 //              
-            return redirect($_SERVER['HTTP_REFERER']);
+            return redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'Omnichannel');
         } else {
             $this->data['warehouses'] = $this->site->getAllWarehouses();
             $this->data['store_info'] = $this->UPM->getrecords('sma_up_stores', '*', 'row', array('id' => $id));
@@ -4168,7 +4175,7 @@ exit;*/
                 $post = $this->input->post();
                 if (!isset($post['val'])) {
                     $this->session->set_flashdata('errors', "Please Select Product");
-                    return redirect($_SERVER['HTTP_REFERER']);
+                    return redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'Omnichannel');
                 } else {
                     $platform = $this->input->post('paltfrom');
                     $action = $this->input->post('action');
@@ -4192,7 +4199,7 @@ exit;*/
                     } else {
                         $this->session->set_flashdata('errors', "Please try again");
                     }
-                    return redirect($_SERVER['HTTP_REFERER']);
+                    return redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'Omnichannel');
                 }
             } else {
 
@@ -6015,6 +6022,10 @@ exit;*/
             $id = $this->input->get('id');
         }
         $sale = $this->pos_model->getwebshopInvoiceByID($id);
+        if (!$sale) {
+            $this->session->set_flashdata('error', lang('sale_not_found'));
+            $this->sma->md();
+        }
         $this->data['inv_items'] = $this->pos_model->getAllWebshopInvoiceItems($id);
        
         if ($delivery = $this->sales_model->getDeliveryBySaleID($id)) {
@@ -6093,20 +6104,20 @@ exit;*/
                     if (!$this->upload->do_upload('document')) {
                         $error = $this->upload->display_errors();
                         $this->session->set_flashdata('error', $error);
-                        redirect($_SERVER["HTTP_REFERER"]);
+                        redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'Omnichannel');
                     }
                     $photo = $this->upload->file_name;
                     $data['attachment'] = $photo;
                 }
             } elseif ($this->input->post('add_delivery')) {
                 $this->session->set_flashdata('error', validation_errors());
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'Omnichannel');
             }
             if ($this->form_validation->run() == true && $this->sales_model->addDelivery($dlDetails)) {
                 $orderstatus = 'Dispatched';
                 $this->UPM->updateDeliveringStatus($this->input->post('sale_id'), $updateItemsDelivery, $saleDeliveryStatus,$orderstatus);
                 $this->session->set_flashdata('message', lang("delivery_added"));
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'Omnichannel');
             } else {
 
                 $this->data['error'] = (validation_errors() ? validation_errors() : $this->session->flashdata('error'));
@@ -6210,7 +6221,7 @@ exit;*/
                 if (!$this->upload->do_upload('document')) {
                     $error = $this->upload->display_errors();
                     $this->session->set_flashdata('error', $error);
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'Omnichannel');
                 }
                 $photo = $this->upload->file_name;
                 $data['attachment'] = $photo;
@@ -6222,7 +6233,7 @@ exit;*/
             }
         } elseif ($this->input->post('edit_delivery')) {
             $this->session->set_flashdata('error', validation_errors());
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'Omnichannel');
         }
         if ($this->form_validation->run() == true && $this->sales_model->updateDelivery($id, $dlDetails)) {
             $this->UPM->updateDeliveringStatus($this->input->post('sale_id'), $updateItemsDelivery, $saleDeliveryStatus,$this->input->post('status'));
@@ -6797,7 +6808,7 @@ exit;*/
 
             if (strtotime($end_time) <= strtotime($start_time)) {
                 $this->session->set_flashdata('error', 'End Time must be greater than Start Time.');
-                redirect($_SERVER['HTTP_REFERER']);
+                redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'Omnichannel');
                 return;
             }
             $category_id      = $this->input->post('category_id');
@@ -6849,7 +6860,7 @@ exit;*/
 
             if (strtotime($end_time) <= strtotime($start_time)) {
                 $this->session->set_flashdata('error', 'End Time must be greater than Start Time.');
-                redirect($_SERVER['HTTP_REFERER']);
+                redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'Omnichannel');
                 return;
             }
             $data = [
@@ -7112,7 +7123,7 @@ exit;*/
 
         if (!$this->Owner && !$this->GP['bulk_actions']) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'Omnichannel');
         }
 
         $this->form_validation->set_rules('form_action', lang("form_action"), 'required');
@@ -7135,7 +7146,7 @@ exit;*/
             //             $this->session->set_flashdata('message', lang("schedules_deleted"));
             //         }
 
-            //         redirect($_SERVER["HTTP_REFERER"]);
+            //         redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'Omnichannel');
             //     }
 
                 if ($this->input->post('form_action') == 'export_excel' || $this->input->post('form_action') == 'export_pdf') {
@@ -7216,19 +7227,19 @@ exit;*/
                         return $objWriter->save('php://output');
                     }
 
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'Omnichannel');
                 }
 
         } else {
             $this->session->set_flashdata('error', lang("no_schedule_selected"));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'Omnichannel');
         }
     }
     public function holiday_actions(){
 
         if (!$this->Owner && !$this->GP['bulk_actions']) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'Omnichannel');
         }
 
         $this->form_validation->set_rules('form_action', lang("form_action"), 'required');
@@ -7252,7 +7263,7 @@ exit;*/
                         $this->session->set_flashdata('message', lang("holidays_deleted"));
                     }
 
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'Omnichannel');
                 }
 
                 if ($this->input->post('form_action') == 'export_excel' || $this->input->post('form_action') == 'export_pdf') {
@@ -7328,16 +7339,16 @@ exit;*/
                         return $objWriter->save('php://output');
                     }
 
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'Omnichannel');
                 }
 
             } else {
                 $this->session->set_flashdata('error', lang("no_holiday_selected"));
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'Omnichannel');
             }
         } else {
             $this->session->set_flashdata('error', validation_errors());
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'Omnichannel');
         }
     }
     public function import_schedule(){

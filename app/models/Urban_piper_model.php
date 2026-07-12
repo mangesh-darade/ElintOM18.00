@@ -110,7 +110,10 @@ class Urban_piper_model  extends CI_Model
 
         $get_data = $this->db->get_where('sma_up_stores', ['ref_id' => $ref_id])->result();
 
-        return $get_data[0];
+        if (!empty($get_data) && isset($get_data[0])) {
+            return $get_data[0];
+        }
+        return FALSE;
     }
 
 
@@ -497,6 +500,7 @@ class Urban_piper_model  extends CI_Model
 
         $q = $this->db->query($sql);
 
+        $data = array();
         if ($q->num_rows()) {
             foreach ($q->result() as $row) {
                 $data[$row->sale_id] = $row;
@@ -1069,7 +1073,7 @@ class Urban_piper_model  extends CI_Model
             $msg = sprintf(lang("quantity_out_of_stock_for_%s"), ($pi->product_name ? $pi->product_name : $product_name));
             $this->session->set_flashdata('error', $msg);
             if (!$this->input->is_ajax_request()) {
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'urban_piper/orders');
             } else {
                 $response['status'] = 'error';
                 $response['message'] = $msg;
@@ -1149,7 +1153,7 @@ class Urban_piper_model  extends CI_Model
             $msg = sprintf(lang("quantity_out_of_stock_for_%s"), ($pi->product_name ? $pi->product_name : $product_name));
             $this->session->set_flashdata('error', $msg);
             if (!$this->input->is_ajax_request()) {
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'urban_piper/orders');
             } else {
                 $response['status'] = 'error';
                 $response['message'] = $msg;
