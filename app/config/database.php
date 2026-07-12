@@ -73,7 +73,7 @@ switch ($subdomain) {
 			'dbdriver' => 'mysqli',
 			'dbprefix' => 'sma_',
 			'pconnect' => FALSE,
-			'db_debug' => TRUE,
+			'db_debug' => FALSE,
 			'cache_on' => FALSE,
 			'cachedir' => '',
 			'char_set' => 'utf8',

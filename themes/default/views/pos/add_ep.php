@@ -1621,6 +1621,7 @@ if ($pos_settings->select_season == 1 && $pos_settings->category_search == 1) {
                             <input type="hidden" value="" name="pending_amount" id="pending_amount" />
                             <input type="hidden" value="" name="invoice_amounts" id="invoice_amounts" />
                             <input type="hidden" value="" name="selected_amounts" id="selected_amounts" />
+                            <input type="hidden" value="0" name="coinage_return_mode" id="coinage_return_mode" />
                             <input type="hidden" value="" name="payment_method" id="payment_method" />
                             <input type="hidden" value="" name="order_type" id="hidden_ordertype" />
                             <div id="print">
@@ -2706,8 +2707,8 @@ if ($pos_settings->select_season == 1 && $pos_settings->category_search == 1) {
                                             
 
                                         <script>
-                                            let activeCategory = null;
-                                            let activeIcon = null; // Store the currently active icon element
+                                            var activeCategory = null;
+                                            var activeIcon = null; // Store the currently active icon element
 
                                             function toggleCategoryView(categoryId, hasSubcategories) {
                                                 const categoryContainer = document.getElementById('category-container');
@@ -9029,25 +9030,35 @@ if ($_SESSION['Print_Deposite_Receipt']['status'] == '1') {
         codeReader.getVideoInputDevices()
             .then((videoInputDevices) => {
                 const sourceSelect = document.getElementById('sourceSelect')
+                const scanCameraBtn = document.getElementById('scancamerabtn')
+                const closeCameraBtn = document.getElementById('closecamera')
                 console.log(videoInputDevices);
-                selectedDeviceId = videoInputDevices[0].deviceId
-                if (videoInputDevices.length >= 1) {
+                if (videoInputDevices.length >= 1 && videoInputDevices[0]) {
+                    selectedDeviceId = videoInputDevices[0].deviceId
                     videoInputDevices.forEach((element) => {
+                        if (!sourceSelect) {
+                            return;
+                        }
                         const sourceOption = document.createElement('option')
                         sourceOption.text = element.label
                         sourceOption.value = element.deviceId
                         sourceSelect.appendChild(sourceOption)
                     })
 
+                    if (sourceSelect) {
                     sourceSelect.onchange = () => {
                         selectedDeviceId = sourceSelect.value;
                     };
+                    }
                     const sourceSelectPanel = document.getElementById('sourceSelectPanel')
+                    if (sourceSelectPanel) {
                     sourceSelectPanel.style.display = 'block'
+                    }
                 }
 
                 //document.getElementById('startButton').addEventListener('click', () => {
-                document.getElementById('scancamerabtn').addEventListener('click', () => {
+                if (scanCameraBtn) {
+                scanCameraBtn.addEventListener('click', () => {
                     codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
                         if (result) {
                             console.log(result.getText())
@@ -9069,14 +9080,17 @@ if ($_SESSION['Print_Deposite_Receipt']['status'] == '1') {
                     })
                     console.log(`Started continous decode from camera with id ${selectedDeviceId}`)
                 })
+                }
 
 
                 //                    document.getElementById('resetButton').addEventListener('click', () => {
-                document.getElementById('closecamera').addEventListener('click', () => {
+                if (closeCameraBtn) {
+                closeCameraBtn.addEventListener('click', () => {
                     codeReader.reset()
                     document.getElementById('result').textContent = '';
                     console.log('Reset.')
                 })
+                }
 
 
 
@@ -10316,7 +10330,9 @@ function showCategory(clickedCategoryId) {
 }
 
 // Event listener for input in the search box
-document.getElementById('search_category').addEventListener('input', function() {
+var searchCategoryInput = document.getElementById('search_category');
+if (searchCategoryInput) {
+searchCategoryInput.addEventListener('input', function() {
     const searchValue = this.value.toLowerCase();
     const categories = document.querySelectorAll('.inline-item, .cat-div .btn-prni');
     const hscroll = document.querySelector('.hscroll'); // Ensure hscroll container is selected
@@ -10374,6 +10390,7 @@ document.getElementById('search_category').addEventListener('input', function() 
         }
     }
 });
+}
 
 
 
@@ -10391,8 +10408,8 @@ function adjustHScrollHeight() {
 
 
 <script>
-let activeCategory = null;
-let activeIcon = null; // Store the currently active icon element
+activeCategory = activeCategory || null;
+activeIcon = activeIcon || null; // Store the currently active icon element
 
 function toggleCategoryView(categoryId, hasSubcategories) {
     const categoryContainer = document.getElementById('category-container');
@@ -10938,6 +10955,7 @@ $(document).ready(function() {
     document.addEventListener('DOMContentLoaded', function () {
         const amountInput = document.getElementById('amount_3');
 
+        if (amountInput) {
         amountInput.addEventListener('input', function () {
             const value = parseFloat(this.value);
             if (!isNaN(value) && value < 0) {
@@ -10946,6 +10964,7 @@ $(document).ready(function() {
                 this.focus();
             }
         });
+        }
     });
 </script>
 <!-- Multipler biller against locations  -->
@@ -11013,12 +11032,15 @@ $(document).ready(function() {
 });
 </script>
 <script>
-document.getElementById('coupon_code').addEventListener('keydown', function(event) {
+var couponCodeInput = document.getElementById('coupon_code');
+if (couponCodeInput) {
+couponCodeInput.addEventListener('keydown', function(event) {
         if (event.key === ' ') {
             alert('Spaces are not allowed in the coupon code.');
             event.preventDefault(); // Prevent the space from being entered
         }
     });
+}
 </script>
 <script>
     (function() {

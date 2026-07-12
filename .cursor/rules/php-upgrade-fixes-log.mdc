@@ -49,8 +49,9 @@ Under the correct **Module N** section (create section if new module):
 **Rules for code blocks:**
 - Use **real** before/after snippets from the diff when possible.
 - For batch fixes (e.g. 64× same pattern), one representative **Old/New** pair + note “applied N× in `File.php`”.
-- **Old** = what was there or the broken pattern. **New** = minimal fix; behavior unchanged.
-- Type `restore` = missing view/method controller already called (not new feature).
+- **Old** = what was there or the broken pattern. **New** = minimal syntax fix; **same logic, same names, no deleted lines**.
+- **Never log** whole-file overwrite from another path — each entry must show **syntax/guard change only**.
+- Type `restore` = missing view/method controller already called (not new feature) — **restore original logic**, not substitute from another project.
 - Type `db-env` = MySQL definer / schema — log symptom only, no fake PHP fix.
 
 ## Also update in same session

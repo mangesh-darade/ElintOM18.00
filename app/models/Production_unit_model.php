@@ -1345,7 +1345,7 @@ class Production_Unit_Model extends CI_Model {
         ORDER BY
             COALESCE(poi.total_order_quantity, 0) DESC, p.name ASC;";
         $result = $this->db->query($query);
-        return $result->result_array();
+        return $result ? $result->result_array() : array();
     }
 
     public function kot_by_order($orderId, $toggle)
@@ -1404,7 +1404,7 @@ class Production_Unit_Model extends CI_Model {
             
                 $result = $this->db->query($query, [$warehouse_id, $orderId]);
         }
-        return $result->result_array();
+        return $result ? $result->result_array() : array();
     }
 
     public function get_warehouse_name($warehouse_id)

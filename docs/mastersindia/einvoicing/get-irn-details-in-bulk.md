@@ -1,0 +1,96 @@
+> For the complete documentation index, see [llms.txt](https://docs.mastersindia.co/einvoicing/llms.txt). Markdown versions of documentation pages are available by appending `.md` to page URLs; this page is available as [Markdown](https://docs.mastersindia.co/einvoicing/get-irn-details-in-bulk.md).
+
+# Get IRN Details In Bulk
+
+### Request Method
+
+GET
+
+### Request Path
+
+```
+{{API_URL}}/api/v1/getBulkEinvoiceResponse/
+```
+
+### Request Headers
+
+<table><thead><tr><th>Parameter</th><th width="184">Value</th><th>Description</th></tr></thead><tbody><tr><td>Authorization/api_key</td><td>api_key/auth token</td><td>Value and header type is mentioned in the Authentication Page</td></tr></tbody></table>
+
+### Request Params
+
+| Parameter   | Value                          | Description                              |
+| ----------- | ------------------------------ | ---------------------------------------- |
+| request\_id | edoc\_1694681573\_7a4d44de71b7 | Request id given in generate    bulk IRN |
+
+### Response Body
+
+#### 200 (OK)
+
+#### Sample Response
+
+```json
+{
+  "results": [
+    {
+      "message": {
+        "AckNo": 142310015934535,
+        "AckDt": "2023-09-14 14:18:46",
+        "Irn": "dd7c08b14f1c764e2d21343afd6c32003d6b56ba688c32b62c82c7c308e83600",
+        "SignedInvoice": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjE1MTNCODIxRUU0NkM3NDlBNjNCODZFMzE4QkY3MTEwOTkyODdEMUYiLCJ4NXQiOiJGUk80SWU1R3gwbW1PNGJqR0w5eEVKa29mUjgiLCJ0eXAiOiJKV1QifQ.eyJkYXRhIjoie1wiQWNrTm9cIjoxNDIzMTAwMTU5MzQ1MzUsXCJBY2tEdFwiOlwiMjAyMy0wOS0xNCAxNDoxODo0NlwiLFwiSXJuXCI6XCJkZDdjMDhiMTRmMWM3NjRlMmQyMTM0M2FmZDZjMzIwMDNkNmI1NmJhNjg4YzMyYjYyYzgyYzdjMzA4ZTgzNjAwXCIsXCJWZXJzaW9uXCI6XCIxLjFcIixcIlRyYW5EdGxzXCI6e1wiVGF4U2NoXCI6XCJHU1RcIixcIlN1cFR5cFwiOlwiQjJCXCIsXCJSZWdSZXZcIjpcIllcIixcIklnc3RPbkludHJhXCI6XCJOXCJ9LFwiRG9jRHRsc1wiOntcIlR5cFwiOlwiSU5WXCIsXCJOb1wiOlwiVEFUQS9BLzAwMTFcIixcIkR0XCI6XCIyMy8wNi8yMDIzXCJ9LFwiU2VsbGVyRHRsc1wiOntcIkdzdGluXCI6XCIwOUFBQVBHNzg4NVIwMDJcIixcIkxnbE5tXCI6XCJNYXN0ZXJzSW5kaWEgVVBcIixcIlRyZE5tXCI6XCIxMjNcIixcIkFkZHIxXCI6XCI0NVwiLFwiQWRkcjJcIjpcImw0NVwiLFwiTG9jXCI6XCIxMjc5XCIsXCJQaW5cIjoyMDEzMDEsXCJTdGNkXCI6XCIwOVwiLFwiUGhcIjpcIjk4NzY1NDMyMzFcIn0sXCJCdXllckR0bHNcIjp7XCJHc3RpblwiOlwiMDVBQUFQRzc4ODVSMDAyXCIsXCJMZ2xObVwiOlwiZXdld2V3ZWh5cml1MzJ5OHJ1XCIsXCJUcmRObVwiOlwiMTIyXCIsXCJQb3NcIjpcIjEzXCIsXCJBZGRyMVwiOlwiOVwiLFwiQWRkcjJcIjpcIjE3ODQzXCIsXCJMb2NcIjpcIjEyMzIxdVwiLFwiUGluXCI6MjYzMDAxLFwiUGhcIjpcIjEyMzIzM1wiLFwiU3RjZFwiOlwiMDVcIn0sXCJEaXNwRHRsc1wiOntcIk5tXCI6XCJkcWZlZmtld2xcIixcIkFkZHIxXCI6XCJWaWxhXCIsXCJBZGRyMlwiOlwiVmlsYVwiLFwiTG9jXCI6XCJOb2lkYVwiLFwiUGluXCI6MjAxMzAxLFwiU3RjZFwiOlwiMDlcIn0sXCJTaGlwRHRsc1wiOntcIkdzdGluXCI6XCIwNUFBQVBHNzg4NVIwMDJcIixcIkxnbE5tXCI6XCIxMjNcIixcIlRyZE5tXCI6XCIyMzJcIixcIkFkZHIxXCI6XCIxXCIsXCJMb2NcIjpcIjIyMVwiLFwiUGluXCI6MjYzMDAxLFwiU3RjZFwiOlwiMDVcIn0sXCJJdGVtTGlzdFwiOlt7XCJJdGVtTm9cIjowLFwiU2xOb1wiOlwiNTAxXCIsXCJJc1NlcnZjXCI6XCJOXCIsXCJQcmREZXNjXCI6XCJXaGVhdCBkZXNjXCIsXCJIc25DZFwiOlwiMTAwMVwiLFwiQmFyY2RlXCI6XCIxMjEyXCIsXCJRdHlcIjoxLjAsXCJGcmVlUXR5XCI6MC4wLFwiVW5pdFwiOlwiS0dTXCIsXCJVbml0UHJpY2VcIjo0LjAsXCJUb3RBbXRcIjo0LjAsXCJEaXNjb3VudFwiOjAuMCxcIlByZVRheFZhbFwiOjAuMCxcIkFzc0FtdFwiOjQuMCxcIkdzdFJ0XCI6NS4wLFwiSWdzdEFtdFwiOjAuMixcIkNnc3RBbXRcIjowLjAsXCJTZ3N0QW10XCI6MC4wLFwiQ2VzUnRcIjowLjAsXCJDZXNBbXRcIjowLjAsXCJDZXNOb25BZHZsQW10XCI6MC4wLFwiU3RhdGVDZXNSdFwiOjAuMCxcIlN0YXRlQ2VzQW10XCI6MC4wLFwiU3RhdGVDZXNOb25BZHZsQW10XCI6MC4wLFwiT3RoQ2hyZ1wiOjAuMCxcIlRvdEl0ZW1WYWxcIjo0LjIsXCJCY2hEdGxzXCI6e1wiTm1cIjpcImFhYVwiLFwiRXhwRHRcIjpcIjMxLzEwLzIwMjBcIixcIldyRHRcIjpcIjMxLzEwLzIwMjBcIn0sXCJBdHRyaWJEdGxzXCI6W3tcIk5tXCI6XCJhYWFcIixcIlZhbFwiOlwiMTQ3ODUyXCJ9XX1dLFwiVmFsRHRsc1wiOntcIkFzc1ZhbFwiOjQuMCxcIkNnc3RWYWxcIjowLjAsXCJTZ3N0VmFsXCI6MC4wLFwiSWdzdFZhbFwiOjAuMixcIkNlc1ZhbFwiOjAuMCxcIlN0Q2VzVmFsXCI6MC4wLFwiRGlzY291bnRcIjowLjAsXCJPdGhDaHJnXCI6MC4wLFwiUm5kT2ZmQW10XCI6MC4wLFwiVG90SW52VmFsXCI6NC4yLFwiVG90SW52VmFsRmNcIjowLjB9LFwiUGF5RHRsc1wiOntcIk5tXCI6XCJQYXllZSBOYW1lXCIsXCJBY2NEZXRcIjpcIkFjY291bnQgRGV0YWlsc1wiLFwiTW9kZVwiOlwiQ0FTSFwiLFwiRmluSW5zQnJcIjpcIktLSzAwMDE4MFwiLFwiUGF5VGVybVwiOlwiVGVybXMgb2YgUGF5bWVudFwiLFwiUGF5SW5zdHJcIjpcIlBheW1lbnQgSW5zdHJ1Y3Rpb25cIixcIkNyVHJuXCI6XCJDcmVkaXQgVHJhbnNmZXJcIixcIkRpckRyXCI6XCJEaXJlY3QgRGViaXRcIixcIkNyRGF5XCI6MixcIlBhaWRBbXRcIjoxMDAuMixcIlBheW10RHVlXCI6MS45fSxcIlJlZkR0bHNcIjp7XCJJbnZSbVwiOlwiSW52b2ljZSBSZW1hcmtzXCIsXCJEb2NQZXJkRHRsc1wiOntcIkludlN0RHRcIjpcIjA3LzAzLzIwMjBcIixcIkludkVuZER0XCI6XCIwNy8wMy8yMDIwXCJ9LFwiUHJlY0RvY0R0bHNcIjpbe1wiSW52Tm9cIjpcIkNGUlQvMDAwNlwiLFwiSW52RHRcIjpcIjA3LzAzLzIwMjBcIixcIk90aFJlZk5vXCI6XCIyMzM0XCJ9XSxcIkNvbnRyRHRsc1wiOlt7XCJSZWNBZHZSZWZyXCI6XCJhYWFcIixcIlJlY0FkdkR0XCI6XCIwNy8wMy8yMDIwXCIsXCJUZW5kUmVmclwiOlwiMjMzNFwiLFwiQ29udHJSZWZyXCI6XCIyMzM0XCIsXCJFeHRSZWZyXCI6XCIyMzM0XCIsXCJQcm9qUmVmclwiOlwiMjMzNFwiLFwiUE9SZWZyXCI6XCIyMzM0MzM0NTQ1NDVcIixcIlBPUmVmRHRcIjpcIjA3LzAyLzIwMjBcIn1dfSxcIkFkZGxEb2NEdGxzXCI6W3tcIlVybFwiOlwiYXNhZnNkXCIsXCJEb2NzXCI6XCJpbmRpYVwiLFwiSW5mb1wiOlwiaW5kaWFcIn1dLFwiRXhwRHRsc1wiOntcIlBvcnRcIjpcIjEyXCIsXCJSZWZDbG1cIjpcIk5cIixcIkZvckN1clwiOlwiaW5yXCIsXCJDbnRDb2RlXCI6XCJJTlwiLFwiRXhwRHV0eVwiOjkwLjl9LFwiRXdiRHRsc1wiOntcIlRyYW5zSWRcIjpcIjA1QUFBQkIwNjM5RzFaOFwiLFwiVHJhbnNOYW1lXCI6XCJKYXkgVHJhbnNcIixcIlRyYW5zTW9kZVwiOlwiMVwiLFwiRGlzdGFuY2VcIjo0MDAwLFwiVHJhbnNEb2NOb1wiOlwiMTIzMFwiLFwiVHJhbnNEb2NEdFwiOlwiMjMvMDYvMjAyM1wiLFwiVmVoTm9cIjpcIlBRUjEyMzRcIixcIlZlaFR5cGVcIjpcIlJcIn19IiwiaXNzIjoiTklDIFNhbmRib3gifQ.dmIoAaIbRfIDDtRKhksz1aGVN_Ue-1eA8ndAxmq_zB6d93sesr-9o4YdR2mKJdWjhRxIHJ1PJu_lfezZ2l-yvee1PGFDqhI_mTvlpXpQ7R5XZazDG6ICINXnTA6HVlH4K3Q1V6LZBRIA2MyRRPjlWogTCrkBcPz3SlVpGUs0pj1BbVoT38Y02fRLh05fRthUdnzACsSrnAyunL9jwBiuxWzri5IvCipGpkKtds4KAKTO1Dl4hezmp9Q9RNcboK9SuiCx4PIF00d5o3Wf6ivjtvyKKK1knA5Y-NdLAMNoSBedXKEEGUq_oko59peC3FCoRmEW07muU7soluFGlXK2tg",
+        "SignedQRCode": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjE1MTNCODIxRUU0NkM3NDlBNjNCODZFMzE4QkY3MTEwOTkyODdEMUYiLCJ4NXQiOiJGUk80SWU1R3gwbW1PNGJqR0w5eEVKa29mUjgiLCJ0eXAiOiJKV1QifQ.eyJkYXRhIjoie1wiU2VsbGVyR3N0aW5cIjpcIjA5QUFBUEc3ODg1UjAwMlwiLFwiQnV5ZXJHc3RpblwiOlwiMDVBQUFQRzc4ODVSMDAyXCIsXCJEb2NOb1wiOlwiVEFUQS9BLzAwMTFcIixcIkRvY1R5cFwiOlwiSU5WXCIsXCJEb2NEdFwiOlwiMjMvMDYvMjAyM1wiLFwiVG90SW52VmFsXCI6NC4yLFwiSXRlbUNudFwiOjEsXCJNYWluSHNuQ29kZVwiOlwiMTAwMVwiLFwiSXJuXCI6XCJkZDdjMDhiMTRmMWM3NjRlMmQyMTM0M2FmZDZjMzIwMDNkNmI1NmJhNjg4YzMyYjYyYzgyYzdjMzA4ZTgzNjAwXCIsXCJJcm5EdFwiOlwiMjAyMy0wOS0xNCAxNDoxODo0NlwifSIsImlzcyI6Ik5JQyBTYW5kYm94In0.rCwhdLhNpoE1jQWwM7FXQIn5He-Rtw4fl7m9uWLbkJYwfabn9R5CQWH38p274PIDqs2GJDowqJsiAQCti_mIjX_MtM_PN33h8aJHJTRi-6o1-xS7iixmUJwxMDquNWrNvlm8BqSD75FTesq1GeMKd9n1BcSf9mZS9ie0APwlI2YuSW_msaEDZ-CnDJ31w4tSqgvPpa_uqbMeP4PQUYPrCcCFRzV3_PN4SSWtSfKIkt3qrXhqov6u55Is_BFaFrkNxcoiiu-PYWdNtgytuj8VfiFNZG_FdtABw9SFE_5ArjjWydD220O9RPdxuEtbclQj7TTpzWDUTeQ-CHlelEiuHw",
+        "EwbNo": null,
+        "EwbDt": null,
+        "EwbValidTill": null,
+        "QRCodeUrl": "https://sandb-api.mastersindia.co/api/v1/einvoice/qrcode/anVsX3NlcF8yMDIzLTI0-6502c9e6fa85d5eadddd5162/",
+        "EinvoicePdf": "https://sandb-api.mastersindia.co/api/v1/einvoice/pdf/anVsX3NlcF8yMDIzLTI0-6502c9e6fa85d5eadddd5162/",
+        "Status": "ACT",
+        "Remarks": "",
+        "alert": "",
+        "error": false
+      },
+      "errorMessage": "",
+      "InfoDtls": "[{\"InfCd\": \"EWBERR\", \"Desc\": [{\"ErrorCode\": \"4013\", \"ErrorMessage\": \"The distance between the pincodes given is too high or low.\"}]}]",
+      "status": "Success",
+      "code": 200,
+      "requestId": "XXXXXXXXXXXXXXX_TATA/A/0011_1694681573"
+    },
+    {
+      "message": {
+        "AckNo": 142310015934544,
+        "AckDt": "2023-09-14 14:18:47",
+        "Irn": "c9664965bc63e50e708870ca7b1b55c2167baee8186343d339ebd64f59971306",
+        "SignedInvoice": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjE1MTNCODIxRUU0NkM3NDlBNjNCODZFMzE4QkY3MTEwOTkyODdEMUYiLCJ4NXQiOiJGUk80SWU1R3gwbW1PNGJqR0w5eEVKa29mUjgiLCJ0eXAiOiJKV1QifQ.eyJkYXRhIjoie1wiQWNrTm9cIjoxNDIzMTAwMTU5MzQ1NDQsXCJBY2tEdFwiOlwiMjAyMy0wOS0xNCAxNDoxODo0N1wiLFwiSXJuXCI6XCJjOTY2NDk2NWJjNjNlNTBlNzA4ODcwY2E3YjFiNTVjMjE2N2JhZWU4MTg2MzQzZDMzOWViZDY0ZjU5OTcxMzA2XCIsXCJWZXJzaW9uXCI6XCIxLjFcIixcIlRyYW5EdGxzXCI6e1wiVGF4U2NoXCI6XCJHU1RcIixcIlN1cFR5cFwiOlwiQjJCXCIsXCJSZWdSZXZcIjpcIllcIixcIklnc3RPbkludHJhXCI6XCJOXCJ9LFwiRG9jRHRsc1wiOntcIlR5cFwiOlwiSU5WXCIsXCJOb1wiOlwiVEFUQS9BLzAwMTJcIixcIkR0XCI6XCIyMy8wNi8yMDIzXCJ9LFwiU2VsbGVyRHRsc1wiOntcIkdzdGluXCI6XCIwOUFBQVBHNzg4NVIwMDJcIixcIkxnbE5tXCI6XCJNYXN0ZXJzSW5kaWEgVVBcIixcIlRyZE5tXCI6XCIxMjNcIixcIkFkZHIxXCI6XCI0NVwiLFwiQWRkcjJcIjpcImw0NVwiLFwiTG9jXCI6XCIxMjc5XCIsXCJQaW5cIjoyMDEzMDEsXCJTdGNkXCI6XCIwOVwiLFwiUGhcIjpcIjk4NzY1NDMyMzFcIn0sXCJCdXllckR0bHNcIjp7XCJHc3RpblwiOlwiMDVBQUFQRzc4ODVSMDAyXCIsXCJMZ2xObVwiOlwiZXdld2V3ZWh5cml1MzJ5OHJ1XCIsXCJUcmRObVwiOlwiMTIyXCIsXCJQb3NcIjpcIjEzXCIsXCJBZGRyMVwiOlwiOVwiLFwiQWRkcjJcIjpcIjE3ODQzXCIsXCJMb2NcIjpcIjEyMzIxdVwiLFwiUGluXCI6MjYzMDAxLFwiUGhcIjpcIjEyMzIzM1wiLFwiU3RjZFwiOlwiMDVcIn0sXCJEaXNwRHRsc1wiOntcIk5tXCI6XCJkcWZlZmtld2xcIixcIkFkZHIxXCI6XCJWaWxhXCIsXCJBZGRyMlwiOlwiVmlsYVwiLFwiTG9jXCI6XCJOb2lkYVwiLFwiUGluXCI6MjAxMzAxLFwiU3RjZFwiOlwiMDlcIn0sXCJTaGlwRHRsc1wiOntcIkdzdGluXCI6XCIwNUFBQVBHNzg4NVIwMDJcIixcIkxnbE5tXCI6XCIxMjNcIixcIlRyZE5tXCI6XCIyMzJcIixcIkFkZHIxXCI6XCIxXCIsXCJMb2NcIjpcIjIyMVwiLFwiUGluXCI6MjYzMDAxLFwiU3RjZFwiOlwiMDVcIn0sXCJJdGVtTGlzdFwiOlt7XCJJdGVtTm9cIjowLFwiU2xOb1wiOlwiNTAxXCIsXCJJc1NlcnZjXCI6XCJOXCIsXCJQcmREZXNjXCI6XCJXaGVhdCBkZXNjXCIsXCJIc25DZFwiOlwiMTAwMVwiLFwiQmFyY2RlXCI6XCIxMjEyXCIsXCJRdHlcIjoxLjAsXCJGcmVlUXR5XCI6MC4wLFwiVW5pdFwiOlwiS0dTXCIsXCJVbml0UHJpY2VcIjo0LjAsXCJUb3RBbXRcIjo0LjAsXCJEaXNjb3VudFwiOjAuMCxcIlByZVRheFZhbFwiOjAuMCxcIkFzc0FtdFwiOjQuMCxcIkdzdFJ0XCI6NS4wLFwiSWdzdEFtdFwiOjAuMixcIkNnc3RBbXRcIjowLjAsXCJTZ3N0QW10XCI6MC4wLFwiQ2VzUnRcIjowLjAsXCJDZXNBbXRcIjowLjAsXCJDZXNOb25BZHZsQW10XCI6MC4wLFwiU3RhdGVDZXNSdFwiOjAuMCxcIlN0YXRlQ2VzQW10XCI6MC4wLFwiU3RhdGVDZXNOb25BZHZsQW10XCI6MC4wLFwiT3RoQ2hyZ1wiOjAuMCxcIlRvdEl0ZW1WYWxcIjo0LjIsXCJCY2hEdGxzXCI6e1wiTm1cIjpcImFhYVwiLFwiRXhwRHRcIjpcIjMxLzEwLzIwMjBcIixcIldyRHRcIjpcIjMxLzEwLzIwMjBcIn0sXCJBdHRyaWJEdGxzXCI6W3tcIk5tXCI6XCJhYWFcIixcIlZhbFwiOlwiMTQ3ODUyXCJ9XX1dLFwiVmFsRHRsc1wiOntcIkFzc1ZhbFwiOjQuMCxcIkNnc3RWYWxcIjowLjAsXCJTZ3N0VmFsXCI6MC4wLFwiSWdzdFZhbFwiOjAuMixcIkNlc1ZhbFwiOjAuMCxcIlN0Q2VzVmFsXCI6MC4wLFwiRGlzY291bnRcIjowLjAsXCJPdGhDaHJnXCI6MC4wLFwiUm5kT2ZmQW10XCI6MC4wLFwiVG90SW52VmFsXCI6NC4yLFwiVG90SW52VmFsRmNcIjowLjB9LFwiUGF5RHRsc1wiOntcIk5tXCI6XCJQYXllZSBOYW1lXCIsXCJBY2NEZXRcIjpcIkFjY291bnQgRGV0YWlsc1wiLFwiTW9kZVwiOlwiQ0FTSFwiLFwiRmluSW5zQnJcIjpcIktLSzAwMDE4MFwiLFwiUGF5VGVybVwiOlwiVGVybXMgb2YgUGF5bWVudFwiLFwiUGF5SW5zdHJcIjpcIlBheW1lbnQgSW5zdHJ1Y3Rpb25cIixcIkNyVHJuXCI6XCJDcmVkaXQgVHJhbnNmZXJcIixcIkRpckRyXCI6XCJEaXJlY3QgRGViaXRcIixcIkNyRGF5XCI6MixcIlBhaWRBbXRcIjoxMDAuMixcIlBheW10RHVlXCI6MS45fSxcIlJlZkR0bHNcIjp7XCJJbnZSbVwiOlwiSW52b2ljZSBSZW1hcmtzXCIsXCJEb2NQZXJkRHRsc1wiOntcIkludlN0RHRcIjpcIjA3LzAzLzIwMjBcIixcIkludkVuZER0XCI6XCIwNy8wMy8yMDIwXCJ9LFwiUHJlY0RvY0R0bHNcIjpbe1wiSW52Tm9cIjpcIkNGUlQvMDAwNlwiLFwiSW52RHRcIjpcIjA3LzAzLzIwMjBcIixcIk90aFJlZk5vXCI6XCIyMzM0XCJ9XSxcIkNvbnRyRHRsc1wiOlt7XCJSZWNBZHZSZWZyXCI6XCJhYWFcIixcIlJlY0FkdkR0XCI6XCIwNy8wMy8yMDIwXCIsXCJUZW5kUmVmclwiOlwiMjMzNFwiLFwiQ29udHJSZWZyXCI6XCIyMzM0XCIsXCJFeHRSZWZyXCI6XCIyMzM0XCIsXCJQcm9qUmVmclwiOlwiMjMzNFwiLFwiUE9SZWZyXCI6XCIyMzM0MzM0NTQ1NDVcIixcIlBPUmVmRHRcIjpcIjA3LzAyLzIwMjBcIn1dfSxcIkFkZGxEb2NEdGxzXCI6W3tcIlVybFwiOlwiYXNhZnNkXCIsXCJEb2NzXCI6XCJpbmRpYVwiLFwiSW5mb1wiOlwiaW5kaWFcIn1dLFwiRXhwRHRsc1wiOntcIlBvcnRcIjpcIjEyXCIsXCJSZWZDbG1cIjpcIk5cIixcIkZvckN1clwiOlwiaW5yXCIsXCJDbnRDb2RlXCI6XCJJTlwiLFwiRXhwRHV0eVwiOjkwLjl9LFwiRXdiRHRsc1wiOntcIlRyYW5zSWRcIjpcIjA1QUFBQkIwNjM5RzFaOFwiLFwiVHJhbnNOYW1lXCI6XCJKYXkgVHJhbnNcIixcIlRyYW5zTW9kZVwiOlwiMVwiLFwiRGlzdGFuY2VcIjo0MDAwLFwiVHJhbnNEb2NOb1wiOlwiMTIzMFwiLFwiVHJhbnNEb2NEdFwiOlwiMjMvMDYvMjAyM1wiLFwiVmVoTm9cIjpcIlBRUjEyMzRcIixcIlZlaFR5cGVcIjpcIlJcIn19IiwiaXNzIjoiTklDIFNhbmRib3gifQ.OVQfrKLhie2Lad1G6giGe0JQVAzC1FzOqlM9HHznCD9sFVhZP7yXn8zZLCStpmLSICBfxEqsQ_KjUW-NDjaaEJfnAairzaXcbNqIFdE9481wy0PycO-MbcB1je7nZRZx3uW5I17BoTIoGgwhkhXTSVAiEImoj83WSjVY08yRG3THHhCXnac70cNHsPVYCv__pVxZVSmcGwR_hlVxxF-_ci646NupQ6ZWVmDFu8XoXTHJgkgLG29Ff-D-TShvHjKBjLEE4TtnWjZtq0X7l4R5ZS2rjvTwdj5vG_G6Pr6kRN9OSA3EMoe9vO57R8_ndX6mDOc81kMmmjkXIX3Cm6xLSQ",
+        "SignedQRCode": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjE1MTNCODIxRUU0NkM3NDlBNjNCODZFMzE4QkY3MTEwOTkyODdEMUYiLCJ4NXQiOiJGUk80SWU1R3gwbW1PNGJqR0w5eEVKa29mUjgiLCJ0eXAiOiJKV1QifQ.eyJkYXRhIjoie1wiU2VsbGVyR3N0aW5cIjpcIjA5QUFBUEc3ODg1UjAwMlwiLFwiQnV5ZXJHc3RpblwiOlwiMDVBQUFQRzc4ODVSMDAyXCIsXCJEb2NOb1wiOlwiVEFUQS9BLzAwMTJcIixcIkRvY1R5cFwiOlwiSU5WXCIsXCJEb2NEdFwiOlwiMjMvMDYvMjAyM1wiLFwiVG90SW52VmFsXCI6NC4yLFwiSXRlbUNudFwiOjEsXCJNYWluSHNuQ29kZVwiOlwiMTAwMVwiLFwiSXJuXCI6XCJjOTY2NDk2NWJjNjNlNTBlNzA4ODcwY2E3YjFiNTVjMjE2N2JhZWU4MTg2MzQzZDMzOWViZDY0ZjU5OTcxMzA2XCIsXCJJcm5EdFwiOlwiMjAyMy0wOS0xNCAxNDoxODo0N1wifSIsImlzcyI6Ik5JQyBTYW5kYm94In0.jg6DkU8Rr8tPOye8Me8-Y0VziZm1ui6zcibN6hgJXF_jtPR5lcP3987VlKRcy0YWNIU7E50VxfxQq1tof9fOaPUpGITV2rbgn4YYcdbaQu-tMumSRbIOGc-gr1PXzq40cmnIwnlwtbG447_ZIYCRHoOwu_02wdKX93z7g2pAiZO9R_TV8GVUt8VUaR-31CsQJsp4IcowGXksO89D8g4CN5rgcO2sA6u2RawAFw3w4CKpxEd9fGPiX0y8pGFA70CQgTuCeZabOxG_BxWcVotdjmPdeNfGvm39NZyq5cALG_V2BALici64r3-lE3JGQlMw7KWs9q-zwYp_AAv4Bg7Tdw",
+        "EwbNo": null,
+        "EwbDt": null,
+        "EwbValidTill": null,
+        "QRCodeUrl": "https://sandb-api.mastersindia.co/api/v1/einvoice/qrcode/anVsX3NlcF8yMDIzLTI0-6502c9e6fa85d5eadddd5164/",
+        "EinvoicePdf": "https://sandb-api.mastersindia.co/api/v1/einvoice/pdf/anVsX3NlcF8yMDIzLTI0-6502c9e6fa85d5eadddd5164/",
+        "Status": "ACT",
+        "Remarks": "",
+        "alert": "",
+        "error": false
+      },
+      "errorMessage": "",
+      "InfoDtls": "[{\"InfCd\": \"EWBERR\", \"Desc\": [{\"ErrorCode\": \"4013\", \"ErrorMessage\": \"The distance between the pincodes given is too high or low.\"}]}]",
+      "status": "Success",
+      "code": 200,
+      "requestId": "XXXXXXXXXXXXXXX_TATA/A/0012_1694681574"
+    }
+  ]
+}
+```
+
+#### 204 (Invalid Parameters)
+
+```json
+
+{
+  "results": {
+    "error": true,
+    "code": 204,
+    "request_status": "",
+    "message": "No records found."
+  }
+}
+```

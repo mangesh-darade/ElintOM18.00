@@ -4,6 +4,33 @@ function parseAmountFromText(text) {
   return match ? parseFloat(match[1]) : 0;
 }
 
+function normalizeDenomKey(value) {
+  var num = parseFloat(value);
+  return isNaN(num) ? '0.00' : num.toFixed(2);
+}
+
+function normalizeDenomType(type) {
+  var low = String(type || '').toLowerCase();
+  if (low === 'coins') {
+    return 'coin';
+  }
+  if (low === 'bills') {
+    return 'note';
+  }
+  if (low === 'coin' || low === 'note') {
+    return low;
+  }
+  return low;
+}
+
+function findAvailableDenomination(availableList, currencyValue, currencyType) {
+  var key = normalizeDenomKey(currencyValue);
+  var t = normalizeDenomType(currencyType);
+  return (availableList || []).find(function (it) {
+    return normalizeDenomKey(it.currency_value) === key && normalizeDenomType(it.type) === t;
+  });
+}
+
 function getCoinageInvoiceAmount() {
   var $modal = $('#paymentModal');
   return parseAmountFromText($modal.find('#twt').text())
@@ -21,6 +48,7 @@ function applyMainPosTotalsToCoinageModal() {
   gtotal = mainPayable;
   var $modal = $('#paymentModal');
   $modal.find('#gtotal1').text(formatMoney(mainPayable));
+  $modal.find('#twt').text(formatMoney(mainPayable));
   var mainDiscount = $('#tds').text();
   if (mainDiscount) {
     $modal.find('#tds1').text(mainDiscount);
@@ -28,9 +56,6 @@ function applyMainPosTotalsToCoinageModal() {
   var mainTotal = $('#total').text();
   if (mainTotal) {
     $modal.find('#total1').text(mainTotal);
-  }
-  if (!parseAmountFromText($modal.find('#twt').text())) {
-    $modal.find('#twt').text(formatMoney(mainPayable));
   }
 }
 
@@ -1103,14 +1128,21 @@ $(document).ready(function () {
       url: site.base_url + "pos/get_denominations",
       dataType: "json",
       success: function (data) {
-        Alldenominations = data;
+        Alldenominations = (data || []).map(function (item) {
+          item.currency_value = normalizeDenomKey(item.currency_value);
+          item.type = normalizeDenomType(item.type);
+          return item;
+        });
         // Store a pristine copy for availability checks in Return mode
         localStorage.setItem('AvailableDenominations', JSON.stringify(Alldenominations));
         localStorage.setItem('Alldenominations', JSON.stringify(Alldenominations));  // working copy for Collected mode UI state
 
         renderDenominations(Alldenominations);
         loadData();
+        applyMainPosTotalsToCoinageModal();
         initialTotalPayable();
+        updateTotalPayableSection();
+        toggleCashButtons();
 
         // Select default/deposit payment method and show denomination UI (after methods + denominations exist)
         initCoinagePaymentSelectionAfterLoad();
@@ -2289,14 +2321,7 @@ $(document).ready(function () {
     if (modeFlag === 'return') {
       try {
         var availableList = JSON.parse(localStorage.getItem('AvailableDenominations')) || [];
-        var key = parseFloat(currencyValue).toFixed(2);
-        var t = String(currencyType).toLowerCase();
-        var match = availableList.find(function (it) {
-          var low = String(it.type || '').toLowerCase();
-          if (low === 'coins') low = 'coin';
-          if (low === 'bills') low = 'note';
-          return String(it.currency_value) === key && low === t;
-        });
+        var match = findAvailableDenomination(availableList, currencyValue, currencyType);
         var avail = match ? (parseInt(match.count) || 0) : 0;
         // If already at or above availability, grey-out and block
         if (currencyCount >= avail) {
@@ -2345,14 +2370,7 @@ $(document).ready(function () {
       var modeFlag = localStorage.getItem('modeFlag');
       if (modeFlag === 'return') {
         var availableList = JSON.parse(localStorage.getItem('AvailableDenominations')) || [];
-        var key = parseFloat(currencyValue).toFixed(2);
-        var t = String(currencyType).toLowerCase();
-        var match = availableList.find(function (it) {
-          var low = String(it.type || '').toLowerCase();
-          if (low === 'coins') low = 'coin';
-          if (low === 'bills') low = 'note';
-          return String(it.currency_value) === key && low === t;
-        });
+        var match = findAvailableDenomination(availableList, currencyValue, currencyType);
         var avail = match ? (parseInt(match.count) || 0) : 0;
         // If below the availability, ensure increase is active (not greyed)
         if (currencyCount < avail) {
@@ -2377,12 +2395,13 @@ $(document).ready(function () {
       checkAvailableCurrency(available);
       return;
     }
-    var key = parseFloat(currencyValue).toFixed(2);
+    var key = normalizeDenomKey(currencyValue);
+    var typeKey = normalizeDenomType(currencyType);
     var denominations = JSON.parse(localStorage.getItem("Alldenominations")) || [];
 
     var existing = denominations.find(item =>
-      item.currency_value === key &&
-      item.type === currencyType.toLowerCase() &&
+      normalizeDenomKey(item.currency_value) === key &&
+      normalizeDenomType(item.type) === typeKey &&
       item.selected === "1"
     );
 
@@ -2392,7 +2411,7 @@ $(document).ready(function () {
       denominations.push({
         id: Date.now().toString(),
         currency_value: key,
-        type: currencyType.toLowerCase(),
+        type: typeKey,
         is_active: "1",
         count: currencyCount.toString(),
         selected: "1"
@@ -2410,7 +2429,7 @@ $(document).ready(function () {
       const value = parseFloat(item.currency_value).toFixed(2);
 
       if (isSelected && count > 0) {
-        const typeKey = item.type === "note" ? "Bills" : "Coins";
+        const typeKey = normalizeDenomType(item.type) === "note" ? "Bills" : "Coins";
         collected[typeKey][value] = count;
       }
     });
@@ -2565,7 +2584,7 @@ $(document).ready(function () {
     var denominations = JSON.parse(localStorage.getItem("Alldenominations")) || [];  // Update localStorage count = 0
 
     denominations.forEach(item => {
-      if (item.currency_value === currencyValue && item.type === currencyType && item.selected === "1") {
+      if (normalizeDenomKey(item.currency_value) === normalizeDenomKey(currencyValue) && normalizeDenomType(item.type) === normalizeDenomType(currencyType) && item.selected === "1") {
         item.count = "0";
       }
     });

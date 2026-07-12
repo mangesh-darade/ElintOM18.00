@@ -1,12 +1,24 @@
 ---
-description: PHP 8.5 fixes for app controllers, models, libraries, helpers
-globs: app/**/*.php
+description: PHP 8.5 fixes for app controllers, models, libraries, helpers, views — syntax only, no delete/rename
+globs: app/**/*.php,themes/default/views/**/*.php
 alwaysApply: false
 ---
 
 # App Code — PHP 8.5 Upgrade Rules
 
-Applies to `app/controllers/`, `app/models/`, `app/libraries/`, `app/helpers/`, `app/core/`.
+Applies to `app/controllers/`, `app/models/`, `app/libraries/`, `app/helpers/`, `app/core/`, `themes/default/views/`.
+
+**ElintOM18.00 only.** Fix syntax in the **existing** file — never delete lines, never rename variables/methods, never replace whole file from another tree.
+
+## Syntax-only checklist (before every edit)
+
+| Check | Pass |
+|-------|------|
+| No lines/blocks/methods removed | ☐ |
+| No `$var`, function, or method renamed | ☐ |
+| Same SQL, same calculations, same workflow | ☐ |
+| Change is cast, guard, `isset`, `AllowDynamicProperties`, or PHP 8.5 parse fix only | ☐ |
+| Diff is minimal (target failing line + smallest guard) | ☐ |
 
 ## Fix Pattern
 
@@ -26,6 +38,9 @@ Before editing any `app/` file, launch an `explore` subagent to find all related
 
 ## Rules
 
+- **No deletion** — do not remove code, comments, or branches; add guards **above** existing logic.
+- **No renames** — keep all variable, function, method, and property names identical.
+- **Patch in place** — edit the ElintOM18.00 file only; **no bulk-copy from any other path**.
 - Match existing naming, structure, and CodeIgniter patterns (`MY_Controller`, `page_construct`, model methods).
 - Fix null/undefined index warnings with minimal guards — do not restructure conditionals.
 - Do not split or rewrite large files (`Sales.php`, `Reports.php`, `Sma.php`) — patch only failing lines.

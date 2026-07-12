@@ -1,0 +1,19 @@
+# EInvoicing
+
+## EInvoicing
+
+- [Introduction](https://docs.mastersindia.co/einvoicing/introduction.md): Masters India provides e-invoicing solution and API.
+- [Environments](https://docs.mastersindia.co/einvoicing/environments.md): Masters India Provides 2 environments for customers.
+- [Authentication](https://docs.mastersindia.co/einvoicing/authentication.md): This section showcases how the 2 types of Authentication mechanisms we support.
+- [Access Tokens](https://docs.mastersindia.co/einvoicing/authentication/access-tokens.md): This page shows how to get the authentication credentials using the access token and refresh token policies.
+- [API KEY](https://docs.mastersindia.co/einvoicing/authentication/api-key.md): This page showcases how you can use API Key as an authentication mechanism
+- [Generate IRN](https://docs.mastersindia.co/einvoicing/generate-irn.md): This API is used for registering the invoice and getting the Invoice Registration Number (IRN). The request payload has to be as per the schema specified below.
+- [Cancel IRN](https://docs.mastersindia.co/einvoicing/cancel-irn.md): This API is used for cancelling an e-Invoice within stipulated time by passing the IRN.
+- [Generate E-Way Bill by IRN](https://docs.mastersindia.co/einvoicing/generate-e-way-bill-by-irn.md): This API is used to generate the e-waybill using Invoice Registration Number (IRN). The details and parameters of the requests and responses are explained.
+- [Generate IRN in Bulk](https://docs.mastersindia.co/einvoicing/generate-irn-in-bulk.md): This API is used for registering the invoice and getting the Invoice Registration Number (IRN). The details of the requests and responses are explained.
+- [Get IRN Details In Bulk](https://docs.mastersindia.co/einvoicing/get-irn-details-in-bulk.md): Get all IRN details in from request id.
+- [Get IRN Details By IRN](https://docs.mastersindia.co/einvoicing/get-irn-details-by-irn.md): This method provides the e-Invoice details for a given IRN.
+- [Get IRN Details By Doc Details](https://docs.mastersindia.co/einvoicing/get-irn-details-by-doc-details.md): This method provides the Get IRN details for a given doctype, docnum & docdate.
+- [Get e-Waybill Details by IRN](https://docs.mastersindia.co/einvoicing/get-e-waybill-details-by-irn.md): This method provides the e-Waybill Details for a given IRN.
+- [Get Gstin Details](https://docs.mastersindia.co/einvoicing/get-gstin-details.md): This method provides the tax payer details for a given GSTIN number.
+- [Sync GSTIN Details from CP](https://docs.mastersindia.co/einvoicing/sync-gstin-details-from-cp.md): This method provides the tax payer to Sync GSTIN details from Common Portal.

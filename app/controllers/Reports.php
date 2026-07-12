@@ -19363,10 +19363,13 @@ window.MyHandler.setPrintRequest('<?php echo json_encode($print); ?>');
 
 
 
-        $countData = $this->db->query($query_count)->row();
+        $count_result = $this->db->query($query_count);
+        $countData = $count_result ? $count_result->row() : null;
 
-        $ledgerData = $this->db->query($query_data)->result();
+        $ledger_result = $this->db->query($query_data);
+        $ledgerData = $ledger_result ? $ledger_result->result() : array();
 
+        $transactionData = array();
         if (count($ledgerData)) {
             foreach ($ledgerData as $data) {
                 $data->action = $data->purchase;

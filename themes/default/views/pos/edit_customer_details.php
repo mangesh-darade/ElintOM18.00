@@ -784,10 +784,16 @@ function validateFields() {
         });
     });
 
-    $('#price_group').select2({
-  placeholder: 'Select Price Group',
-  allowClear: true
-});
+    (function initPriceGroupSelect2() {
+        if (typeof $ !== 'undefined' && $.fn.select2 && $('#price_group').length) {
+            $('#price_group').select2({
+                placeholder: 'Select Price Group',
+                allowClear: true
+            });
+        } else {
+            setTimeout(initPriceGroupSelect2, 50);
+        }
+    })();
 
 </script>
 <script>

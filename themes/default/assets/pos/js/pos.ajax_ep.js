@@ -1234,7 +1234,7 @@ $(document).ready(function () {
         if ($('#poption').select2('val') != '') {
             $('#poption').select2('val', product_variant);
             product_variant = 0;
-            $('#pquantity').val(qty);
+            $('#pquantity').val($('#old_qty').val());
         }
     });
     $(document).on('change', '#ptax, #pmrp, #mrpdiscount, #pricediscount, #selling, #pquantity', function () { 

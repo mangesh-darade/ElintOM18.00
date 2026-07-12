@@ -373,7 +373,7 @@ class Datatables
             $iFilteredTotal = $this->get_total_results(TRUE);
         }
 
-        foreach ($rResult->result_array() as $row_key => $row_val) {
+        foreach (($rResult ? $rResult->result_array() : array()) as $row_key => $row_val) {
             $aaData[$row_key] = ($this->check_mDataprop()) ? $row_val : array_values($row_val);
 
             foreach ($this->add_columns as $field => $val)
@@ -448,7 +448,7 @@ class Datatables
 
         $query = $this->ci->db->get($this->table, NULL, NULL, FALSE);
         //echo $this->ci->db->last_query();
-        return $query->num_rows();
+        return $query ? $query->num_rows() : 0;
     }
 
     /**

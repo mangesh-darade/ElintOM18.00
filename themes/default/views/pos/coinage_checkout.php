@@ -2,7 +2,7 @@
 $displayStyle = ($pos_settingss->display_seller == 2) ? 'none' : 'block';
 ?>
 <!-- <script defer type="text/javascript" src="<?= $assets ?>pos/js/coinage.js"></script> -->
-<script defer type="text/javascript" src="<?= $assets ?>pos/js/coinage_checkout.js?v=20260710_07"></script>
+<script defer type="text/javascript" src="<?= $assets ?>pos/js/coinage_checkout.js?v=20260712_02"></script>
 <script type="text/javascript" src="<?= $assets ?>pos/js/customer_family_relation.js?v=20260620"></script>
 <script type="text/javascript" src="<?= $assets ?>js/customer_add_address_modal.js?v=20260630_2"></script>
 <script type="text/javascript" src="<?= $assets ?>pos/js/edit_customer_details.js?v=20260620"></script>

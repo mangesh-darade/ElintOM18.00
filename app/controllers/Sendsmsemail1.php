@@ -35,7 +35,7 @@ class Sendsmsemail extends MY_Controller
     }
     function add(){ 
         error_reporting(-1);
-        ini_set('display_errors', 1);
+        ini_set('display_errors', 0);
         $this->form_validation->set_rules('sender', lang("comment"), 'required');
         $this->form_validation->set_rules('subject', 'subject', 'required');
         $this->form_validation->set_rules('hiddencust', lang("Customer List"), 'required');

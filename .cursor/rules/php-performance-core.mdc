@@ -1,9 +1,9 @@
 ---
-description: No over-engineering + sub-1s screen/AJAX performance for phpupgrade
+description: No over-engineering + sub-1s screen/AJAX performance for ElintOM18.00 upgrade
 alwaysApply: true
 ---
 
-# Performance & Minimal Code — phpupgrade
+# Performance & Minimal Code — ElintOM18.00
 
 ElintPOS on **CI 3.1.13 / PHP 8.5**. Every change must stay **small, fast, and behavior-identical**.
 
@@ -26,7 +26,7 @@ If a fix risks slowing hot paths (POS, Sales list, login), **choose the smaller 
 - Generic helpers used once
 - Caching (Redis, file cache, memo wrappers)
 - New Composer packages for “cleaner” code
-- Refactors “while we’re here” (rename, reorder, extract method)
+- Refactors “while we’re here” (rename, reorder, extract method, **delete dead code**)
 - Extra test scripts outside `upgrade/` directory (keep new `phase4_*` scripts in `upgrade/`)
 - `#[\AllowDynamicProperties]` on every class when parent already has it
 - Wrapping 1-line null guards in new functions

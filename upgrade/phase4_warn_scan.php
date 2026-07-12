@@ -8,7 +8,7 @@ function req($url, $cf, $post = null) {
     $b = curl_exec($ch);
     return [(int)curl_getinfo($ch, CURLINFO_HTTP_CODE), curl_getinfo($ch, CURLINFO_REDIRECT_URL), $b];
 }
-$base = 'http://localhost/phpupgrade';
+$base = 'http://localhost/ElintOM18.00';
 $r = req("$base/login", $cf);
 preg_match('/name="token"\s+value="([^"]+)"/', $r[2], $m);
 $post = http_build_query(['identity' => 'Admin', 'password' => 'Admin@554', 'login_device' => 'web', 'token' => $m[1]]);

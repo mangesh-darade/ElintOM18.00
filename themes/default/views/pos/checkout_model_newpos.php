@@ -739,6 +739,7 @@ $displayStyle = ($pos_settingss->display_seller == 2) ? 'none' : 'block';
                         if (this.id === "showDivButton4" || this.id === "showDivButton3") {
                             if (this.id === "showDivButton4" || this.id === "showDivButton3" || this.id === "showDivButton5") {
                             document.getElementById("showDivButton2").classList.add("active");
+                            }
                         }
                     });
                 });
