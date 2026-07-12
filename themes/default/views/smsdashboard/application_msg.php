@@ -77,7 +77,7 @@
         </div>
         <div id="group-appmsg" class="tab-pane fade in">
              <?php
-                $attrib = array(  'role' => 'form', 'name' => "appmsg-group", id=>"appmsg-group");
+                $attrib = array(  'role' => 'form', 'name' => "appmsg-group", 'id'=>"appmsg-group");
                 echo form_open_multipart("", $attrib)
                 ?>
             

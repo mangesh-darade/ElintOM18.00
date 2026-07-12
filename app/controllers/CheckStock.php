@@ -12,7 +12,7 @@ class CheckStock extends MY_Controller {
         }
         if ($this->Supplier) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('welcome'));
         }
         $this->load->model('CheckStock_model');
         $this->load->model('products_model');
@@ -22,7 +22,7 @@ class CheckStock extends MY_Controller {
     public function index() {
         if (!$this->Owner && !$this->GP['products-stock_check']) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('welcome'));
         }
         if($this->session->userdata('group_id')!='1'){
             $this->data['warehouse'] =   $this->CheckStock_model->getUserWarehouse();
@@ -36,13 +36,13 @@ class CheckStock extends MY_Controller {
     }
 
     public function getStockReport() {
-        $warehouse = $_POST['warehouse'];
-        $product = array_count_values($_POST['scanproduct']);
+        $warehouse = isset($_POST['warehouse']) ? $_POST['warehouse'] : null;
+        $product = isset($_POST['scanproduct']) && is_array($_POST['scanproduct']) ? array_count_values($_POST['scanproduct']) : array();
         $notProcducts = '';
-        if ($_POST['allcategory'] == 'true') {
+        if (isset($_POST['allcategory']) && $_POST['allcategory'] == 'true') {
             $response = $this->CheckStock_model->getStock($warehouse, $product);
         } else {
-            $categorys = $_POST['category'];
+            $categorys = isset($_POST['category']) ? $_POST['category'] : null;
             $response = $this->CheckStock_model->getCategoryProduct($warehouse, $product, $categorys);
         }
         $result = '<div > <div id="note" class="alert alert-danger"></div> <button type="button" class="btn btn-primary pull-right " id="btnExport" onclick="exportTableToExcel();"> <i class="fa fa-file-excel-o" aria-hidden="true"></i>
@@ -74,6 +74,7 @@ class CheckStock extends MY_Controller {
         $result.='<th style="text-align: left;"><i class="fa fa-times"></i></th>';
         $result.='</tr></thead>';
         $result.='<tbody>';
+        if (!empty($response) && is_array($response)) {
         foreach ($response as $key => $response_value) {
             $difference = 0;
             $qyt = 0;
@@ -131,6 +132,7 @@ class CheckStock extends MY_Controller {
             $result.='<td class="text-center"><button onclick="add_adjustment(' . $response_value['product_id'] . ',' . $type . ',' . $qyt . ',' . $variant . ',' . $warehouse . ')"' . (($warehouse) ? '' : 'disabled') . ' type="button" class="btn btn-xs btn-primary"> Add </button></td>';*/
              $result.='<td><button style="cursor: pointer;" class="removerow btn btn-xs btn-danger" data-item="id_'.$key.'" onclick="removerow('.$key.')"><i class="fa fa-times"></i></button></td>';
             $result.='</tr>';
+        }
         }
         $result.='</tbody></table></div>';
         $result.='<div id="notData">'.$notProcducts .'</div>';

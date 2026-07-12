@@ -13,7 +13,7 @@ class Help extends MY_Controller
         }
         if ($this->Customer || $this->Supplier) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('welcome'));
         }
         $this->load->model('help_model');
     }
@@ -23,6 +23,7 @@ class Help extends MY_Controller
      * Show State List
      */
     public function statelist(){
+        $action = '';
         $this->data['stateList'] = $this->help_model->getState();
         $this->data['error'] = (validation_errors()) ? validation_errors() : $this->session->flashdata('error');
         $this->data['action'] = $action;

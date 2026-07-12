@@ -13,7 +13,7 @@ class Calendar extends MY_Controller
         }
         if ($this->Customer || $this->Supplier) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('welcome'));
         }
 
         $this->load->library('form_validation');
@@ -49,11 +49,13 @@ class Calendar extends MY_Controller
         $start = $this->fc->parseDateTime($start);
         $end = $this->fc->parseDateTime($end);
         $output_arrays = array();
+        if (!empty($input_arrays) && is_array($input_arrays)) {
         foreach ($input_arrays as $array) {
             $this->fc->load_event($array);
             if ($this->fc->isWithinDayRange($start, $end)) {
                 $output_arrays[] = $this->fc->toArray();
             }
+        }
         }
 
         // $this->sma->send_json($output_arrays);

@@ -28,7 +28,7 @@ $cronTypeD = ($pos_sms_cron == 1) ? '' : 'style="display:none"';
     <div class="row">
         <div class="col-lg-12">
             <?php
-            $attrib = array('role' => 'form', 'name' => "cron_setting", id => "cron_setting");
+            $attrib = array('role' => 'form', 'name' => "cron_setting", 'id' => "cron_setting");
             echo form_open_multipart("", $attrib)
             ?>
             <div class="row">
@@ -54,7 +54,7 @@ $cronTypeD = ($pos_sms_cron == 1) ? '' : 'style="display:none"';
         </div>
         <div class="col-lg-12  ">
             <?php
-            $attrib = array('role' => 'form', 'name' => "cron_user_setting", id => "cron_user_setting");
+            $attrib = array('role' => 'form', 'name' => "cron_user_setting", 'id' => "cron_user_setting");
             echo form_open_multipart("", $attrib)
             ?>
             <br>

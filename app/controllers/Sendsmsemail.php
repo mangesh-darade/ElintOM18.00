@@ -12,7 +12,7 @@ class Sendsmsemail extends MY_Controller
 
        /* if (!$this->Owner && !$this->Admin) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'sendsmsemail');
         }*/
          $this->upload_path = 'assets/mdata/'.$this->Customer_assets.'/uploads/';
         $this->load->library('form_validation');
@@ -25,12 +25,12 @@ class Sendsmsemail extends MY_Controller
     { 
        /* if (!$this->Owner && !$this->Admin) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'sendsmsemail');
         }*/
 
         $this->data['error'] = validation_errors() ? validation_errors() : $this->session->flashdata('error');
-        $current_user =   $this->site->getUser( $this->session->userdata('id'));
-        $this->data['default_email'] =  $current_user->email ;
+        $current_user =   $this->site->getUser( $this->session->userdata('user_id'));
+        $this->data['default_email'] =  ($current_user && isset($current_user->email)) ? $current_user->email : '';
         $this->data['sms_limit']     =  $this->sma->BalanceSMS();
         
         $bc = array(array('link' => base_url(), 'page' => lang('home')), array('link' => '#', 'page' => lang('notifications')));
@@ -43,12 +43,12 @@ class Sendsmsemail extends MY_Controller
    /*
       if (!$this->Owner && !$this->Admin) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'sendsmsemail');
         }
 */
         $this->data['error'] = validation_errors() ? validation_errors() : $this->session->flashdata('error');
-        $current_user =   $this->site->getUser( $this->session->userdata('id'));
-        $this->data['default_email'] =  $current_user->email ;
+        $current_user =   $this->site->getUser( $this->session->userdata('user_id'));
+        $this->data['default_email'] =  ($current_user && isset($current_user->email)) ? $current_user->email : '';
         $this->data['sms_limit']     =  $this->sma->BalanceSMS();
         
         $bc = array(array('link' => base_url(), 'page' => lang('home')), array('link' => '#', 'page' => lang('notifications')));

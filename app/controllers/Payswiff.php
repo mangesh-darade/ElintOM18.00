@@ -28,7 +28,7 @@ class Payswiff extends MY_Controller {
     
     public function v2(){
     	
-       $responseData = json_decode($_POST['responseData'],TRUE);
+       $responseData = isset($_POST['responseData']) ? json_decode($_POST['responseData'], TRUE) : null;
              
     	if(!isset($responseData['secret_token'] )) :
             

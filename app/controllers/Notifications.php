@@ -13,7 +13,7 @@ class Notifications extends MY_Controller
         }
         if (!$this->Owner && !$this->Admin) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'notifications');
         }
         $this->lang->load('notifications', $this->Settings->user_language);
         $this->load->library('form_validation');
@@ -25,7 +25,7 @@ class Notifications extends MY_Controller
     {
         if (!$this->Owner && !$this->Admin) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'notifications');
         }
 
         $this->data['error'] = validation_errors() ? validation_errors() : $this->session->flashdata('error');
@@ -89,7 +89,7 @@ class Notifications extends MY_Controller
     {
         if (!$this->Owner) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'notifications');
         }
 
         if ($this->input->post('id')) {
@@ -142,7 +142,7 @@ class Notifications extends MY_Controller
     {
         if (!$this->Owner) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'notifications');
         }
 
         if ($this->cmt_model->deleteComment($id)) {

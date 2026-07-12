@@ -12,7 +12,7 @@ class Offline extends MY_Controller
         }
         if ($this->Customer || $this->Supplier) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('welcome'));
         }
 
         $this->load->model('pos_model');
@@ -40,7 +40,7 @@ class Offline extends MY_Controller
         $this->data['error'] = (validation_errors()) ? validation_errors() : $this->session->flashdata('error');
         
         if(isset($this->data['error'])){
-            $error_url = "http://".$_SERVER[HTTP_HOST].$_SERVER[REQUEST_URI];
+            $error_url = "http://".(isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '').(isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '');
             $logger = array($this->data['error'] , $error_url);
             $this->pos_error_log($logger);
         }

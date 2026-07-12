@@ -14,7 +14,7 @@
     </div>
     <div class="box-content">
         <?php
-        $attrib = array('data-toggle' => 'validator', 'role' => 'form', 'name' => "sendsmsemail", id=>"sendsmsemail");
+        $attrib = array('data-toggle' => 'validator', 'role' => 'form', 'name' => "sendsmsemail", 'id'=>"sendsmsemail");
         echo form_open_multipart("sendsmsemail/add", $attrib)
         ?>
         <div class="row">

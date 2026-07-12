@@ -13,7 +13,7 @@ class Purchases_Mobile extends MY_Controller
         }
         if ($this->Customer) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('welcome'));
         }
         $this->lang->load('purchases', $this->Settings->user_language);
         $this->load->library('form_validation');

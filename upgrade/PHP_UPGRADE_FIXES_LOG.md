@@ -1934,7 +1934,53 @@ $this->data['taxItems'] = $this->sales_model->getAllTaxItemsGroup($id, $inv->ret
 
 ---
 
-## Test scripts index (Modules 1–23)
+## Module 24 — Other Modules
+
+**Tests:** `phase4_other_modules_test.php` (**30/30**), `phase4_other_modules_links_test.php` (**17/17**) PASS  
+**Status:** ✅ Module complete — fixes applied + retest 2026-07-12  
+**Controllers:** `Orders.php`, `Employees.php`, `Offline.php`, `CheckStock.php`, `Smsdashboard.php`, `Sendsmsemail.php`, `Notifications.php`, `Calendar.php`, `Screens.php`, `Help.php`, `Payswiff.php`, `Recipies.php`, `mobile_view/Sales_Mobile.php`, `mobile_view/Purchases_Mobile.php`  
+**Views restored:** `mobile_view/production_unit/procurement_orders_mobile.php`, `mobile_view/production_unit/inventory_mobile.php`
+
+| # | File | Old | New | Type |
+|---|------|-----|-----|------|
+| 24.1 | `Orders.php` | `$_SEpRVER` typo; bare `HTTP_REFERER`; `getInvoiceByID`/`getOrderByID` false access | typo fix; P1 referer guards; early redirect guards | guard/syntax |
+| 24.2 | `Offline.php` | bare `$_SERVER[HTTP_HOST]`; unguarded `HTTP_REFERER` | isset guards (P1) | guard |
+| 24.3 | `CheckStock.php` | `count($_POST['...'])`; foreach on unset `$response` | isset guards before count/foreach | guard |
+| 24.4 | `Employees.php` | `getEmployeeByID` false; `foreach $_POST['val']` | redirect guard; `!empty` foreach | guard |
+| 24.5 | `Smsdashboard.php` | `userdata('id')`; foreach on false cron rows | `userdata('user_id')`; `!empty` guards | guard |
+| 24.6 | `Sendsmsemail.php` | bare `HTTP_REFERER`; missing email isset | P1 referer; isset on email field | guard |
+| 24.7 | `smsdashboard/*.php`, `sendsmsemail/*.php` | bare constant `id=>` in arrays (PHP 8 fatal) | quoted key `'id'=>` | syntax |
+| 24.8 | `Sales_Mobile.php` | `sales.type` column in SELECT (DB 1054) | computed `if(pos=1,...)` alias as `type` | db-env |
+| 24.9 | `mobile_view/production_unit/*.php` | missing views → 500 on mobile production links | restore from production_unit templates | restore |
+| 24.10 | `phase4_other_modules_*.php` | — | Screen + deep-link test scripts | test |
+
+#### 24.1 `Orders.php` — HTTP_REFERER guard (representative; applied ~40×)
+
+**Old code:**
+```php
+redirect($_SERVER["HTTP_REFERER"]);
+```
+
+**New code:**
+```php
+redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('welcome'));
+```
+
+#### 24.8 `Sales_Mobile.php` — unknown `sales.type` column
+
+**Old code:**
+```php
+... . ".return_id as return_id, " . $this->db->dbprefix('sales') . ".type as type", FALSE)
+```
+
+**New code:**
+```php
+... . ".return_id as return_id, if(pos=1, 'POS', if(offline_sale=1, 'Offline', if(eshop_sale=1, 'Eshop', if(up_sales=1, 'up_sales', 'Sale')))) as type", FALSE)
+```
+
+---
+
+## Test scripts index (Modules 1–24)
 
 | Module | Scripts |
 |--------|---------|
@@ -1958,6 +2004,7 @@ $this->data['taxItems'] = $this->sales_model->getAllTaxItemsGroup($id, $inv->ret
 | 21 Service Requests | `phase4_service_requests_test.php`, `phase4_service_requests_links_test.php` |
 | 22 Urban Piper / Omnichannel | `phase4_urban_piper_test.php`, `phase4_urban_piper_links_test.php`, `phase4_omnichannel_test.php`, `phase4_omnichannel_links_test.php` |
 | 23 APIs (JSON) | `phase4_apis_test.php`, `phase4_apis_links_test.php` |
+| 24 Other Modules | `phase4_other_modules_test.php`, `phase4_other_modules_links_test.php` |
 | Shared | `phase4_test_lib.php` |
 
 **Run:** `cd upgrade && php phase4_<module>_*.php Admin "Admin@554"`
@@ -1998,6 +2045,7 @@ $this->data['taxItems'] = $this->sales_model->getAllTaxItemsGroup($id, $inv->ret
 | 2026-07-12 | 21 | Module 21 Service Requests **certified complete** — mobile foreach + Settings guards; screen **5/5**, links **11/11** |
 | 2026-07-12 | 22 | Module 22 Urban Piper / Omnichannel **certified complete** — constructor/order guards, HTTP_REFERER, restore delivery views; UP **8/8** + **9/9**, OC **9/9** + **11/11** |
 | 2026-07-12 | 23 | Module 23 APIs (JSON) **certified complete** — ApiOwner json_op restore, constructor/decode guards, Restapi5 auth POST guards; screen **11/11**, links **14/14** |
+| 2026-07-12 | 24 | Module 24 Other Modules **certified complete** — Orders/Employees/Offline/SMS guards, Sales_Mobile `type` SELECT fix, restore mobile production views; screen **30/30**, links **17/17** |
 
 ---
 

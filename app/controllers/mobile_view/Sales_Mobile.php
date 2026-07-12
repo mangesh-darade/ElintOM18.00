@@ -18,7 +18,7 @@ class Sales_Mobile extends MY_Controller {
         }
         if ($this->Supplier) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('welcome'));
         }
 
         $this->lang->load('sales', $this->Settings->user_language);
@@ -104,7 +104,7 @@ class Sales_Mobile extends MY_Controller {
 
         if ($pdf || $xls) {
             $this->db
-                ->select("date, reference_no, invoice_no, biller, customer, sale_status, grand_total, paid, (grand_total-paid) as balance, payment_status, attachment, return_id, type")
+                ->select("date, reference_no, invoice_no, biller, customer, sale_status, grand_total, paid, (grand_total-paid) as balance, payment_status, attachment, return_id, if(pos=1, 'POS', if(offline_sale=1, 'Offline', if(eshop_sale=1, 'Eshop', if(up_sales=1, 'up_sales', 'Sale')))) as type")
                 ->from('sales');
 
             if ($warehouse) {
@@ -246,7 +246,7 @@ class Sales_Mobile extends MY_Controller {
                 }
             }
             $this->session->set_flashdata('error', lang('nothing_found'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('welcome'));
         }
 
         $detail_link1 = anchor('pos/view/$1', '<i class="fa fa-file-text-o"></i> ' . lang('view_receipt'));
@@ -283,7 +283,7 @@ class Sales_Mobile extends MY_Controller {
 
         $this->load->library('datatables');
         $this->datatables
-                ->select($this->db->dbprefix('sales') . ".id as id, " . $this->db->dbprefix('sales') . ".date as date, " . $this->db->dbprefix('sales') . ".reference_no as reference_no, " . $this->db->dbprefix('sales') . ".invoice_no as invoice_no, " . $this->db->dbprefix('sales') . ".biller as biller, " . $this->db->dbprefix('sales') . ".customer as customer, " . $this->db->dbprefix('sales') . ".sale_status as sale_status, " . $this->db->dbprefix('sales') . ".grand_total as grand_total, " . $this->db->dbprefix('sales') . ".paid as paid, (grand_total-paid) as balance, " . $this->db->dbprefix('sales') . ".payment_status as payment_status, " . $this->db->dbprefix('sales') . ".attachment as attachment, " . $this->db->dbprefix('sales') . ".return_id as return_id, " . $this->db->dbprefix('sales') . ".type as type", FALSE)
+                ->select($this->db->dbprefix('sales') . ".id as id, " . $this->db->dbprefix('sales') . ".date as date, " . $this->db->dbprefix('sales') . ".reference_no as reference_no, " . $this->db->dbprefix('sales') . ".invoice_no as invoice_no, " . $this->db->dbprefix('sales') . ".biller as biller, " . $this->db->dbprefix('sales') . ".customer as customer, " . $this->db->dbprefix('sales') . ".sale_status as sale_status, " . $this->db->dbprefix('sales') . ".grand_total as grand_total, " . $this->db->dbprefix('sales') . ".paid as paid, (grand_total-paid) as balance, " . $this->db->dbprefix('sales') . ".payment_status as payment_status, " . $this->db->dbprefix('sales') . ".attachment as attachment, " . $this->db->dbprefix('sales') . ".return_id as return_id, if(pos=1, 'POS', if(offline_sale=1, 'Offline', if(eshop_sale=1, 'Eshop', if(up_sales=1, 'up_sales', 'Sale')))) as type", FALSE)
                 ->from('sales');
 
         if ($user) {

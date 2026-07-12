@@ -13,7 +13,7 @@ class Employees extends MY_Controller
         }
         if (!$this->Owner) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'employees');
         }
         $this->lang->load('employees_lang', $this->Settings->user_language);
         $this->load->library('form_validation');         
@@ -240,7 +240,7 @@ class Employees extends MY_Controller
             }
            } elseif ($this->input->post('edit_employee')){
                $this->session->set_flashdata('error', validation_errors());
-               redirect($_SERVER["HTTP_REFERER"]);
+               redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'employees');
            }
     
          if ($this->form_validation->run() == true && $this->employees_model->updateEmployee($id, $data)) {
@@ -251,6 +251,10 @@ class Employees extends MY_Controller
          } else {
              
             $this->data['employee'] = $this->employees_model->getEmployeeByID($id);
+            if (!$this->data['employee']) {
+                $this->session->set_flashdata('error', 'Employee not found');
+                redirect('employees');
+            }
             $this->data['employeeType'] =  $this->employees_model->getEmployeeTypes();
          
             $this->data['error'] = (validation_errors() ? validation_errors() : $this->session->flashdata('error'));
@@ -300,7 +304,7 @@ class Employees extends MY_Controller
     {
         if (!$this->Owner && !$this->GP['bulk_actions']) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'employees');
         }
 
         $this->form_validation->set_rules('form_action', lang("form_action"), 'required');
@@ -311,6 +315,7 @@ class Employees extends MY_Controller
                 if ($this->input->post('form_action') == 'delete') {
                     $this->sma->checkPermissions('delete');
                     $error = false;
+                    if (!empty($_POST['val']) && is_array($_POST['val'])) {
                     foreach ($_POST['val'] as $id) {
                         $this->sma->storeDeletedData('companies', 'id', $id);
                         if (!$this->employees_model->deleteSeller($id)) {
@@ -318,12 +323,13 @@ class Employees extends MY_Controller
                             $error = true;
                         }
                     }
+                    }
                     if ($error) {
                         $this->session->set_flashdata('warning', lang('sales_person_x_deleted_have_sales'));
                     } else {
                         $this->session->set_flashdata('message', $this->lang->line("sales_person_deleted"));
                     }
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'employees');
                 }
 
                 if ($this->input->post('form_action') == 'export_excel' || $this->input->post('form_action') == 'export_pdf') {
@@ -345,6 +351,7 @@ class Employees extends MY_Controller
                     $this->excel->getActiveSheet()->SetCellValue('E2', lang('state'));
 
                     $row = 3;
+                    if (!empty($_POST['val']) && is_array($_POST['val'])) {
                     foreach ($_POST['val'] as $id) {
                         $customer = $this->employees_model->getEmployeeByID($id);
 
@@ -355,6 +362,7 @@ class Employees extends MY_Controller
                         $this->excel->getActiveSheet()->SetCellValue('D' . $row, $customer->city);
                         $this->excel->getActiveSheet()->SetCellValue('E' . $row, $customer->state);
                         $row++;
+                    }
                     }
 
                     $this->excel->getActiveSheet()->getColumnDimension('A')->setWidth(20);
@@ -391,15 +399,15 @@ class Employees extends MY_Controller
                         return $objWriter->save('php://output');
                     }
 
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'employees');
                 }
             } else {
                 $this->session->set_flashdata('error', $this->lang->line("No_Sales_Person_Selected"));
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'employees');
             }
         } else {
             $this->session->set_flashdata('error', validation_errors());
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'employees');
         }
     }
 

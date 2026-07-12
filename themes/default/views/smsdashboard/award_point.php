@@ -20,7 +20,7 @@
     <div class="tab-content col-sm-12">
         <div id="single-sms-award" class="tab-pane  in active">
             <?php
-            $attrib = array('role' => 'form', 'name' => "sms-single-award", id => "sms-single-award");
+            $attrib = array('role' => 'form', 'name' => "sms-single-award", 'id' => "sms-single-award");
             echo form_open_multipart("", $attrib)
             ?>
             <input type="hidden" name="hiddencust_sms"  id="hiddencust_sms_award" >
@@ -74,7 +74,7 @@
         </div>
         <div id="group-sms-award" class="tab-pane fade in">
             <?php
-            $attrib = array('role' => 'form', 'name' => "sms-group-award", id => "sms-group-award");
+            $attrib = array('role' => 'form', 'name' => "sms-group-award", 'id' => "sms-group-award");
             echo form_open_multipart("", $attrib)
             ?>
             <input type="hidden" name="group_id"  id="sms_group_id"  class="group_id">

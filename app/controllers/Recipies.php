@@ -221,13 +221,16 @@ class Recipies extends MY_Controller
 
         // Insert BOM Item Details
         $altIds = array();
+        if (!empty($postData['items']) && is_array($postData['items'])) {
         foreach ($postData['items'] as $it) {
             if (isset($it['primary_product_id']) && !empty($it['primary_product_id'])) {
                 $altIds[(int)$it['rawProductId']] = true;
                 $altIds[(int)$it['primary_product_id']] = true;
             }
         }
+        }
 
+        if (!empty($postData['items']) && is_array($postData['items'])) {
         foreach ($postData['items'] as $item) {
             $itemData = [
                 'bom_id' => $bom_id,
@@ -241,6 +244,7 @@ class Recipies extends MY_Controller
             ];
 
             $this->DineIn_Bill_of_material_model->addProddUnitBomItems($itemData);
+        }
         }
         echo json_encode([
             'status' => 'success',

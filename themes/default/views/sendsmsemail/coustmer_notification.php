@@ -9,7 +9,7 @@
 </style>
 <div class="row">
     <?php
-    $attrib = array('role' => 'form', 'name' => "sendsmsemail", id => "sendsmsemail");
+    $attrib = array('role' => 'form', 'name' => "sendsmsemail", 'id' => "sendsmsemail");
     echo form_open_multipart("sendsmsemail/add", $attrib)
     ?>
     <div class="col-sm-4 contact-group">

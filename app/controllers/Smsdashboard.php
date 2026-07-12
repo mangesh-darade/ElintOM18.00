@@ -165,20 +165,20 @@ class Smsdashboard extends MY_Controller
      	$res = $this->event_model->getAllCustomerFromEvent();
       
         $this->data['error'] = validation_errors() ? validation_errors() : $this->session->flashdata('error');
-        $current_user =   $this->site->getUser( $this->session->userdata('id'));
+        $current_user =   $this->site->getUser( $this->session->userdata('user_id'));
         $this->data['groupList'] =  $this->site->getAllContactGroup();
         
         $this->data['templateList']  =  $this->site->getAllContactTemplate();
       
-        $this->data['default_email'] =  $current_user->email ;
+        $this->data['default_email'] =  ($current_user && isset($current_user->email)) ? $current_user->email : '';
         $this->data['sms_limit']     =  $this->sma->BalanceSMS();
         $this->data['notification']     =  $res ;
         $this->data['customer'] = $this->companies_model->getAllCustomerCompanies();
         $this->data['customerlist'] = $this->companies_model->getSMSCustomerList();
 	$resCron= $this->sma->SmsCron(1,1);
 	 
-	$this->data['pos_sms_cron'] =  $resCron->pos_sms_cron ;
-   	$this->data['pos_sms_cron_type'] =  $resCron->pos_sms_cron_type ;
+	$this->data['pos_sms_cron'] = ($resCron && isset($resCron->pos_sms_cron)) ? $resCron->pos_sms_cron : '';
+   	$this->data['pos_sms_cron_type'] = ($resCron && isset($resCron->pos_sms_cron_type)) ? $resCron->pos_sms_cron_type : '';
    	
         $bc = array(array('link' => base_url(), 'page' => lang('home')), array('link' => '#', 'page' => lang('notifications')));
         $meta = array('page_title' => lang('notifications'), 'bc' => $bc);
@@ -269,9 +269,11 @@ class Smsdashboard extends MY_Controller
             $members = $this->site->getAllContactGroupMemberDetails($group_id);
             $_member = array();
             $_member_name = array();
+            if (!empty($members) && is_array($members)) {
             foreach ($members as $memberData) {
                 $_member[] = $memberData->id ;
                 $_member_name[] = $memberData->name ;
+            }
             }
             $this->data['members_name'] = $_member_name;
             $this->data['members'] = $_member;

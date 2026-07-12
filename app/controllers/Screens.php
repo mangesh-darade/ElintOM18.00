@@ -17,7 +17,7 @@ class Screens extends MY_Controller{
         }
         if ($this->Customer || $this->Supplier) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('welcome'));
         }
 
         $this->load->model('Screen_model');
@@ -63,6 +63,7 @@ class Screens extends MY_Controller{
         $meta = array('page_title' => lang('screen'), 'bc' => $bc);
         
         $data_json['group_items'] = array();
+        if (!empty($this->data['list']) && is_array($this->data['list'])) {
         foreach($this->data['list'] as $key=>$val){
             
             $this->data['list'][$key]->items = '';
@@ -75,6 +76,7 @@ class Screens extends MY_Controller{
             }
             
             $data_json['group_items'][$val->suspend_note][] = $val;
+        }
         }
         $latest_token = $this->pos_model->getLastTokenToday();
         $data_json['current_token'] = $latest_token;

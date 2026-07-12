@@ -20,7 +20,7 @@
     <div class="tab-content col-sm-12">
         <div id="single-sms" class="tab-pane fade in">
             <?php
-            $attrib = array('role' => 'form', 'name' => "sms-single", id => "sms-single");
+            $attrib = array('role' => 'form', 'name' => "sms-single", 'id' => "sms-single");
             echo form_open_multipart("", $attrib)
             ?>
             <input type="hidden" name="hiddencust_sms"  id="hiddencust_sms" >
@@ -80,7 +80,7 @@
         </div>
         <div id="group-sms" class="tab-pane fade in">
             <?php
-            $attrib = array('role' => 'form', 'name' => "sms-group", id => "sms-group");
+            $attrib = array('role' => 'form', 'name' => "sms-group", 'id' => "sms-group");
             echo form_open_multipart("", $attrib)
             ?>
             <input type="hidden" name="group_id"  id="sms_group_id"  class="group_id">

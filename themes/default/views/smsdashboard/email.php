@@ -10,7 +10,7 @@
     <div class="tab-content col-sm-12">
         <div id="single-email" class="tab-pane fade in active">
             <?php
-                $attrib = array(  'role' => 'form', 'name' => "email-single", id=>"email-single");
+                $attrib = array(  'role' => 'form', 'name' => "email-single", 'id'=>"email-single");
                 echo form_open_multipart("", $attrib)
                 ?>
                 <input type="hidden" name="hiddencust_email"  id="hiddencust_email" >
@@ -63,7 +63,7 @@
         </div>
         <div id="group-email" class="tab-pane fade in">
             <?php
-                $attrib = array(  'role' => 'form', 'name' => "email-group", id=>"email-group");
+                $attrib = array(  'role' => 'form', 'name' => "email-group", 'id'=>"email-group");
                 echo form_open_multipart("", $attrib)
                 ?>
             <input type="hidden" name="group_id"  id="email_group_id"  class="group_id">

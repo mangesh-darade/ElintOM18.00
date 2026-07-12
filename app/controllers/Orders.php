@@ -12,7 +12,7 @@ class Orders extends MY_Controller {
         }
         if ($this->Supplier) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SEpRVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('welcome'));
         }
 
         $this->lang->load('orders', $this->Settings->user_language);
@@ -479,7 +479,7 @@ class Orders extends MY_Controller {
                 if ($this->input->post('paid_by') == 'deposit') {
                     if (!$this->site->check_customer_deposit($customer_id, $this->input->post('amount-paid'))) {
                         $this->session->set_flashdata('error', lang("amount_greater_than_deposit"));
-                        redirect($_SERVER["HTTP_REFERER"]);
+                        redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'orders');
                     }
                 }
                 if ($this->input->post('paid_by') == 'gift_card') {
@@ -536,7 +536,7 @@ class Orders extends MY_Controller {
                 if (!$this->upload->do_upload('document')) {
                     $error = $this->upload->display_errors();
                     $this->session->set_flashdata('error', $error);
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'orders');
                 }
                 $photo = $this->upload->file_name;
                 $data['attachment'] = $photo;
@@ -704,6 +704,10 @@ class Orders extends MY_Controller {
         if ($this->uri->segment(4))
             $saleType = $this->uri->segment(4);
         $inv = $this->sales_model->getInvoiceByID($id);
+        if (!$inv) {
+            $this->session->set_flashdata('error', lang('sale_not_found'));
+            $this->sma->md();
+        }
 
         if ($inv->sale_status == 'returned' || $inv->return_id || $inv->return_sale_ref) {
             $this->session->set_flashdata('error', lang('sale_x_action'));
@@ -1003,7 +1007,7 @@ class Orders extends MY_Controller {
                 if (!$this->upload->do_upload('document')) {
                     $error = $this->upload->display_errors();
                     $this->session->set_flashdata('error', $error);
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'orders');
                 }
                 $photo = $this->upload->file_name;
                 $data['attachment'] = $photo;
@@ -1030,7 +1034,7 @@ class Orders extends MY_Controller {
             if ($this->Settings->disable_editing) {
                 if ($this->data['inv']->date <= date('Y-m-d', strtotime('-' . $this->Settings->disable_editing . ' days'))) {
                     $this->session->set_flashdata('error', sprintf(lang("sale_x_edited_older_than_x_days"), $this->Settings->disable_editing));
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'orders');
                 }
             }
             $inv_items = $this->sales_model->getAllInvoiceItems($id);
@@ -1142,16 +1146,20 @@ class Orders extends MY_Controller {
             $orderType = $this->uri->segment(4);
         }
         $order = $this->orders_model->getOrderByID($id);
+        if (!$order) {
+            $this->session->set_flashdata('error', 'Order not found');
+            redirect('orders');
+        }
 
 if($order->sale_invoice_no){
             $this->session->set_flashdata('error', lang("Sorry...! Sales has been created."));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'orders');
         }
 
         if ($order->return_id) {
             if ($this->Settings->sale_multiple_return_edit == 0) {
                 $this->session->set_flashdata('error', lang("order_already_returned"));
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'orders');
             }
         }
 
@@ -1534,7 +1542,7 @@ if($order->sale_invoice_no){
                 if (!$this->upload->do_upload('document')) {
                     $error = $this->upload->display_errors();
                     $this->session->set_flashdata('error', $error);
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'orders');
                 }
                 $photo = $this->upload->file_name;
                 $data['attachment'] = $photo;
@@ -1570,13 +1578,13 @@ if($order->sale_invoice_no){
             $this->data['inv'] = $order;
             if ($this->data['inv']->sale_status != 'completed') {
                 $this->session->set_flashdata('error', lang("order_status_x_competed"));
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'orders');
             }
             
             if ($this->Settings->disable_editing) {
                 if ($this->data['inv']->date <= date('Y-m-d', strtotime('-' . $this->Settings->disable_editing . ' days'))) {
                     $this->session->set_flashdata('error', lang("order_x_edited_older_than_3_months"));
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'orders');
                 }
             }            
                  
@@ -1686,6 +1694,10 @@ if($order->sale_invoice_no){
         }
         $this->data['error'] = (validation_errors()) ? validation_errors() : $this->session->flashdata('error');
         $inv = $this->sales_model->getInvoiceByID($id);
+        if (!$inv) {
+            $this->session->set_flashdata('error', lang('sale_not_found'));
+            $this->sma->md();
+        }
         if (!$this->session->userdata('view_right')) {
             $this->sma->view_rights($inv->created_by, true);
         }
@@ -1722,6 +1734,10 @@ if($order->sale_invoice_no){
         }
         $this->data['error'] = (validation_errors()) ? validation_errors() : $this->session->flashdata('error');
         $inv = $this->sales_model->getInvoiceByID($id);
+        if (!$inv) {
+            $this->session->set_flashdata('error', lang('sale_not_found'));
+            $this->sma->md();
+        }
         if (!$this->session->userdata('view_right')) {
             $this->sma->view_rights($inv->created_by);
         }
@@ -1979,14 +1995,14 @@ if($order->sale_invoice_no){
         } elseif ($this->input->post('send_email')) {
             $this->data['error'] = (validation_errors() ? validation_errors() : $this->session->flashdata('error'));
             $this->session->set_flashdata('error', $this->data['error']);
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'orders');
         }
 
         if ($this->form_validation->run() == true && $this->sma->send_email($to, $subject, $message, null, null, $attachment, $cc, $bcc)) {
             delete_files($attachment);
             $this->session->set_flashdata('message', lang("email_sent_msg"));
             // redirect("sales");
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'orders');
         } else {
 
             if (file_exists('./themes/' . $this->theme . '/views/email_templates/sale.html')) {
@@ -2058,7 +2074,7 @@ if($order->sale_invoice_no){
     public function orders_actions() {
         if (!$this->Owner && !$this->GP['bulk_actions']) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'orders');
         }
 
         $this->form_validation->set_rules('form_action', lang("form_action"), 'required');
@@ -2069,11 +2085,13 @@ if($order->sale_invoice_no){
                 if ($this->input->post('form_action') == 'delete') {
 
                     $this->sma->checkPermissions('delete');
+                    if (!empty($_POST['val']) && is_array($_POST['val'])) {
                     foreach ($_POST['val'] as $id) {
                         $this->orders_model->actionDeleteOrder($id);
                     }
+                    }
                     $this->session->set_flashdata('message', lang("challans_deleted"));
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'orders');
                 } elseif ($this->input->post('form_action') == 'combine') {
 
                     $html = $this->combine_pdf($_POST['val']);
@@ -2151,15 +2169,15 @@ if($order->sale_invoice_no){
                         return $objWriter->save('php://output');
                     }
 
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'orders');
                 }
             } else {
                 $this->session->set_flashdata('error', lang("no_orders_selected"));
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'orders');
             }
         } else {
             $this->session->set_flashdata('error', validation_errors());
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'orders');
         }
     }
 
@@ -2289,6 +2307,10 @@ if($order->sale_invoice_no){
         }
         $this->data['error'] = (validation_errors()) ? validation_errors() : $this->session->flashdata('error');
         $inv = $this->orders_model->getOrderByID($id);
+        if (!$inv) {
+            $this->session->set_flashdata('error', 'Order not found');
+            redirect('orders');
+        }
         if (!$this->session->userdata('view_right')) {
             $this->sma->view_rights($inv->created_by, true);
         }
@@ -2325,6 +2347,10 @@ if($order->sale_invoice_no){
         }
         $this->data['error'] = (validation_errors()) ? validation_errors() : $this->session->flashdata('error');
         $inv = $this->orders_model->getOrderByID($id);
+        if (!$inv) {
+            $this->session->set_flashdata('error', 'Order not found');
+            redirect('orders');
+        }
         if (!$this->session->userdata('view_right')) {
             $this->sma->view_rights($inv->created_by);
         }
@@ -2559,6 +2585,10 @@ if($order->sale_invoice_no){
         }
         $this->data['error'] = (validation_errors()) ? validation_errors() : $this->session->flashdata('error');
         $inv = $this->orders_model->getOrderByID($id);
+        if (!$inv) {
+            $this->session->set_flashdata('error', 'Order not found');
+            redirect('orders');
+        }
         if (!$this->session->userdata('view_right')) {
             $this->sma->view_rights($inv->created_by, true);
         }
@@ -2938,7 +2968,7 @@ if($order->sale_invoice_no){
                     if ($this->input->post('paid_by') == 'deposit') {
                         if (!$this->site->check_customer_deposit($customer_id, $this->input->post('amount-paid'))) {
                             $this->session->set_flashdata('error', lang("amount_greater_than_deposit"));
-                            redirect($_SERVER["HTTP_REFERER"]);
+                            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'orders');
                         }
                     }
                     if ($this->input->post('paid_by') == 'gift_card') {
@@ -2995,7 +3025,7 @@ if($order->sale_invoice_no){
                 if (!$this->upload->do_upload('document')) {
                     $error = $this->upload->display_errors();
                     $this->session->set_flashdata('error', $error);
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'orders');
                 }
                 $photo = $this->upload->file_name;
                 $data['attachment'] = $photo;
@@ -3018,7 +3048,7 @@ if($order->sale_invoice_no){
             if ($this->Settings->disable_editing) {
                 if ($this->data['inv']->date <= date('Y-m-d', strtotime('-' . $this->Settings->disable_editing . ' days'))) {
                     $this->session->set_flashdata('error', sprintf(lang("sale_x_edited_older_than_x_days"), $this->Settings->disable_editing));
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'orders');
                 }
             }
             $inv_items = $this->orders_model->getAllEshopOrderItems($id);
@@ -3253,14 +3283,14 @@ if($order->sale_invoice_no){
         } elseif ($this->input->post('send_email')) {
             $this->data['error'] = (validation_errors() ? validation_errors() : $this->session->flashdata('error'));
             $this->session->set_flashdata('error', $this->data['error']);
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'orders');
         }
 
         if ($this->form_validation->run() == true && $this->sma->send_email($to, $subject, $message, null, null, $attachment, $cc, $bcc)) {
             delete_files($attachment);
             $this->session->set_flashdata('message', lang("email_sent_msg"));
             // redirect("sales");
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'orders');
         } else {
 
             if (file_exists('./themes/' . $this->theme . '/views/email_templates/sale.html')) {
@@ -3309,7 +3339,7 @@ if($order->sale_invoice_no){
                 $amount = $this->input->post('amount-paid') - $payment->amount;
                 if (!$this->site->check_customer_deposit($customer_id, $amount)) {
                     $this->session->set_flashdata('error', lang("amount_greater_than_deposit"));
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'orders');
                 }
             } else {
                 $customer_id = null;
@@ -3346,7 +3376,7 @@ if($order->sale_invoice_no){
                 if (!$this->upload->do_upload()) {
                     $error = $this->upload->display_errors();
                     $this->session->set_flashdata('error', $error);
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'orders');
                 }
                 $photo = $this->upload->file_name;
                 $payment['attachment'] = $photo;
@@ -3355,7 +3385,7 @@ if($order->sale_invoice_no){
             //$this->sma->print_arrays($payment);
         } elseif ($this->input->post('edit_payment')) {
             $this->session->set_flashdata('error', validation_errors());
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'orders');
         }
 
         if ($this->form_validation->run() == true && $this->orders_model->updateEshopOrderPayment($id, $payment, $customer_id)) {
@@ -3392,7 +3422,7 @@ if($order->sale_invoice_no){
                 $customer_id = $sale->customer_id;
                 if (!$this->site->check_customer_deposit($customer_id, $this->input->post('amount-paid'))) {
                     $this->session->set_flashdata('error', lang("amount_greater_than_deposit"));
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'orders');
                 }
             } else {
                 $customer_id = null;
@@ -3431,7 +3461,7 @@ if($order->sale_invoice_no){
                 if (!$this->upload->do_upload()) {
                     $error = $this->upload->display_errors();
                     $this->session->set_flashdata('error', $error);
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'orders');
                 }
                 $photo = $this->upload->file_name;
                 $payment['attachment'] = $photo;
@@ -3440,12 +3470,12 @@ if($order->sale_invoice_no){
             //$this->sma->print_arrays($payment);
         } elseif ($this->input->post('add_payment')) {
             $this->session->set_flashdata('error', validation_errors());
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'orders');
         }
 
         if ($this->form_validation->run() == true && $this->sales_model->addPayment($payment, $customer_id, 'eshop_order')) {
             $this->session->set_flashdata('message', lang("payment_added"));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'orders');
         } else {
 
             $this->data['error'] = (validation_errors() ? validation_errors() : $this->session->flashdata('error'));
@@ -4196,7 +4226,7 @@ if($order->sale_invoice_no){
         }
 
         if ($direct_location == 1) {
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'orders');
         }
     }
 
@@ -4350,7 +4380,7 @@ if($order->sale_invoice_no){
         }
 
         if ($direct_location == 1) {
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'orders');
         }
     }
 
@@ -4364,7 +4394,7 @@ if($order->sale_invoice_no){
         if ($this->orders_model->deletePayment($id)) {
             //echo lang("payment_deleted");
             $this->session->set_flashdata('message', lang("payment_deleted"));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'orders');
         }
     }
 
@@ -4504,7 +4534,7 @@ if($order->sale_invoice_no){
                 }
             }
             $this->session->set_flashdata('error', lang('nothing_found'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'orders');
         } else {
 
             $this->load->library('datatables');
@@ -4666,7 +4696,7 @@ if($order->sale_invoice_no){
                 }
             }
             $this->session->set_flashdata('error', lang('nothing_found'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'orders');
         } else {
 
             $this->load->library('datatables');
@@ -4722,7 +4752,7 @@ if($order->sale_invoice_no){
     //             $customer_id = $sale->customer_id;
     //             if (!$this->site->check_customer_deposit($customer_id, $this->input->post('amount-paid'))) {
     //                 $this->session->set_flashdata('error', lang("amount_greater_than_deposit"));
-    //                 redirect($_SERVER["HTTP_REFERER"]);
+    //                 redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'orders');
     //             }
     //         } else {
     //             $customer_id = null;
@@ -4761,7 +4791,7 @@ if($order->sale_invoice_no){
     //             if (!$this->upload->do_upload()) {
     //                 $error = $this->upload->display_errors();
     //                 $this->session->set_flashdata('error', $error);
-    //                 redirect($_SERVER["HTTP_REFERER"]);
+    //                 redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'orders');
     //             }
     //             $photo = $this->upload->file_name;
     //             $payment['attachment'] = $photo;
@@ -4770,12 +4800,12 @@ if($order->sale_invoice_no){
     //         //$this->sma->print_arrays($payment);
     //     } elseif ($this->input->post('add_payment')) {
     //         $this->session->set_flashdata('error', validation_errors());
-    //         redirect($_SERVER["HTTP_REFERER"]);
+    //         redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'orders');
     //     }
 
     //     if ($this->form_validation->run() == true && $this->orders_model->add_3p_order_payments($payment, $customer_id, 'eshop_order')) {
     //         $this->session->set_flashdata('message', lang("payment_added"));
-    //         redirect($_SERVER["HTTP_REFERER"]);
+    //         redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'orders');
     //     } else {
 
     //         $this->data['error'] = (validation_errors() ? validation_errors() : $this->session->flashdata('error'));
@@ -4807,7 +4837,7 @@ if($order->sale_invoice_no){
                 $customer_id = $sale->customer_id;
                 if (!$this->site->check_customer_deposit($customer_id, $this->input->post('amount-paid'))) {
                     $this->session->set_flashdata('error', lang("amount_greater_than_deposit"));
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'orders');
                 }
             } else {
                 $customer_id = null;
@@ -4846,7 +4876,7 @@ if($order->sale_invoice_no){
                 if (!$this->upload->do_upload()) {
                     $error = $this->upload->display_errors();
                     $this->session->set_flashdata('error', $error);
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'orders');
                 }
                 $photo = $this->upload->file_name;
                 $payment['attachment'] = $photo;
@@ -4855,7 +4885,7 @@ if($order->sale_invoice_no){
             //$this->sma->print_arrays($payment);
         } elseif ($this->input->post('add_payment')) {
             $this->session->set_flashdata('error', validation_errors());
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'orders');
         }
         if ($id && $this->orders_model->add_3p_order_payments($payment, $customer_id, 'eshop_order')) {
             $this->session->set_flashdata('message', lang("payment_added"));
