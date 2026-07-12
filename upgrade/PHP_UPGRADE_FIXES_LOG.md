@@ -1880,7 +1880,61 @@ echo form_open_multipart("Omnichannel/add_delivery/" . $inv->id, $attrib);
 
 ---
 
-## Test scripts index (Modules 1–22)
+## Module 23 — APIs (JSON)
+
+**Tests:** `phase4_apis_test.php` (**11/11**), `phase4_apis_links_test.php` (**14/14**) PASS  
+**Status:** ✅ Module complete — fixes applied + retest 2026-07-12  
+**Controllers:** `Api3.php`, `Api4.php`, `ApiOwner.php`, `Restapi5.php`, `Webhook.php`, `Whatsapp.php`, `Web_service.php`
+
+| # | File | Old | New | Type |
+|---|------|-----|-----|------|
+| 23.1 | `Api3.php` | `json_decode` null → `->version` fatal | `is_object` fallback object | guard |
+| 23.2 | `Api3.php` | `getInvoiceByID` false → property access in `SaleDetails` | early JSON error return | guard |
+| 23.3 | `Api3.php` | `$_REQUEST['draw']`, `$_SERVER['REQUEST_METHOD']` bare | `isset` guards (P1) | guard |
+| 23.4 | `Api3.php` | `synchOfflineposSales` invalid JSON → property access | `is_object` guard after decode | guard |
+| 23.5 | `Api4.php` | `$config` before init; null `posVersion` | reorder init; `is_object` fallback | guard |
+| 23.6 | `ApiOwner.php` | missing `json_op()`; `$config` order; null `posVersion` | restore `json_op`; reorder; fallback | restore/guard |
+| 23.7 | `ApiOwner.php` | `foreach($warehouses)` on false; `$pQty->quantity` unguarded | `!empty` / isset guards | guard |
+| 23.8 | `Restapi5.php` | `$_SERVER['HTTP_X_API_KEY']`; undefined `$inputs`; `foreach($postProducts)` | isset guards; `_customers_add()`; `is_array` | guard |
+| 23.9 | `Webhook.php` | `getCompanyByID` false + `json_decode` null keys | isset guards on biller/data fields | guard |
+| 23.10 | `Whatsapp.php` | `getOrderByID` false; `json_decode` on array response in OTP | order guard; `is_string` before decode | guard |
+| 23.11 | `Web_service.php` | `$_POST['action']`; `json_decode` null → `->order` | isset guard; `is_object` guard | guard |
+| 23.12 | `phase4_apis_*.php` | — | Smoke + endpoint sweep scripts | test |
+
+#### 23.6 `ApiOwner.php` — restore missing json_op
+
+**Old code:** *(method absent — constructor error paths 500)*
+
+**New code:**
+```php
+private function json_op($arr) {
+    $arr = is_array($arr) ? $arr : array();
+    echo @json_encode($arr);
+    exit;
+}
+```
+
+#### 23.2 `Api3.php` — SaleDetails invoice guard
+
+**Old code:**
+```php
+$inv = $this->sales_model->getInvoiceByID($id);
+$this->data['taxItems'] = $this->sales_model->getAllTaxItemsGroup($id, $inv->return_id);
+```
+
+**New code:**
+```php
+$inv = $this->sales_model->getInvoiceByID($id);
+if (!$inv) {
+    echo json_encode(array('status' => 'ERROR', 'msg' => 'Sale not found'));
+    return;
+}
+$this->data['taxItems'] = $this->sales_model->getAllTaxItemsGroup($id, $inv->return_id);
+```
+
+---
+
+## Test scripts index (Modules 1–23)
 
 | Module | Scripts |
 |--------|---------|
@@ -1903,6 +1957,7 @@ echo form_open_multipart("Omnichannel/add_delivery/" . $inv->id, $attrib);
 | 20 Leads | `phase4_leads_test.php`, `phase4_leads_links_test.php` |
 | 21 Service Requests | `phase4_service_requests_test.php`, `phase4_service_requests_links_test.php` |
 | 22 Urban Piper / Omnichannel | `phase4_urban_piper_test.php`, `phase4_urban_piper_links_test.php`, `phase4_omnichannel_test.php`, `phase4_omnichannel_links_test.php` |
+| 23 APIs (JSON) | `phase4_apis_test.php`, `phase4_apis_links_test.php` |
 | Shared | `phase4_test_lib.php` |
 
 **Run:** `cd upgrade && php phase4_<module>_*.php Admin "Admin@554"`
@@ -1942,6 +1997,7 @@ echo form_open_multipart("Omnichannel/add_delivery/" . $inv->id, $attrib);
 | 2026-07-12 | 20 | Module 20 Leads **certified complete** — add empty `$leads`, getByID/modal guards, getLeadTypes array; screen **4/4**, links **8/8** |
 | 2026-07-12 | 21 | Module 21 Service Requests **certified complete** — mobile foreach + Settings guards; screen **5/5**, links **11/11** |
 | 2026-07-12 | 22 | Module 22 Urban Piper / Omnichannel **certified complete** — constructor/order guards, HTTP_REFERER, restore delivery views; UP **8/8** + **9/9**, OC **9/9** + **11/11** |
+| 2026-07-12 | 23 | Module 23 APIs (JSON) **certified complete** — ApiOwner json_op restore, constructor/decode guards, Restapi5 auth POST guards; screen **11/11**, links **14/14** |
 
 ---
 

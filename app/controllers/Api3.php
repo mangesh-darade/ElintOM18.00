@@ -22,9 +22,12 @@ class Api3 extends MY_Controller {
         $this->load->library('form_validation');
 
         $this->posVersion = json_decode($this->Settings->pos_version);
+        if (!is_object($this->posVersion)) {
+            $this->posVersion = (object) array('version' => 0);
+        }
         $this->api3_private_key = isset($this->Settings->api_privatekey) && !empty($this->Settings->api_privatekey) ? $this->Settings->api_privatekey : NULL;
         
-        if((float)$this->offline_pos_version > (float)$this->posVersion){
+        if((float)$this->offline_pos_version > (float)$this->posVersion->version){
             $this->offline_pos_version = 4.16;
         }
         
@@ -232,7 +235,7 @@ class Api3 extends MY_Controller {
         header('Access-Control-Allow-Origin: *');
         header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
         header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
-        $method = $_SERVER['REQUEST_METHOD'];
+        $method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : '';
         if ($method == "OPTIONS") {
             die();
         }
@@ -257,12 +260,16 @@ class Api3 extends MY_Controller {
                 }
             }
             //$datas = array_map('array_values', $data);
-            $DataArray = array('draw' => $_REQUEST['draw'], 'recordsTotal' => $total, 'recordsFiltered' => $total, 'data' => $data);
+            $DataArray = array('draw' => isset($_REQUEST['draw']) ? $_REQUEST['draw'] : 0, 'recordsTotal' => $total, 'recordsFiltered' => $total, 'data' => $data);
             echo json_encode($DataArray);
         }
         if ($action == 'SaleDetails') {
             $id = $this->input->post('id');
             $inv = $this->sales_model->getInvoiceByID($id);
+            if (!$inv) {
+                echo json_encode(array('status' => 'ERROR', 'msg' => 'Sale not found'));
+                return;
+            }
             $this->data['taxItems'] = $this->sales_model->getAllTaxItemsGroup($id, $inv->return_id);
             $this->data['customer'] = $this->site->getCompanyByID($inv->customer_id);
             $this->data['biller'] = $this->site->getCompanyByID($inv->biller_id);
@@ -1080,6 +1087,9 @@ class Api3 extends MY_Controller {
     public function synchOfflineposSales($jsonSalesData) {
 
         $salesDataArr = json_decode($jsonSalesData);
+        if (!is_object($salesDataArr)) {
+            return array('status' => 'ERROR', 'msg' => 'Invalid JSON');
+        }
 
         $MsgArr['data_post'] = $salesDataArr;
         if (!empty($salesDataArr->customers)) {
@@ -1424,7 +1434,7 @@ class Api3 extends MY_Controller {
             header('Access-Control-Allow-Origin: *');
             header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
             header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
-            $method = $_SERVER['REQUEST_METHOD'];
+            $method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : '';
             if ($method == "OPTIONS") {
                 die();
             }
@@ -1450,7 +1460,7 @@ class Api3 extends MY_Controller {
             header('Access-Control-Allow-Origin: *');
             header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
             header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
-            $method = $_SERVER['REQUEST_METHOD'];
+            $method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : '';
             if ($method == "OPTIONS") {
                 die();
             }

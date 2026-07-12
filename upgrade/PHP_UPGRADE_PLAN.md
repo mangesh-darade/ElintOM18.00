@@ -156,7 +156,8 @@
 | **Module 20 — Leads** | **✅ Module complete** | Screen 4/4, deep-links 8/8 |
 | **Module 21 — Service Requests** | **✅ Module complete** | Screen 5/5, deep-links 11/11 |
 | **Module 22 — Urban Piper / Omnichannel** | **✅ Module complete** | Urban Piper screen 8/8 + links 9/9; Omnichannel screen 9/9 + links 11/11 |
-| Remaining controllers (23–24) | Pending | Full module scan during Phase 4 |
+| **Module 23 — APIs (JSON)** | **✅ Module complete** | Screen 11/11, deep-links 14/14 |
+| Remaining controllers (24) | Pending | Full module scan during Phase 4 |
 
 #### Phase 4 — Module Testing Log (last run 2026-07-07; status reset 2026-07-11 — pending retest)
 
@@ -333,7 +334,7 @@ php phase4_suppliers_billers_links_test.php Admin "Admin@554"
 | 20 | Leads (CRM) | `Leads.php` | 7 | P3 | — | ✅ screen 4/4 + links 8/8 |
 | 21 | Service Requests | `Service_requests.php` | 3 | P3 | MPDF PDF | ✅ screen 5/5 + links 11/11 |
 | 22 | Urban Piper / Omnichannel | `Urban_piper.php`, `Omnichannel.php` | 30 | P3 | Webhooks, API callbacks | **✅ Complete** — UP 8/8 + 9/9, OC 9/9 + 11/11 |
-| 23 | APIs (JSON) | `Api3`, `Api4`, `ApiOwner`, `Restapi5`, `Webhook`, `Whatsapp` | 0 UI | P2 | REST, webhooks | — |
+| 23 | APIs (JSON) | `Api3`, `Api4`, `ApiOwner`, `Restapi5`, `Webhook`, `Whatsapp` | 0 UI | P2 | REST, webhooks | **✅ Complete** — 11/11 + links 14/14 |
 | 24 | Other Modules | Various (see Section 28) | 50+ | P2-P4 | Mixed | — |
 
 ---

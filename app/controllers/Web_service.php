@@ -5,7 +5,7 @@ class web_service extends MY_Controller {
 	
 	
 	public function action(){
-		$keytype = $_POST['action'];
+		$keytype = isset($_POST['action']) ? $_POST['action'] : '';
 		unset($_POST['action']);
 		switch($keytype){
 		    case 'Product_add':
@@ -58,7 +58,9 @@ $newJsonString = json_encode($phpObject);
 header('Content-Type: application/json');
 //echo $newJsonString;
 
+	if (is_object($phpObject) && isset($phpObject->order)) {
 	print_r($phpObject->order);
+	}
 		
 	}
 	

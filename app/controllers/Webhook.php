@@ -23,15 +23,15 @@ class Webhook extends CI_Controller {
         'group_id' => '3',
         'group_name' => 'customer',
         'customer_group_id' => $this->Settings->customer_group, 
-        'customer_group_name' => $customerGroupDetails->name,
-        'state' => $companyData->state,
-        'country' => $companyData->country, 
-        'state_code' => $companyData->state_code,
-        'gst_state_code' => $companyData->gst_state_code,
-        'name' => $data['name'],
-        'phone' => preg_replace('/^91/', '', $data['mobile']) // Remove '91' only if it is at the start
+        'customer_group_name' => ($customerGroupDetails && isset($customerGroupDetails->name)) ? $customerGroupDetails->name : '',
+        'state' => ($companyData && isset($companyData->state)) ? $companyData->state : '',
+        'country' => ($companyData && isset($companyData->country)) ? $companyData->country : '', 
+        'state_code' => ($companyData && isset($companyData->state_code)) ? $companyData->state_code : '',
+        'gst_state_code' => ($companyData && isset($companyData->gst_state_code)) ? $companyData->gst_state_code : '',
+        'name' => (is_array($data) && isset($data['name'])) ? $data['name'] : '',
+        'phone' => (is_array($data) && isset($data['mobile'])) ? preg_replace('/^91/', '', $data['mobile']) : '' // Remove '91' only if it is at the start
         ];
-        $MobileNo =  preg_replace('/^91/', '', $data['mobile']);
+        $MobileNo =  (is_array($data) && isset($data['mobile'])) ? preg_replace('/^91/', '', $data['mobile']) : '';
       // $MobileNo =  '7744010738';
        $mobiledetails =  $this->checkMobileno($MobileNo);
       

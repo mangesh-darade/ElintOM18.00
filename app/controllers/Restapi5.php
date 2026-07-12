@@ -34,7 +34,7 @@ class Restapi5 extends REST_Controller {
         //$privatekey = $this->input->get('X-API-KEY');    //Sent by Query Params
         //
         //Sent by The authorization API-Key (HTTPHEADER) header 
-       $privatekey = $_SERVER['HTTP_X_API_KEY'] ? $_SERVER['HTTP_X_API_KEY'] : ($this->input->get('X-API-KEY'));
+       $privatekey = isset($_SERVER['HTTP_X_API_KEY']) ? $_SERVER['HTTP_X_API_KEY'] : ($this->input->get('X-API-KEY'));
                 
         if ($this->_settings->api_access != 1) {
             $data['status'] = 'ERROR';
@@ -321,7 +321,7 @@ class Restapi5 extends REST_Controller {
         switch ($action) {
             
             case 'customers':                
-                $this->_customers_add($inputs);                
+                $this->_customers_add();                
                 break;
             
             case 'customer_views_products':
@@ -1430,7 +1430,7 @@ class Restapi5 extends REST_Controller {
            
             $_POST = $postJson;
             
-            $postProducts = $postJson['products'];
+            $postProducts = isset($postJson['products']) ? $postJson['products'] : array();
             $postPayment  = $postJson['payment'];
             $postDelivery = $postJson['delivery'];
                 
@@ -1444,12 +1444,14 @@ class Restapi5 extends REST_Controller {
             $this->form_validation->set_rules('payment[payment_method]', 'payment_method', 'trim|required');
             $this->form_validation->set_rules('products[]', 'products', 'trim|required');
             
+            if (is_array($postProducts)) {
             foreach($postProducts as $ind=>$product) 
             {
                 $this->form_validation->set_rules("products[$ind][product_code]", "product_code[$ind]", 'trim|required');
                 $this->form_validation->set_rules("products[$ind][quantity]", "product_quantity[$ind]", 'trim|required');
                 $this->form_validation->set_rules("products[$ind][unit_price]", "unit_price[$ind]", 'trim|required');
                 $this->form_validation->set_rules("products[$ind][unit_selling_price]", "unit_selling_price[$ind]", 'trim|required');
+            }
             }
             
             if ($this->form_validation->run() !== FALSE)

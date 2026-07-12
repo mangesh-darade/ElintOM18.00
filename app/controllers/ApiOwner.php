@@ -13,13 +13,15 @@ class ApiOwner extends MY_Controller {
         parent::__construct();
         $this->load->model('ApiOwner_model');
          $this->load->model('reports_model');
-        $this->posVersion = json_decode($this->Settings->pos_version);
-        $this->pos_type = $this->Settings->pos_type;
-        $this->api_private_key = isset($this->Settings->api_privatekey) && !empty($this->Settings->api_privatekey) ? $this->Settings->api_privatekey : $config->config['api3_private_key'];
-
         $this->ci = $ci = get_instance();
         $config = $ci->config;
         $this->merchant_phone = isset($config->config['merchant_phone']) && !empty($config->config['merchant_phone']) ? $config->config['merchant_phone'] : NULL;
+        $this->posVersion = json_decode($this->Settings->pos_version);
+        if (!is_object($this->posVersion)) {
+            $this->posVersion = (object) array('version' => 0);
+        }
+        $this->pos_type = $this->Settings->pos_type;
+        $this->api_private_key = isset($this->Settings->api_privatekey) && !empty($this->Settings->api_privatekey) ? $this->Settings->api_privatekey : $config->config['api3_private_key'];
         
         if ($this->posVersion->version < 4.03) {
             $data['status'] = 'ERROR';
@@ -208,6 +210,7 @@ class ApiOwner extends MY_Controller {
        $htmlcontaint = '';
        $warehouses = $this->ApiOwner_model->getWarehouseSales();
     
+       if (!empty($warehouses)) {
        foreach($warehouses as $warehouse){
          $htmlcontaint .='<div class="row" style="margin-bottom:1em;">
                                         <div class="col-xl-13 col-sm-12 mb-xl-0 mb-4">
@@ -378,6 +381,7 @@ class ApiOwner extends MY_Controller {
                    </div>
                  </div>' ;
        
+        }
         } 
 
        return $htmlcontaint;
@@ -571,9 +575,15 @@ class ApiOwner extends MY_Controller {
      */
     public function getLiveStock($productCode){
        $pQty =  $this->db->select('quantity')->where(['code' =>$productCode])->get('sma_products')->row();
-       return ($this->db->affected_rows()?['qty'=>round($pQty->quantity,2)] : ['qty'=>'0']);
+       return ($pQty && isset($pQty->quantity) ? ['qty'=>round($pQty->quantity,2)] : ['qty'=>'0']);
        
        
+    }
+
+    private function json_op($arr) {
+        $arr = is_array($arr) ? $arr : array();
+        echo @json_encode($arr);
+        exit;
     }
     
 }

@@ -240,6 +240,10 @@ class Whatsapp extends MY_Controller
        $_PID = $this->Settings->default_printer;
        $this->data['default_printer'] = $this->site->defaultPrinterOption($_PID);
        $inv = $this->orders_model->getOrderByID($id);
+       if (!$inv) {
+           echo 'Order not found';
+           return;
+       }
        if ($this->data['default_printer']->tax_classification_view):
            $inv->rows_tax = $this->orders_model->getAllTaxOrderItems($id, $inv->return_id);
        endif;
@@ -282,7 +286,7 @@ class Whatsapp extends MY_Controller
         $otp = '123456'; // Example OTP, you can generate this dynamically
         // $response = $this->Whatsapp_model->send_order_whatsapp_message($phone,$order_id);
         $response = $this->Whatsapp_model->send_otp_by_whatsapp($phone,$otp);
-        $data = json_decode($response, true);
+        $data = is_string($response) ? json_decode($response, true) : $response;
         echo "<pre>";
         print_r($response);
         echo "</pre>";

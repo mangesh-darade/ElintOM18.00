@@ -15,13 +15,16 @@ class Api4 extends MY_Controller {
         $this->load->model('Superadmin_model');
          $this->load->model('Api4_model');
 
-        $this->posVersion = json_decode($this->Settings->pos_version);
-        $this->pos_type = $this->Settings->pos_type;
-        $this->api_private_key = isset($this->Settings->api_privatekey) && !empty($this->Settings->api_privatekey) ? $this->Settings->api_privatekey : $config->config['api3_private_key'];
-
         $this->ci = $ci = get_instance();
         $config = $ci->config;
         $this->merchant_phone = isset($config->config['merchant_phone']) && !empty($config->config['merchant_phone']) ? $config->config['merchant_phone'] : NULL;
+
+        $this->posVersion = json_decode($this->Settings->pos_version);
+        if (!is_object($this->posVersion)) {
+            $this->posVersion = (object) array('version' => 0);
+        }
+        $this->pos_type = $this->Settings->pos_type;
+        $this->api_private_key = isset($this->Settings->api_privatekey) && !empty($this->Settings->api_privatekey) ? $this->Settings->api_privatekey : $config->config['api3_private_key'];
         
         if ($this->posVersion->version < 4.03) {
             $data['status'] = 'ERROR';
