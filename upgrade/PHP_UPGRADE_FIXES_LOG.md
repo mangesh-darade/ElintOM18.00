@@ -375,11 +375,16 @@ public function getEvents() {
 
 ## Module 3 — POS
 
-**Tests:** `phase4_pos_test.php` **9/9**; `phase4_pos_deep_test.php` **7/7**; `phase4_pos_links_test.php` **11/11** PASS (2026-07-11 ElintOM18.00 retest)  
+**Tests:** `phase4_pos_test.php` **9/9**; `phase4_pos_deep_test.php` **7/7**; `phase4_pos_links_test.php` **11/11**; `phase4_pos_return_deep_test.php` **8/8**; `phase4_pos_return_links_test.php` **14/14** PASS (2026-07-12 ElintOM18.00 retest)  
 **Status:** ✅ Module complete
 
 | # | File | Old | New | Type |
 |---|------|-----|-----|------|
+| 3.21 | `Pos.php` `returnsale()` | GET/no POST `product_id` → undefined index fatal | Redirect `pos` when missing POST array | guard |
+| 3.22 | `Pos.php` `returnsale()` | `getCompanyByID()` false → property fatal | Early redirect + flash | guard |
+| 3.23 | `Pos.php` `returnsale()` | Uninit `$sale_cgst`/`$note`/`$paid`; POST row `false[$r]` TypeError | Init vars + `isset`/`is_array` row guards | guard |
+| 3.24 | `Pos.php` `returnsale()` | `$tax_details` null → `->type` fatal | `$tax_details &&` guards in tax block | guard |
+| 3.25 | `Pos.php` `returnsale()` | `remove_commas()` 1-arg → ArgumentCountError PHP 8.5 | Pass `, 4` format arg on each `returnsale()` call only | syntax |
 | 3.1 | `Pos.php`, `Pos_elite.php`, `Pos2.php`, `Pos_sun.php` | Bare `HTTP_REFERER` | P1 → `site_url('pos')` | guard |
 | 3.2 | `Pos.php`, etc. | Unquoted `$_SERVER` keys | P6 | syntax |
 | 3.3 | `Pos.php`, `Pos_elite.php` | `getPreviousPosSale()` null → `->id` | Null guards | guard |
@@ -400,7 +405,39 @@ public function getEvents() {
 | 3.19 | `Pos.php` `opened_bills()` | `fetch_bills()` 3 args, needs 4 | Add `null` customerId arg | syntax |
 | 3.20 | `today_sale.php` | `$refunds`/`$duepayment` false → property fatal | `!empty()` / ternary guards | guard |
 
-#### 3.1 `Pos.php` — HTTP_REFERER (representative; many occurrences)
+#### 3.21 `Pos.php` `returnsale()` — POST-only guard
+
+**Old code:**
+```php
+$ids = $this->input->post('product_id');
+$grand_total = $this->sma->remove_commas($this->input->post('grandtotal'));
+```
+
+**New code:**
+```php
+$ids = $this->input->post('product_id');
+if (!$ids || !is_array($ids)) {
+    redirect('pos');
+}
+$grand_total = $this->sma->remove_commas($this->input->post('grandtotal'));
+```
+
+#### 3.25 `Pos.php` `returnsale()` — remove_commas second arg
+
+**Old code:**
+```php
+$grand_total = $this->sma->remove_commas($this->input->post('grandtotal'));
+```
+
+**New code:**
+```php
+$grand_total = $this->sma->remove_commas($this->input->post('grandtotal'), 4);
+```
+
+*(Same `, 4` added on each `remove_commas()` call inside `returnsale()` only — `Sma.php` unchanged.)*
+
+*(3.22–3.24: representative `isset`/`is_array` guards on `returnsale()` POST rows, `getCompanyByID`, `$tax_details` — same pattern as table.)*
+
 
 **Old code:**
 ```php
@@ -2074,6 +2111,7 @@ $return = parent::line($line, FALSE);
 | 2026-07-12 | 23 | Module 23 APIs (JSON) **certified complete** — ApiOwner json_op restore, constructor/decode guards, Restapi5 auth POST guards; screen **11/11**, links **14/14** |
 | 2026-07-12 | 24 | Module 24 Other Modules **certified complete** — Orders/Employees/Offline/SMS guards, Sales_Mobile `type` SELECT fix, restore mobile production views; screen **30/30**, links **17/17** |
 | 2026-07-12 | Shared | `MY_Lang.php` — cache pos_type labels per request; stop missing-key ERROR log spam on every page refresh |
+| 2026-07-12 | 3 | Module 3 POS return — `returnsale()` PHP 8.5 guards + scoped `remove_commas(..., 4)` in `returnsale()` only; `phase4_pos_return_deep_test.php` **8/8**, `phase4_pos_return_links_test.php` **14/14** |
 
 ---
 

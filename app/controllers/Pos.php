@@ -6451,10 +6451,14 @@ window.MyHandler.setPrintRequest('<?php echo json_encode($print); ?>');
         $this->form_validation->set_rules('customer', $this->lang->line("customer"), 'trim|required');
         $this->form_validation->set_rules('warehouse', $this->lang->line("warehouse"), 'required');
         $this->form_validation->set_rules('biller', $this->lang->line("biller"), 'required');
-        
+
         $ids = $this->input->post('product_id');
-        $grand_total = $this->sma->remove_commas($this->input->post('grandtotal'));
-        $return_quantity = $this->sma->remove_commas($this->input->post('return_quantity'));
+        if (!$ids || !is_array($ids)) {
+            redirect('pos');
+        }
+
+        $grand_total = $this->sma->remove_commas($this->input->post('grandtotal'), 4);
+        $return_quantity = $this->sma->remove_commas($this->input->post('return_quantity'), 4);
         // $return_amounts = ((0) - ($this->sma->remove_commas($this->input->post('return_amounts'))));
         // $amount_paid = (0 - ($this->sma->remove_commas($this->input->post('amount-paid'))));
         $payment_reference_no = $this->input->post('payment_reference_no');
@@ -6464,21 +6468,26 @@ window.MyHandler.setPrintRequest('<?php echo json_encode($print); ?>');
             $warehouse_id = $warehouse_ids;
         } else {
             $user_data = $this->site->getUser($user_id);
-            $warehouse_id = $user_data->warehouse_id;
-            if ($warehouse_id === null) {
-                $warehouse_id = 0;
-            }
+            $warehouse_id = ($user_data && $user_data->warehouse_id !== null) ? $user_data->warehouse_id : 0;
         }
         $customer_id = $this->input->post('customer');
         $biller_id = $this->input->post('biller');
         $SalesPersonDetails = $this->input->post('pos_sale_person');
-        $ExplodeSalesPerson = explode('-', $SalesPersonDetails);
-        $SellerId = $ExplodeSalesPerson[0];
-        $SellerName = $ExplodeSalesPerson[1];
+        $ExplodeSalesPerson = explode('-', $SalesPersonDetails ? $SalesPersonDetails : '0-');
+        $SellerId = isset($ExplodeSalesPerson[0]) ? $ExplodeSalesPerson[0] : '0';
+        $SellerName = isset($ExplodeSalesPerson[1]) ? $ExplodeSalesPerson[1] : '';
         
         $customer_details = $this->site->getCompanyByID($customer_id);
+        if (!$customer_details) {
+            $this->session->set_flashdata('error', lang('customer_x_found'));
+            redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('pos'));
+        }
         $customer = ($customer_details->company != '' && $customer_details->company != '-') ? $customer_details->company : $customer_details->name;
         $biller_details = $this->site->getCompanyByID($biller_id);
+        if (!$biller_details) {
+            $this->session->set_flashdata('error', lang('biller_x_found'));
+            redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('pos'));
+        }
         $biller = ($biller_details->company != '-' && $biller_details->company != '') ? $biller_details->company : $biller_details->name;
         $SellerId = $ExplodeSalesPerson[0];
         $total = 0;
@@ -6487,6 +6496,11 @@ window.MyHandler.setPrintRequest('<?php echo json_encode($print); ?>');
         $product_discount = 0;
         $order_discount = 0;
         $percentage = '%';
+        $sale_cgst = $sale_sgst = $sale_igst = 0;
+        $note = '';
+        $total_items = 0;
+        $paid = 0;
+        $payment_term = 0;
     
         $products = [];
         $si_return = [];
@@ -6496,36 +6510,44 @@ window.MyHandler.setPrintRequest('<?php echo json_encode($print); ?>');
             $interStateTax = false;
         }
 
-        $i = sizeof($_POST['product_id']);
+        $i = count($ids);
         for ($r = 0; $r < $i; $r++) {
+            $customer_group_discount = isset($_POST['customer_group_discount'][$r]) ? $_POST['customer_group_discount'][$r] : 0;
             
             $productIds = explode(',', $_POST['product_id'][$r]);
             $returnQuantities = explode(',', $_POST['return_quantity'][$r]);
             $product_base_quantity = explode(',', $_POST['return_product_base_quantity'][$r]);
-            $return_subtotals = explode(',', $this->input->post('return_subtotal')[$r]);
-            $return_netprices = explode(',', $this->sma->remove_commas($this->input->post('return_netprice')[$r]));
-            $item_discount = explode(',', $this->input->post('return_product_discount')[$r]);
-            $return_product_taxes = explode(',', $this->input->post('return_product_tax')[$r]);
-            $item_article_code = $_POST['article_code'][$r];
-            $item_name = $_POST['product_name'][$r];
-            $totalpayable = $this->sma->remove_commas($_POST['totalpayable'][$r]);
-            $return_item_price = explode(',', $this->input->post('return_item_price')[$r]);
+            $return_subtotal_row = $this->input->post('return_subtotal');
+            $return_netprice_row = $this->input->post('return_netprice');
+            $return_item_price_row = $this->input->post('return_item_price');
+            $return_product_discount_row = $this->input->post('return_product_discount');
+            $return_product_tax_row = $this->input->post('return_product_tax');
+            $unitprices_row = $this->input->post('unitprices');
+            $mrpdiscount_row = $this->input->post('mrpdiscount');
+            $return_subtotals = explode(',', (is_array($return_subtotal_row) && isset($return_subtotal_row[$r])) ? $return_subtotal_row[$r] : '');
+            $return_netprices = explode(',', $this->sma->remove_commas((is_array($return_netprice_row) && isset($return_netprice_row[$r])) ? $return_netprice_row[$r] : '', 4));
+            $item_discount = explode(',', (is_array($return_product_discount_row) && isset($return_product_discount_row[$r])) ? $return_product_discount_row[$r] : '0');
+            $return_product_taxes = explode(',', (is_array($return_product_tax_row) && isset($return_product_tax_row[$r])) ? $return_product_tax_row[$r] : '0');
+            $item_article_code = isset($_POST['article_code'][$r]) ? $_POST['article_code'][$r] : '';
+            $item_name = isset($_POST['product_name'][$r]) ? $_POST['product_name'][$r] : '';
+            $totalpayable = isset($_POST['totalpayable'][$r]) ? $this->sma->remove_commas($_POST['totalpayable'][$r], 4) : 0;
+            $return_item_price = explode(',', (is_array($return_item_price_row) && isset($return_item_price_row[$r])) ? $return_item_price_row[$r] : '');
             $shipping = $this->input->post('shipping') ? $this->input->post('shipping') : 0;
-            $mrps = explode(',', $this->input->post('mrp')); 
-            $mrp = array_map([$this->sma, 'remove_commas'], $mrps);
+            $mrps = explode(',', (string) ($this->input->post('mrp') ? $this->input->post('mrp') : '')); 
+            $mrp = array_map(function ($v) { return $this->sma->remove_commas($v, 4); }, $mrps);
             // $item_option = explode(',', $this->input->post('return_item_option')[$r]);
-            $item_mrp_discount = explode(',', $this->input->post('mrpdiscount')[$r]);
-            $unit_prices = explode(',', $this->input->post('unitprices')[$r]);
+            $item_mrp_discount = explode(',', (is_array($mrpdiscount_row) && isset($mrpdiscount_row[$r])) ? $mrpdiscount_row[$r] : '0%');
+            $unit_prices = explode(',', (is_array($unitprices_row) && isset($unitprices_row[$r])) ? $unitprices_row[$r] : '0');
             $posted_amount = $this->input->post('return_amounts');
             $clean_amount = str_replace(',', '', $posted_amount); 
             $return_amounts = 0 - floatval($clean_amount);
             $amount_paids = $this->input->post('amount-paid');
             $amount_paid = str_replace(',', '', $amount_paids); 
             $amount_paid = 0 - floatval($amount_paid); 
-            $manualeditprice = $_POST['manualedit'][$r];
-            $category_id = explode(',', $_POST['cat_id'][$r]);
+            $manualeditprice = isset($_POST['manualedit'][$r]) ? $_POST['manualedit'][$r] : '0';
+            $category_id = explode(',', isset($_POST['cat_id'][$r]) ? $_POST['cat_id'][$r] : '0');
             // $product_option_color = isset($_POST['product_option_color'][$r]) ? $_POST['product_option_color'][$r] : null;
-            $product_option_color =  explode(',', $_POST['product_option_color'][$r]);
+            $product_option_color =  explode(',', isset($_POST['product_option_color'][$r]) ? $_POST['product_option_color'][$r] : '');
             if (count($productIds) == count($returnQuantities)) {
                 foreach ($productIds as $index => $productId) {
                     $Products = $this->site->getProductsDataById($productId);
@@ -6534,24 +6556,24 @@ window.MyHandler.setPrintRequest('<?php echo json_encode($print); ?>');
                     $item_mrp = $this->sma->formatDecimal($item_mrp_val);
                     $pr_discount = 0;
                     $unit_discount = 0;
-                    $option_ids = explode(',', $_POST['option_ids'][$r]);
-                    $unit_price = isset($unit_prices[$index]) ? $this->sma->remove_commas($unit_prices[$index]) : 0;
+                    $option_ids = explode(',', isset($_POST['option_ids'][$r]) ? $_POST['option_ids'][$r] : '0');
+                    $unit_price = isset($unit_prices[$index]) ? $this->sma->remove_commas($unit_prices[$index], 4) : 0;
                     $product_details = $Products;
 
                     // return sale unit price fallback when cart hidden value is zero
                     if ($product_details->tax_method == '1') {
                         // exclusive tax — pre-tax net base (unit_price[] / net_price[] post from cart)
                         if ($unit_price === '' || $unit_price === null || (float) $unit_price == 0) {
-                            if (isset($return_netprices[$index]) && (float) $this->sma->remove_commas($return_netprices[$index]) > 0) {
-                                $unit_price = $this->sma->remove_commas($return_netprices[$index]);
+                            if (isset($return_netprices[$index]) && (float) $this->sma->remove_commas($return_netprices[$index], 4) > 0) {
+                                $unit_price = $this->sma->remove_commas($return_netprices[$index], 4);
                             } elseif ((float) $item_mrp_val > 0) {
                                 $unit_price = $item_mrp_val;
                             } elseif ((float) $product_details->price > 0) {
                                 $unit_price = (float) $product_details->price;
-                            } elseif (isset($return_item_price[$index]) && (float) $this->sma->remove_commas($return_item_price[$index]) > 0) {
-                                $unit_price = $this->sma->remove_commas($return_item_price[$index]);
-                            } elseif (isset($return_subtotals[$index]) && (float) $returnQuantities[$index] > 0 && (float) $this->sma->remove_commas($return_subtotals[$index]) > 0) {
-                                $unit_price = $this->sma->formatDecimal(($this->sma->remove_commas($return_subtotals[$index]) / $returnQuantities[$index]), 6);
+                            } elseif (isset($return_item_price[$index]) && (float) $this->sma->remove_commas($return_item_price[$index], 4) > 0) {
+                                $unit_price = $this->sma->remove_commas($return_item_price[$index], 4);
+                            } elseif (isset($return_subtotals[$index]) && (float) $returnQuantities[$index] > 0 && (float) $this->sma->remove_commas($return_subtotals[$index], 4) > 0) {
+                                $unit_price = $this->sma->formatDecimal(($this->sma->remove_commas($return_subtotals[$index], 4) / $returnQuantities[$index]), 6);
                             }
                         }
                         // when cart display price is tax-inclusive, derive exclusive net before tax calculation
@@ -6559,11 +6581,11 @@ window.MyHandler.setPrintRequest('<?php echo json_encode($print); ?>');
                             $item_tax_rate = $return_product_taxes[$index];
                             if ($tax_details = $this->site->getTaxRateByID($item_tax_rate)) {
                                 if ($tax_details->type == 1 && (float) $tax_details->rate > 0) {
-                                    $line_net_price = isset($return_netprices[$index]) ? (float) $this->sma->remove_commas($return_netprices[$index]) : 0;
-                                    $line_item_price = isset($return_item_price[$index]) ? (float) $this->sma->remove_commas($return_item_price[$index]) : 0;
+                                    $line_net_price = isset($return_netprices[$index]) ? (float) $this->sma->remove_commas($return_netprices[$index], 4) : 0;
+                                    $line_item_price = isset($return_item_price[$index]) ? (float) $this->sma->remove_commas($return_item_price[$index], 4) : 0;
                                     $item_quantity = (float) $returnQuantities[$index] > 0 ? (float) $returnQuantities[$index] : 1;
-                                    $line_unit_price = (isset($return_subtotals[$index]) && (float) $this->sma->remove_commas($return_subtotals[$index]) > 0)
-                                        ? ((float) $this->sma->remove_commas($return_subtotals[$index]) / $item_quantity) : 0;
+                                    $line_unit_price = (isset($return_subtotals[$index]) && (float) $this->sma->remove_commas($return_subtotals[$index], 4) > 0)
+                                        ? ((float) $this->sma->remove_commas($return_subtotals[$index], 4) / $item_quantity) : 0;
                                     if ($line_net_price <= 0 && (
                                         ($line_item_price > 0 && abs((float) $unit_price - $line_item_price) < 0.05)
                                         || ($line_unit_price > 0 && abs((float) $unit_price - $line_unit_price) < 0.05)
@@ -6576,14 +6598,14 @@ window.MyHandler.setPrintRequest('<?php echo json_encode($print); ?>');
                     } else {
                         // inclusive tax — selling price includes tax
                         if ($unit_price === '' || $unit_price === null || (float) $unit_price == 0) {
-                            if (isset($return_item_price[$index]) && (float) $this->sma->remove_commas($return_item_price[$index]) > 0) {
-                                $unit_price = $this->sma->remove_commas($return_item_price[$index]);
+                            if (isset($return_item_price[$index]) && (float) $this->sma->remove_commas($return_item_price[$index], 4) > 0) {
+                                $unit_price = $this->sma->remove_commas($return_item_price[$index], 4);
                             } elseif ((float) $item_mrp_val > 0) {
                                 $unit_price = $item_mrp_val;
                             } elseif ((float) $product_details->price > 0) {
                                 $unit_price = (float) $product_details->price;
-                            } elseif (isset($return_subtotals[$index]) && (float) $returnQuantities[$index] > 0 && (float) $this->sma->remove_commas($return_subtotals[$index]) > 0) {
-                                $unit_price = $this->sma->formatDecimal(($this->sma->remove_commas($return_subtotals[$index]) / $returnQuantities[$index]), 6);
+                            } elseif (isset($return_subtotals[$index]) && (float) $returnQuantities[$index] > 0 && (float) $this->sma->remove_commas($return_subtotals[$index], 4) > 0) {
+                                $unit_price = $this->sma->formatDecimal(($this->sma->remove_commas($return_subtotals[$index], 4) / $returnQuantities[$index]), 6);
                             }
                         }
                     }
@@ -6686,6 +6708,7 @@ window.MyHandler.setPrintRequest('<?php echo json_encode($print); ?>');
                     $item_surcharge = NULL;
                     $tax = "";
                     $tax_method = '';
+                    $tax_details = null;
                     $net_unit_price = $item_unit_price_less_discount;
                     $unit_price = $item_unit_price_less_discount;
                     $invoice_unit_price = $item_unit_price_less_discount;
@@ -6696,7 +6719,7 @@ window.MyHandler.setPrintRequest('<?php echo json_encode($print); ?>');
                         $pr_tax = $item_tax_rate;
                         $tax_details = $this->site->getTaxRateByID($pr_tax);
                         //Tax Type In Percentage (%)
-                        if ($tax_details->type == 1 && $tax_details->rate != 0) {
+                        if ($tax_details && $tax_details->type == 1 && $tax_details->rate != 0) {
 
                             if ($product_details && $tax_method == 1 && $manualeditprice == '') {
                                 //Exclusive Tax Calculations
@@ -6718,7 +6741,7 @@ window.MyHandler.setPrintRequest('<?php echo json_encode($print); ?>');
                             }
 
                             $unit_tax = $item_tax;
-                        } elseif ($tax_details->type == 2) {
+                        } elseif ($tax_details && $tax_details->type == 2) {
                             //Tax Type is Fixed Amount
                             if ($product_details && $tax_method == 1) {
                                 //Exclusive Tax Calculations
@@ -6744,6 +6767,7 @@ window.MyHandler.setPrintRequest('<?php echo json_encode($print); ?>');
                             $unit_tax = $item_tax;
                         }
 
+                        if ($tax_details) {
                         $unit_surcharge_val = $this->sma->calcSaleItemUnitSurcharge($tax_details, $unit_tax);
                         if ($unit_surcharge_val !== NULL && (float) $unit_surcharge_val != 0) {
                             $unit_surcharge = $this->sma->formatDecimal($unit_surcharge_val, 6);
@@ -6765,7 +6789,8 @@ window.MyHandler.setPrintRequest('<?php echo json_encode($print); ?>');
                         if ($item_surcharge !== NULL) {
                             $item_surcharge = $this->sma->formatDecimal(($unit_surcharge * -1 * $item_unit_quantity), 4);
                         }
-                    }//end if.
+                        }
+                    }//end if item_tax_rate.
                     
                     
                     $product_tax += $pr_item_tax;
@@ -6790,18 +6815,19 @@ window.MyHandler.setPrintRequest('<?php echo json_encode($print); ?>');
                     // $item_sgst = $this->sma->formatDecimal($pr_item_tax / 2, 4);
                     // $item_igst = 0;
                     $unit_price = $this->sma->formatDecimal($unit_price, 4);
-                    if ($interStateTax) {
+                    if ($interStateTax && $tax_details) {
                         $item_gst = $tax_details->rate;
                         $item_cgst = 0;
                         $item_sgst = 0;
                         $item_igst = $pr_item_tax;
                     } else {
-
-                        $item_gst = $this->sma->formatDecimal($tax_details->rate / 2, 4);
+                        $item_gst = ($tax_details ? $this->sma->formatDecimal($tax_details->rate / 2, 4) : 0);
                         $item_cgst = $this->sma->formatDecimal($pr_item_tax / 2, 4);
                         $item_sgst = $this->sma->formatDecimal($pr_item_tax / 2, 4);
                         $item_igst = 0;
                     }
+                    $item_serial = isset($item_serial) ? $item_serial : '';
+                    $sale_item_id = isset($sale_item_id) ? $sale_item_id : null;
                     $sale_item_discount = $this->sma->getSaleItemDiscountForStorage($line_mrp_discount, $line_item_discount, $productmrp, $unit_prices[$index]);
                     $products[] = [
                         'product_id' => $productId,
@@ -6936,13 +6962,13 @@ window.MyHandler.setPrintRequest('<?php echo json_encode($print); ?>');
             'note' => $note,
             'product_discount' => $product_discount,
             'order_discount_id' => $order_discount_id,
-            'order_discount' => $this->sma->remove_commas($order_discount),
+            'order_discount' => $this->sma->remove_commas($order_discount, 4),
             'total_discount' => $total_discount,
             'product_tax' => $product_tax,
             'order_tax' => $order_tax,
             'total_items' => $total_items,
             'payment_term' => $payment_term,
-            'rounding' => $this->sma->remove_commas($rounding),
+            'rounding' => $this->sma->remove_commas($rounding, 4),
             'paid' =>$amount_paid,
             'created_by' => $this->session->userdata('user_id'),
             'cgst'                  => $sale_cgst,
@@ -6970,7 +6996,7 @@ window.MyHandler.setPrintRequest('<?php echo json_encode($print); ?>');
             session_start();  // Start the session
             $_SESSION['flag'] = true;  // Set the session variable
             $this->session->set_flashdata('message', lang("Return_Sale_Added"));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('pos'));
         }
         
     }
