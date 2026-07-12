@@ -130,4 +130,32 @@ class Leads_model extends CI_Model {
         return FALSE;  // Return false if no results are found
         
     }
+
+    public function getGroupByName($group_name)
+    {
+        $this->db->select('id');
+        $this->db->from('sma_groups');
+        $this->db->where('name', $group_name);
+        $q = $this->db->get();
+        if ($q->num_rows() > 0) {
+            $group_id = $q->row()->id;
+            $users = $this->getAllUserByHandelingGrop($group_id);
+            return $users;
+        } else {
+            return FALSE;
+        }
+    }
+
+    public function getAllUserByHandelingGrop($group_id)
+    {
+        $this->db->select('id, first_name');
+        $this->db->from('users');
+        $this->db->where('group_id', $group_id);
+        $this->db->where('active', 1);
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $query->result();
+        }
+        return [];
+    }
 }

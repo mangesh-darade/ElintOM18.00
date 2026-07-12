@@ -1,0 +1,362 @@
+/**
+ * Embedded ERP module views inside CMS Admin shell (e.g. Leads list).
+ */
+.cms-erp-embed {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 14px 16px 18px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    max-width: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.cms-erp-embed .box {
+    margin-bottom: 0;
+    border: none;
+    box-shadow: none;
+    max-width: 100%;
+}
+
+.cms-erp-embed .box-content {
+    padding: 0;
+}
+
+.cms-erp-embed .box-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px 14px;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+}
+
+.cms-erp-embed .box-icon {
+    flex: 0 0 auto;
+    margin-left: auto;
+}
+
+.cms-erp-embed .tab-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+    margin: 0;
+    flex: 1 1 280px;
+    min-width: 0;
+}
+
+.cms-erp-embed .tab-buttons button {
+    flex-shrink: 0;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 7px 14px;
+}
+
+.cms-erp-embed .tab-buttons button.active {
+    background-color: #2563eb;
+    border-color: #2563eb;
+    color: #fff;
+}
+
+.cms-erp-embed-leads #assignToFilterWrapper,
+.cms-erp-embed-leads #statusFilterWrapper {
+    display: inline-flex !important;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px 6px;
+    margin-left: 0 !important;
+}
+
+.cms-erp-embed-leads #assignToFilterWrapper label,
+.cms-erp-embed-leads #statusFilterWrapper label {
+    margin: 0 !important;
+    font-size: 12px;
+    font-weight: 600;
+    color: #475569;
+    white-space: nowrap;
+}
+
+.cms-erp-embed-leads #assignToFilter,
+.cms-erp-embed-leads #statusFilter {
+    width: 140px !important;
+    max-width: 100%;
+    height: 34px;
+    font-size: 12px;
+    padding: 4px 8px;
+}
+
+.cms-erp-embed-leads .row {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.cms-erp-embed-leads .col-lg-12 {
+    padding-left: 0;
+    padding-right: 0;
+    max-width: 100%;
+}
+
+/* Scroll container — only the table area scrolls horizontally */
+.cms-erp-embed-leads .cms-leads-table-scroll,
+.cms-erp-embed-leads .table-responsive {
+    overflow-x: auto;
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+    margin: 0;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.cms-erp-embed-leads .dataTables_wrapper {
+    width: 100% !important;
+    max-width: 100%;
+    padding-bottom: 6px;
+}
+
+.cms-erp-embed-leads .dataTables_length,
+.cms-erp-embed-leads .dataTables_filter {
+    margin: 0 0 12px;
+    font-size: 13px;
+    color: #475569;
+}
+
+.cms-erp-embed-leads .dataTables_length label,
+.cms-erp-embed-leads .dataTables_filter label {
+    font-weight: 500;
+    margin: 0;
+}
+
+.cms-erp-embed-leads .dataTables_length select,
+.cms-erp-embed-leads .dataTables_filter input {
+    height: 34px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    padding: 4px 10px;
+    font-size: 13px;
+    margin: 0 6px;
+}
+
+.cms-erp-embed-leads .dataTables_info {
+    font-size: 13px;
+    color: #64748b;
+    padding-top: 10px;
+}
+
+.cms-erp-embed-leads .dataTables_paginate {
+    padding-top: 8px;
+}
+
+.cms-erp-embed-leads .dataTables_paginate .paginate_button {
+    border-radius: 6px !important;
+    margin: 0 2px;
+    padding: 4px 10px !important;
+    font-size: 13px;
+}
+
+.cms-erp-embed-leads #LeadData,
+.cms-erp-embed-leads #LeadHistoryData {
+    margin: 0 !important;
+    font-size: 13px;
+    table-layout: auto;
+    border-collapse: collapse;
+}
+
+.cms-erp-embed-leads #LeadData thead th {
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.3;
+    white-space: nowrap;
+    vertical-align: middle !important;
+    padding: 10px 10px !important;
+    background: #2563eb !important;
+    color: #fff !important;
+    border-color: #1d4ed8 !important;
+}
+
+.cms-erp-embed-leads #LeadData tbody td {
+    vertical-align: middle !important;
+    padding: 8px 10px !important;
+    color: #0f172a;
+    border-color: #e2e8f0;
+}
+
+.cms-erp-embed-leads #LeadData tbody tr:hover td {
+    background: #f8fafc;
+}
+
+/* Checkbox */
+.cms-erp-embed-leads #LeadData th:nth-child(1),
+.cms-erp-embed-leads #LeadData td:nth-child(1) {
+    width: 40px;
+    min-width: 40px;
+    text-align: center;
+}
+
+/* Full name */
+.cms-erp-embed-leads #LeadData th:nth-child(2),
+.cms-erp-embed-leads #LeadData td:nth-child(2) {
+    min-width: 120px;
+    max-width: 160px;
+}
+
+.cms-erp-embed-leads #LeadData td:nth-child(2) a {
+    font-weight: 600;
+    color: #2563eb;
+}
+
+/* Mobile */
+.cms-erp-embed-leads #LeadData th:nth-child(3),
+.cms-erp-embed-leads #LeadData td:nth-child(3) {
+    min-width: 100px;
+    white-space: nowrap;
+}
+
+/* Source */
+.cms-erp-embed-leads #LeadData th:nth-child(6),
+.cms-erp-embed-leads #LeadData td:nth-child(6) {
+    min-width: 150px;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Assign / Status dropdowns */
+.cms-erp-embed-leads #LeadData th:nth-child(8),
+.cms-erp-embed-leads #LeadData td:nth-child(8),
+.cms-erp-embed-leads #LeadData th:nth-child(9),
+.cms-erp-embed-leads #LeadData td:nth-child(9) {
+    min-width: 110px;
+    max-width: 130px;
+}
+
+.cms-erp-embed-leads #LeadData td select.form-control {
+    width: 100% !important;
+    min-width: 0;
+    height: 32px;
+    font-size: 12px;
+    padding: 2px 6px;
+}
+
+/* Created by */
+.cms-erp-embed-leads #LeadData th:nth-child(10),
+.cms-erp-embed-leads #LeadData td:nth-child(10) {
+    min-width: 80px;
+    white-space: nowrap;
+}
+
+/* Created at */
+.cms-erp-embed-leads #LeadData th:nth-child(11),
+.cms-erp-embed-leads #LeadData td:nth-child(11) {
+    min-width: 130px;
+    white-space: nowrap;
+}
+
+/* Actions — sticky so never clipped */
+.cms-erp-embed-leads #LeadData th:last-child,
+.cms-erp-embed-leads #LeadData td:last-child {
+    position: sticky;
+    right: 0;
+    z-index: 4;
+    min-width: 96px;
+    width: 96px;
+    text-align: center;
+    white-space: nowrap;
+    background: #fff;
+    box-shadow: -6px 0 10px rgba(15, 23, 42, 0.06);
+}
+
+.cms-erp-embed-leads #LeadData thead th:last-child {
+    z-index: 5;
+    background: #2563eb !important;
+    box-shadow: -6px 0 10px rgba(15, 23, 42, 0.12);
+}
+
+.cms-erp-embed-leads #LeadData tbody tr:hover td:last-child {
+    background: #f8fafc;
+}
+
+.cms-erp-embed-leads #LeadData .btn-group .btn {
+    font-size: 12px;
+    padding: 5px 10px;
+    border-radius: 6px;
+}
+
+.cms-erp-embed-leads #LeadData .dropdown-menu {
+    font-size: 13px;
+    min-width: 200px;
+    z-index: 1060;
+}
+
+/* Modals */
+.cms-erp-embed-leads .modal {
+    z-index: 11050;
+}
+
+.cms-erp-embed-leads .modal-backdrop {
+    z-index: 11040;
+}
+
+.cms-erp-embed-leads #leadModal .modal-dialog {
+    max-width: min(720px, 92vw);
+    width: auto;
+    margin: 30px auto;
+}
+
+.cms-erp-embed-leads #leadModal .modal-content {
+    height: auto;
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+#lead-history-image-overlay {
+    z-index: 12000 !important;
+}
+
+body.cms-admin-body[data-cms-section="leads"] {
+    overflow-x: hidden;
+}
+
+body.cms-admin-body[data-cms-section="leads"] .cms-main,
+body.cms-admin-body[data-cms-section="leads"] .cms-content {
+    max-width: 100%;
+    overflow-x: hidden;
+    box-sizing: border-box;
+}
+
+body.cms-admin-body[data-cms-section="leads"] .cms-content {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+@media (max-width: 768px) {
+    .cms-erp-embed {
+        padding: 10px 10px 14px;
+    }
+
+    .cms-erp-embed-leads .dataTables_length,
+    .cms-erp-embed-leads .dataTables_filter {
+        float: none !important;
+        text-align: left !important;
+        width: 100%;
+        display: block;
+    }
+
+    .cms-erp-embed-leads .dataTables_filter input {
+        width: 100% !important;
+        max-width: 100%;
+        margin-left: 0 !important;
+    }
+
+    body.cms-admin-body[data-cms-section="leads"] .cms-content {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+}

@@ -1,0 +1,196 @@
+/* Contact form — phone field with country flag picker (merged single input) */
+.cf-phone-field {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    width: 100%;
+    margin-bottom: 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    background: #fff;
+    overflow: visible;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.cf-phone-field:focus-within {
+    border-color: #b9860b;
+    box-shadow: 0 0 0 1px #b9860b;
+}
+
+.cf-phone-country-wrap {
+    flex: 0 0 auto;
+    min-width: 108px;
+    max-width: 132px;
+    position: relative;
+    border-right: 1px solid #e5e7eb;
+}
+
+.cf-phone-picker {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.cf-phone-picker-trigger {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    min-height: 44px;
+    height: 100%;
+    padding: 8px 10px;
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    box-sizing: border-box;
+    font-size: 14px;
+    line-height: 1.2;
+    font-family: inherit;
+    color: #334155;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+    box-shadow: none;
+}
+
+.cf-phone-picker-trigger:hover {
+    background: #f8fafc;
+}
+
+.cf-phone-picker-trigger:disabled {
+    cursor: default;
+    opacity: 0.85;
+}
+
+.cf-phone-picker-flag {
+    width: 22px;
+    height: 16px;
+    object-fit: cover;
+    border-radius: 2px;
+    box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.08);
+    flex: 0 0 auto;
+    display: block;
+}
+
+.cf-phone-picker-code {
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.cf-phone-picker-caret {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    margin-left: 2px;
+    color: #64748b;
+    pointer-events: none;
+    line-height: 0;
+}
+
+.cf-phone-picker-caret svg {
+    width: 14px;
+    height: 14px;
+    display: block;
+}
+
+.cf-phone-picker.is-open .cf-phone-picker-trigger {
+    background: #f8fafc;
+}
+
+.cf-phone-picker-panel {
+    position: absolute;
+    left: 0;
+    top: calc(100% + 4px);
+    z-index: 1200;
+    min-width: 280px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.14);
+    max-height: 260px;
+    overflow: auto;
+}
+
+.cf-phone-picker-panel[hidden] {
+    display: none !important;
+}
+
+.cf-phone-picker-list {
+    list-style: none;
+    margin: 0;
+    padding: 6px 0;
+}
+
+.cf-phone-picker-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #334155;
+}
+
+.cf-phone-picker-item:hover,
+.cf-phone-picker-item.is-selected {
+    background: #f8fafc;
+}
+
+.cf-phone-picker-item.is-selected {
+    background: #fffbeb;
+}
+
+.cf-phone-picker-item-name {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cf-phone-picker-item-code {
+    flex: 0 0 auto;
+    font-weight: 600;
+    color: #64748b;
+}
+
+.cf-phone-number {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0 !important;
+    border: none !important;
+    border-radius: 0;
+    box-shadow: none !important;
+    outline: none;
+    background: transparent;
+}
+
+.cf-phone-picker-trigger:focus,
+.cf-phone-number:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.contact-us-component .cf-phone-field {
+    margin-bottom: 0;
+}
+
+.cms-ft-preview-html .cf-phone-field {
+    margin-bottom: 0;
+}
+
+.embed-form .cf-phone-field {
+    margin-bottom: 16px;
+}
+
+.embed-form .cf-phone-number {
+    padding: 11px 14px;
+    font-size: 14px;
+    font-family: inherit;
+    color: #334155;
+}
+
+.embed-form label + .cf-phone-field {
+    margin-top: 0;
+}

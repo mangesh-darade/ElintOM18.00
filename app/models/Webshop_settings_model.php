@@ -226,6 +226,330 @@ class Webshop_settings_model extends CI_Model {
     
     
     
+
+    /**
+     * Normalize sma_website_setting row keys: mysqli may return `ID` / `Fields` etc.; views expect lowercase keys.
+     *
+     * @param array $row
+     * @return array
+     */
+    private function _normalize_storefront_identity_row(array $row) {
+        $pk = null;
+        foreach (array('id', 'ID', 'Id', 'setting_id', 'SETTING_ID') as $k) {
+            if (array_key_exists($k, $row) && $row[$k] !== null && $row[$k] !== '') {
+                $pk = (int) $row[$k];
+                break;
+            }
+        }
+        if ($pk !== null && $pk > 0) {
+            $row['id'] = $pk;
+        }
+        foreach (array(array('fields', 'Fields', 'FIELDS'), array('value', 'Value', 'VALUE'), array('icons', 'Icons', 'ICONS')) as $aliases) {
+            $canonical = strtolower($aliases[0]);
+            if (!isset($row[$canonical]) || $row[$canonical] === null) {
+                foreach ($aliases as $k) {
+                    if ($k === $canonical) {
+                        continue;
+                    }
+                    if (array_key_exists($k, $row)) {
+                        $row[$canonical] = $row[$k];
+                        break;
+                    }
+                }
+            }
+        }
+        return $row;
+    }
+
+    /**
+     * True when sma_cms_webshop_header_footer exists.
+     */
+    public function header_footer_schema_ready() {
+        return $this->db->table_exists('sma_cms_webshop_header_footer');
+    }
+
+    private function _normalize_webshop_header_footer_row(array $row) {
+        $pk = null;
+        foreach (array('id', 'ID') as $k) {
+            if (array_key_exists($k, $row) && $row[$k] !== null && $row[$k] !== '') {
+                $pk = (int) $row[$k];
+                break;
+            }
+        }
+        if ($pk !== null && $pk > 0) {
+            $row['id'] = $pk;
+        }
+        $aliases = array(
+            'section_type' => array('Section_type', 'SECTION_TYPE'),
+            'field_key'    => array('Field_key', 'FIELD_KEY'),
+            'layoutname'   => array('Layoutname', 'LAYOUTNAME'),
+            'label'        => array('Label', 'LABEL'),
+            'value'        => array('Value', 'VALUE'),
+            'icons'        => array('Icons', 'ICONS'),
+            'sort_order'   => array('Sort_order', 'SORT_ORDER'),
+            'is_active'    => array('Is_active', 'IS_ACTIVE'),
+        );
+        foreach ($aliases as $canon => $alts) {
+            if (!isset($row[$canon]) || $row[$canon] === null) {
+                foreach ($alts as $alt) {
+                    if (isset($row[$alt])) {
+                        $row[$canon] = $row[$alt];
+                        break;
+                    }
+                }
+            }
+        }
+        if (isset($row['sort_order'])) {
+            $row['sort_order'] = (int) $row['sort_order'];
+        }
+        if (isset($row['is_active'])) {
+            $row['is_active'] = (int) $row['is_active'] ? 1 : 0;
+        }
+        if (isset($row['layoutname']) && $row['layoutname'] !== null && $row['layoutname'] !== '') {
+            $this->load->helper('cms_layout');
+            $row['layoutname'] = cms_storefront_normalize_profile_slug($row['layoutname']);
+        }
+        return $row;
+    }
+
+    /**
+     * @param array<string,mixed> $data
+     * @return array<string,mixed>
+     */
+    private function _prepare_webshop_header_footer_layoutname(array $data) {
+        if (!$this->header_footer_schema_ready()) {
+            return $data;
+        }
+        $this->load->helper('cms_layout');
+        if (!cms_storefront_header_footer_has_layoutname_column()) {
+            return $data;
+        }
+        if (!empty($data['layoutname'])) {
+            $data['layoutname'] = cms_storefront_normalize_profile_slug($data['layoutname']);
+            return $data;
+        }
+        $ln = cms_storefront_resolve_layoutname(
+            isset($data['field_key']) ? $data['field_key'] : '',
+            isset($data['value']) ? $data['value'] : '',
+            isset($data['section_type']) ? $data['section_type'] : 'header'
+        );
+        $data['layoutname'] = $ln !== '' ? $ln : null;
+        return $data;
+    }
+
+    /**
+     * Storefront identity list (sma_cms_webshop_header_footer).
+     */
+    public function get_storefront_identity_rows() {
+        if (!$this->header_footer_schema_ready()) {
+            return array();
+        }
+        $this->db->order_by('section_type', 'ASC');
+        $this->db->order_by('sort_order', 'ASC');
+        $this->db->order_by('field_key', 'ASC');
+        $q = $this->db->get('sma_cms_webshop_header_footer');
+        if ($q->num_rows() === 0) {
+            return array();
+        }
+        $out = array();
+        foreach ($q->result_array() as $row) {
+            $out[] = $this->_normalize_webshop_header_footer_row($row);
+        }
+        return $out;
+    }
+
+    public function get_storefront_identity_by_id($id) {
+        if (!$this->header_footer_schema_ready()) {
+            return null;
+        }
+        $q = $this->db->where('id', (int) $id)->limit(1)->get('sma_cms_webshop_header_footer');
+        if ($q->num_rows() === 0) {
+            return null;
+        }
+        return $this->_normalize_webshop_header_footer_row($q->row_array());
+    }
+
+    /**
+     * @param array $data keys: section_type, field_key, label, value, icons (optional), sort_order, is_active
+     */
+    public function insert_storefront_identity(array $data) {
+        if (!$this->header_footer_schema_ready()) {
+            return false;
+        }
+        $data = $this->_prepare_webshop_header_footer_layoutname($data);
+        return (bool) $this->db->insert('sma_cms_webshop_header_footer', $data);
+    }
+
+    public function update_storefront_identity($id, array $data) {
+        if (!$this->header_footer_schema_ready()) {
+            return false;
+        }
+        if ($this->db->field_exists('layoutname', 'sma_cms_webshop_header_footer')) {
+            $data = $this->_prepare_webshop_header_footer_layoutname($data);
+        }
+        $this->db->where('id', (int) $id);
+        return (bool) $this->db->update('sma_cms_webshop_header_footer', $data);
+    }
+
+    public function delete_storefront_identity($id) {
+        if (!$this->header_footer_schema_ready()) {
+            return false;
+        }
+        $this->db->where('id', (int) $id);
+        return (bool) $this->db->delete('sma_cms_webshop_header_footer');
+    }
+
+    /**
+     * Duplicate check per section + field_key.
+     */
+    public function storefront_identity_field_key_exists($section, $fields, $exclude_id = 0) {
+        if (!$this->header_footer_schema_ready()) {
+            return false;
+        }
+        $section = strtolower(trim((string) $section));
+        $fields = strtolower(trim((string) $fields));
+        $this->db->where('section_type', $section);
+        $this->db->where('field_key', $fields);
+        if ((int) $exclude_id > 0) {
+            $this->db->where('id !=', (int) $exclude_id);
+        }
+        return $this->db->count_all_results('sma_cms_webshop_header_footer') > 0;
+    }
+
+    /**
+     * Map one DB row to API row (fields/value/icons + section metadata).
+     *
+     * @param object $r Query row from webshop_header_footer
+     * @return stdClass
+     */
+    private function _webshop_header_footer_row_to_api_object($r) {
+        $o = new stdClass();
+        $o->fields = (string) $r->field_key;
+        $o->value = isset($r->value) ? (string) $r->value : '';
+        $o->icons = isset($r->icons) && $r->icons !== null && $r->icons !== '' ? (string) $r->icons : null;
+        $sec = isset($r->section_type) ? strtolower(trim((string) $r->section_type)) : '';
+        $o->section_type = ($sec === 'header' || $sec === 'footer') ? $sec : '';
+        $o->label = isset($r->label) ? (string) $r->label : '';
+        $o->sort_order = isset($r->sort_order) ? (int) $r->sort_order : 0;
+        return $o;
+    }
+
+    /**
+     * Rows shaped like legacy website_setting objects for getsettings API / webshopapi.
+     * Only active rows are exposed. Includes section_type / label / sort_order for storefront rows.
+     *
+     * @return array<int, stdClass>
+     */
+    public function get_header_footer_contain_as_website_setting_objects() {
+        if (!$this->header_footer_schema_ready()) {
+            return array();
+        }
+        $this->db->where('is_active', 1);
+        $this->db->order_by('section_type', 'ASC');
+        $this->db->order_by('sort_order', 'ASC');
+        $this->db->order_by('field_key', 'ASC');
+        $q = $this->db->get('sma_cms_webshop_header_footer');
+        $out = array();
+        foreach ($q->result() as $r) {
+            $fk = isset($r->field_key) ? strtolower(trim((string) $r->field_key)) : '';
+            if ($fk !== '' && strpos($fk, 'builder_config') !== false) {
+                continue;
+            }
+            $out[] = $this->_webshop_header_footer_row_to_api_object($r);
+        }
+        return $out;
+    }
+
+    /**
+     * Same rows as above, grouped by section for themes/API consumers.
+     *
+     * @return array{header: array<int, stdClass>, footer: array<int, stdClass>}
+     */
+    public function get_website_setting_sections_for_api() {
+        $out = array('header' => array(), 'footer' => array());
+        if (!$this->header_footer_schema_ready()) {
+            return $out;
+        }
+        $this->db->where('is_active', 1);
+        $this->db->order_by('sort_order', 'ASC');
+        $this->db->order_by('field_key', 'ASC');
+        $q = $this->db->get('sma_cms_webshop_header_footer');
+        foreach ($q->result() as $r) {
+            $fk = isset($r->field_key) ? strtolower(trim((string) $r->field_key)) : '';
+            if ($fk !== '' && strpos($fk, 'builder_config') !== false) {
+                continue;
+            }
+            $o = $this->_webshop_header_footer_row_to_api_object($r);
+            $sec = isset($o->section_type) ? $o->section_type : '';
+            if ($sec === 'header') {
+                $out['header'][] = $o;
+            } elseif ($sec === 'footer') {
+                $out['footer'][] = $o;
+            }
+        }
+        if (!function_exists('cms_webshop_inject_header_builder_strip_rows')) {
+            $this->load->helper('cms_layout');
+        }
+        if (function_exists('cms_webshop_inject_header_builder_strip_rows')) {
+            $out['header'] = cms_webshop_inject_header_builder_strip_rows($out['header']);
+        }
+        return $out;
+    }
+
+    /**
+     * Return storefront identity rows for API/webshop payloads.
+     * Legacy sma_website_setting is intentionally ignored.
+     *
+     * @param array $legacy_objects Unused (kept for backwards compatibility).
+     * @return array<int, stdClass>
+     */
+    public function merge_website_setting_for_api($legacy_objects) {
+        $rows = $this->get_header_footer_contain_as_website_setting_objects();
+        if (!function_exists('cms_webshop_inject_header_builder_strip_rows')) {
+            $this->load->helper('cms_layout');
+        }
+        if (function_exists('cms_webshop_inject_header_builder_strip_rows')) {
+            $rows = cms_webshop_inject_header_builder_strip_rows($rows);
+        }
+        return $rows;
+    }
+
+    /**
+     * Header logo row from sma_cms_webshop_header_footer (active + inactive) for webshop show/hide.
+     *
+     * @return array{configured:bool,active:bool,field_key:string,value:string}
+     */
+    public function get_storefront_header_logo_status() {
+        $empty = array(
+            'configured' => false,
+            'active'     => false,
+            'field_key'  => '',
+            'value'      => '',
+        );
+        if (!$this->header_footer_schema_ready()) {
+            return $empty;
+        }
+        $keys = array('logo_image', 'site_logo', 'header_logo', 'store_logo');
+        foreach ($keys as $field_key) {
+            $q = $this->db
+                ->where('section_type', 'header')
+                ->where('field_key', $field_key)
+                ->limit(1)
+                ->get('sma_cms_webshop_header_footer');
+            if ($q->num_rows() === 0) {
+                continue;
+            }
+            $r = $q->row();
+            return array(
+                'configured' => true,
+                'active'     => ((int) $r->is_active) === 1,
+                'field_key'  => $field_key,
+                'value'      => isset($r->value) ? trim((string) $r->value) : '',
+            );
+        }
+        return $empty;
+    }
+
 }
 
 //end class

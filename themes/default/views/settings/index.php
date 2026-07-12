@@ -679,6 +679,16 @@ echo form_dropdown('watermark', $wm, (isset($_POST['watermark']) ? $_POST['water
                                     ?>
                                 </div>
                             </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Active CMS Admin Panel<img src="<?= $assets ?>images/new.gif" height="30px" alt="new" /></label>                             
+                                    <?php
+                                    $active_cms_admin_panel_options = array(1 => lang('Enable'), 0 => lang('Disable'));
+                                    $active_cms_admin_panel_val = isset($Settings->active_cms_admin_panel) ? $Settings->active_cms_admin_panel : 0;
+                                    echo form_dropdown('active_cms_admin_panel', $active_cms_admin_panel_options, $active_cms_admin_panel_val, 'class="form-control" id="active_cms_admin_panel"');
+                                    ?>
+                                </div>
+                            </div>
                         </fieldset>
                         <fieldset class="scheduler-border">
                             <legend class="scheduler-border">Show/Hide Product Images</legend>       

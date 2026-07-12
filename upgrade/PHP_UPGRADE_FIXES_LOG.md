@@ -2017,6 +2017,34 @@ redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('
 
 ---
 
+## Module 25 — CMS Admin Panel (port + PHP 8.5)
+
+**Tests:** `phase4_cms_admin_test.php` **7/7**, `phase4_cms_admin_links_test.php` **43/43** (2026-07-12).
+
+| # | File | Old | New | Type |
+|---|------|-----|-----|------|
+| 25.1 | `app/models/cms_admin/Cms_admin_schema_model.php` | `/cmspage/{slug}` MySQL 1146 — `sma_cms_global_tag_defaults` / `sma_cms_page_type_tag_defaults` missing | Auto-create both tables in `ensure_core_tables()`; `SCHEMA_VERSION` 3 | `db-env` |
+| 25.2 | `app/models/cms_admin/Cms_admin_entity_faqs_model.php` | `product_name_expr()` undefined → HTTP 500 on entity_faqs | Restored `product_name_expr()` from ElintOm port | `restore` |
+| 25.3 | `app/models/Leads_model.php` | `getGroupByName()` / `getAllUserByHandelingGrop()` missing → cms_admin/leads 500 | Restored methods for CMS leads embed | `restore` |
+| 25.4 | `app/helpers/order_pricing_helper.php` | Missing helper fatal on CMS catalog | Copied helper + `cheerio_whatsapp_helper.php` from port | `restore` |
+
+#### 25.1 `Cms_admin_schema_model.php` — tag default tables
+
+**Old code:**
+```php
+// ensure_core_tables() had sma_cms_page_tag_mapping but not global/page_type tag defaults
+// Cms_model::getTagsByPageId() → MySQL 1146
+```
+
+**New code:**
+```php
+$this->create_table_if_missing('sma_cms_global_tag_defaults', "...");
+$this->create_table_if_missing('sma_cms_page_type_tag_defaults', "...");
+const SCHEMA_VERSION = 3;
+```
+
+---
+
 ## Test scripts index (Modules 1–24)
 
 | Module | Scripts |
@@ -2042,6 +2070,7 @@ redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('
 | 22 Urban Piper / Omnichannel | `phase4_urban_piper_test.php`, `phase4_urban_piper_links_test.php`, `phase4_omnichannel_test.php`, `phase4_omnichannel_links_test.php` |
 | 23 APIs (JSON) | `phase4_apis_test.php`, `phase4_apis_links_test.php` |
 | 24 Other Modules | `phase4_other_modules_test.php`, `phase4_other_modules_links_test.php` |
+| 25 CMS Admin Panel | `phase4_cms_admin_test.php`, `phase4_cms_admin_links_test.php` |
 | Shared | `phase4_test_lib.php` |
 
 **Run:** `cd upgrade && php phase4_<module>_*.php Admin "Admin@554"`
@@ -2112,6 +2141,7 @@ $return = parent::line($line, FALSE);
 | 2026-07-12 | 24 | Module 24 Other Modules **certified complete** — Orders/Employees/Offline/SMS guards, Sales_Mobile `type` SELECT fix, restore mobile production views; screen **30/30**, links **17/17** |
 | 2026-07-12 | Shared | `MY_Lang.php` — cache pos_type labels per request; stop missing-key ERROR log spam on every page refresh |
 | 2026-07-12 | 3 | Module 3 POS return — `returnsale()` PHP 8.5 guards + scoped `remove_commas(..., 4)` in `returnsale()` only; `phase4_pos_return_deep_test.php` **8/8**, `phase4_pos_return_links_test.php` **14/14** |
+| 2026-07-12 | 25 | Module 25 CMS Admin Panel — schema tag-default tables, entity_faqs/leads/helpers restore; screen **7/7**, deep-links **43/43** |
 
 ---
 

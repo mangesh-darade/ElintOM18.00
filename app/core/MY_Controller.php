@@ -6,6 +6,10 @@ class MY_Controller extends CI_Controller {
     {
         parent::__construct();
         $subdomain = explode('.', $_SERVER['HTTP_HOST'])[0];
+        if ($this->_is_cms_admin_request()) {
+            $this->_bootstrap_cms_admin($subdomain);
+            return;
+        }
         $this->Customer_assets =  $subdomain;
         $this->shopowner  = $this->checkusers();
         $this->Settings = $this->site->get_setting();
@@ -107,6 +111,72 @@ class MY_Controller extends CI_Controller {
 
         }
     }
+
+    /**
+     * CMS Admin routes skip ERP POS/promo bootstrap (faster first paint).
+     */
+    protected function _is_cms_admin_request()
+    {
+        $uri = isset($_SERVER['REQUEST_URI']) ? (string) $_SERVER['REQUEST_URI'] : '';
+        return $uri !== '' && strpos($uri, 'cms_admin') !== false;
+    }
+
+    protected function _bootstrap_cms_admin($subdomain)
+    {
+        $this->Customer_assets = $subdomain;
+        $this->shopowner = null;
+        $this->Owner = null;
+        $this->Admin = null;
+        $this->Customer = null;
+        $this->Supplier = null;
+        $this->Businessowner = null;
+        $this->loggedIn = false;
+        $this->dateFormats = array(
+            'js_sdate' => 'mm-dd-yyyy',
+            'php_sdate' => 'm-d-Y',
+            'mysq_sdate' => '%m-%d-%Y',
+            'js_ldate' => 'mm-dd-yyyy hh:ii:ss',
+            'php_ldate' => 'm-d-Y H:i:s',
+            'mysql_ldate' => '%m-%d-%Y %T',
+        );
+
+        $this->Settings = $this->site->get_setting();
+        if (!$this->Settings) {
+            show_error('Application settings are missing.');
+        }
+
+        $this->config->set_item('language', $this->Settings->language);
+        $this->lang->load('sma', $this->Settings->language);
+        $this->Settings->user_language = $this->Settings->language;
+        $this->Settings->user_rtl = $this->Settings->rtl;
+
+        $this->theme = $this->Settings->theme . '/views/';
+        if (is_dir(VIEWPATH . $this->Settings->theme . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR)) {
+            $this->data['assets'] = base_url() . 'themes/' . $this->Settings->theme . '/assets/';
+        } else {
+            $this->data['assets'] = base_url() . 'themes/default/assets/';
+        }
+
+        $this->data['Settings'] = $this->Settings;
+        $this->data['Shopowner'] = null;
+        $this->data['dateFormats'] = $this->dateFormats;
+        $this->data['GP'] = null;
+        $this->Customer_url = $this->Customer_url($subdomain);
+        $this->data['Customer_assets'] = $this->Customer_url;
+
+        $this->loggedIn = $this->sma->logged_in();
+        if ($this->loggedIn) {
+            $this->Owner = $this->sma->in_group('owner') ? TRUE : NULL;
+            $this->Admin = $this->sma->in_group('admin') ? TRUE : NULL;
+            $this->data['Owner'] = $this->Owner;
+            $this->data['Admin'] = $this->Admin;
+            $this->m = strtolower($this->router->fetch_class());
+            $this->v = strtolower($this->router->fetch_method());
+            $this->data['m'] = $this->m;
+            $this->data['v'] = $this->v;
+        }
+    }
+
     public function checkusers(){
         $user_id            = $this->session->userdata('user_id');
         $this->db->select('group_id');

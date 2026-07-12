@@ -65,8 +65,14 @@ class system_settings extends MY_Controller {
         }
     }
 
+    private function ensureCmsAdminPanelSettingColumn() {
+        $this->load->model('cms_admin/Cms_admin_schema_model', 'cms_schema_model');
+        $this->cms_schema_model->ensure_settings_columns();
+    }
+
     public function index() {
         $this->ensureAutoCustomerNumberSettingColumn();
+        $this->ensureCmsAdminPanelSettingColumn();
         $this->form_validation->set_rules('site_name', lang('site_name'), 'trim|required');
         $this->form_validation->set_rules('dateformat', lang('dateformat'), 'trim|required');
         $this->form_validation->set_rules('timezone', lang('timezone'), 'trim|required');
@@ -245,6 +251,7 @@ class system_settings extends MY_Controller {
                 'business_hour' => $this->input->post('business_hour') ? 1 : 0,
                 'challan_transporter_details' => $this->input->post('challan_transporter_details'),
                 'discount_on_mrp' => $this->input->post('discount_on_mrp') ? 1 : 0,
+                'active_cms_admin_panel' => $this->input->post('active_cms_admin_panel') ? 1 : 0,
             );  
 
             if ($this->db->field_exists('enable_module_attendance', 'settings')) {

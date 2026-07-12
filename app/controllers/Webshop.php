@@ -3397,6 +3397,235 @@ class Webshop extends MY_Controller
         }
         redirect('webshop/contact_us');
     }
+
+    /**
+     * Standalone embeddable CMS form template (iframe / direct link).
+     * URL: /webshop/embed_form/{form_key}
+     *
+     * @param string $form_key
+     */
+    public function embed_form($form_key = '')
+    {
+        $form_key = strtolower(preg_replace('/[^a-z0-9_.-]/', '', (string) $form_key));
+        if ($form_key === '') {
+            show_404();
+            return;
+        }
+
+        if (function_exists('header_remove')) {
+            @header_remove('X-Frame-Options');
+        }
+        $this->output->set_header('Content-Security-Policy: frame-ancestors *');
+
+        $this->load->model('webshop_api_model');
+        $theme = is_object($this->webshop_settings) && isset($this->webshop_settings->webshop_theme)
+            ? strtolower(trim((string) $this->webshop_settings->webshop_theme))
+            : 'default';
+        if ($theme === '') {
+            $theme = 'default';
+        }
+
+        $result = $this->webshop_api_model->get_contact_form_preset($theme, '', $form_key);
+        if (empty($result['status']) || strtoupper((string) $result['status']) !== 'SUCCESS' || empty($result['form']['fields'])) {
+            $this->load_view('embed_form_page', array('form_not_found' => true));
+            return;
+        }
+
+        $this->load->helper('contact_form_phone');
+
+        // Resolve Google reCAPTCHA site key
+        $recaptcha_site_key = '';
+        if (isset($result['form']['recaptcha_site_key']) && trim($result['form']['recaptcha_site_key']) !== '') {
+            $recaptcha_site_key = trim($result['form']['recaptcha_site_key']);
+        } else {
+            $this->load->config('recaptcha');
+            $recaptcha_site_key = $this->config->item('recaptcha_site_key');
+            if (isset($this->Settings->recaptcha_site_key) && trim($this->Settings->recaptcha_site_key) !== '') {
+                $recaptcha_site_key = trim($this->Settings->recaptcha_site_key);
+            } elseif (isset($this->Settings->google_recaptcha_site_key) && trim($this->Settings->google_recaptcha_site_key) !== '') {
+                $recaptcha_site_key = trim($this->Settings->google_recaptcha_site_key);
+            }
+        }
+
+        $this->load_view('embed_form_page', array(
+            'form_not_found' => false,
+            'form'           => $result['form'],
+            'form_key'       => $form_key,
+            'phone_countries' => contact_form_phone_countries(),
+            'form_countries'  => contact_form_country_list(),
+            'recaptcha_site_key' => $recaptcha_site_key,
+        ));
+    }
+
+    /**
+     * CMS embed form submission.
+     */
+    public function contact_us_submit()
+    {
+        if (!$this->input->post()) {
+            redirect('webshop');
+            return;
+        }
+
+        $form_key = strtolower(preg_replace('/[^a-z0-9_.-]/', '', (string) $this->input->post('form_key', true)));
+        $return_url = trim((string) $this->input->post('return_url', true));
+        if ($return_url === '') {
+            $return_url = $form_key !== '' ? site_url('webshop/embed_form/' . $form_key) : site_url('webshop');
+        }
+        $notice_url = $return_url . (strpos($return_url, '?') === false ? '?' : '&') . 'contact_notice=1';
+
+        $this->load->model('webshop_api_model');
+        $theme = is_object($this->webshop_settings) && isset($this->webshop_settings->webshop_theme)
+            ? strtolower(trim((string) $this->webshop_settings->webshop_theme))
+            : 'default';
+        $preset = $this->webshop_api_model->get_contact_form_preset($theme, '', $form_key);
+        $fields = (!empty($preset['form']['fields']) && is_array($preset['form']['fields'])) ? $preset['form']['fields'] : array();
+        $source = isset($preset['form']['source']) ? (string) $preset['form']['source'] : 'webshop_contact_form';
+
+        $this->load->helper('contact_form_phone');
+        $phone_countries = contact_form_phone_countries();
+        $form_countries = contact_form_country_list();
+        $allowed_country_values = array();
+        foreach ($form_countries as $countryOpt) {
+            if (is_array($countryOpt) && !empty($countryOpt['value'])) {
+                $allowed_country_values[(string) $countryOpt['value']] = true;
+            }
+        }
+
+        $name = '';
+        $phone = '';
+        $email = '';
+        $message = '';
+        $errors = array();
+        $form_values = array();
+
+        foreach ($fields as $field) {
+            if (!is_array($field) || empty($field['name'])) {
+                continue;
+            }
+            $fname = preg_replace('/[^a-z0-9_]/', '', strtolower((string) $field['name']));
+            if ($fname === '') {
+                continue;
+            }
+            $ftype = isset($field['type']) ? strtolower((string) $field['type']) : 'text';
+            $value = trim((string) $this->input->post($fname, true));
+            $countryValue = trim((string) $this->input->post($fname . '_country', true));
+            if ($ftype === 'tel' && $value !== '') {
+                if ($countryValue === '') {
+                    $countryValue = contact_form_phone_default_country_value($phone_countries);
+                }
+                if (!contact_form_phone_validate_national($value, $countryValue, $phone_countries)) {
+                    $label = isset($field['label']) ? (string) $field['label'] : $fname;
+                    $country = contact_form_phone_country_by_option_value($phone_countries, $countryValue);
+                    $digits = $country && !empty($country['phone_digits']) ? (int) $country['phone_digits'] : 0;
+                    $errors[] = $digits > 0
+                        ? $label . ' must be ' . $digits . ' digits for the selected country.'
+                        : $label . ' must be a valid phone number.';
+                    continue;
+                }
+                $value = contact_form_phone_merge_submitted($value, $countryValue, $phone_countries);
+            }
+            if ($ftype === 'country' && $value !== '' && !isset($allowed_country_values[$value])) {
+                $label = isset($field['label']) ? (string) $field['label'] : $fname;
+                $errors[] = 'Invalid selection for ' . $label . '.';
+                continue;
+            }
+            $form_values[$fname] = $value;
+            $label = isset($field['label']) ? (string) $field['label'] : $fname;
+            if (!empty($field['required']) && $value === '') {
+                $errors[] = $label . ' is required.';
+                continue;
+            }
+            $map = isset($field['map']) ? strtolower((string) $field['map']) : 'extra';
+            if ($map === 'name') {
+                $name = $value;
+            } elseif ($map === 'phone') {
+                $phone = $value;
+            } elseif ($map === 'email') {
+                $email = $value;
+            } elseif ($map === 'message') {
+                $message = $value;
+            } elseif ($map === 'country' && $value !== '') {
+                if ($message !== '') {
+                    $message .= "\n";
+                }
+                $message .= 'Country: ' . $value;
+            }
+        }
+
+        // --- Bot / CAPTCHA check ---
+        $recaptcha_secret = '';
+        if (isset($preset['form']['recaptcha_secret_key']) && trim($preset['form']['recaptcha_secret_key']) !== '') {
+            $recaptcha_secret = trim($preset['form']['recaptcha_secret_key']);
+        } else {
+            $this->load->config('recaptcha');
+            $recaptcha_secret = $this->config->item('recaptcha_secret_key');
+            if (isset($this->Settings->recaptcha_secret_key) && trim($this->Settings->recaptcha_secret_key) !== '') {
+                $recaptcha_secret = trim($this->Settings->recaptcha_secret_key);
+            } elseif (isset($this->Settings->google_recaptcha_secret_key) && trim($this->Settings->google_recaptcha_secret_key) !== '') {
+                $recaptcha_secret = trim($this->Settings->google_recaptcha_secret_key);
+            }
+        }
+
+        if (!empty($recaptcha_secret)) {
+            $recaptcha_response = $this->input->post('g-recaptcha-response');
+            if (empty($recaptcha_response)) {
+                $errors[] = 'Please complete the reCAPTCHA verification.';
+            } else {
+                $verify_url = 'https://www.google.com/recaptcha/api/siteverify';
+                $response = @file_get_contents($verify_url . '?secret=' . urlencode($recaptcha_secret) . '&response=' . urlencode($recaptcha_response));
+                $res = json_decode($response, true);
+                if (empty($res['success'])) {
+                    $errors[] = 'reCAPTCHA verification failed. Please try again.';
+                }
+            }
+        } else {
+            if (!$this->input->post('not_robot')) {
+                $errors[] = 'Please confirm you are not a robot.';
+            }
+        }
+        // --- End bot check ---
+
+        if (!empty($errors)) {
+            $this->session->set_flashdata('contact_errors', $errors);
+            redirect($notice_url . '&contact_status=error');
+            return;
+        }
+
+        $result = $this->webshop_api_model->submit_contact_lead(array(
+            'name'          => $name,
+            'phone'         => $phone,
+            'email'         => $email,
+            'message'       => $message,
+            'source'        => $source,
+            'response_json' => array('form_fields' => $form_values, 'form_key' => $form_key),
+        ));
+
+        if (!empty($result['status']) && strtoupper((string) $result['status']) === 'SUCCESS') {
+            $firstName = '';
+            if (trim($name) !== '') {
+                $parts = preg_split('/\s+/', trim($name));
+                $firstName = ucfirst(strtolower((string) $parts[0]));
+            }
+            $greeting = $firstName !== '' ? 'Thank you, ' . $firstName . '!' : 'Thank you!';
+            $leadAction = isset($result['lead_action']) ? strtolower(trim((string) $result['lead_action'])) : '';
+            $successMsg = ($leadAction === 'updated')
+                ? $greeting . ' Your details have been updated successfully. Our team will get in touch with you shortly.'
+                : $greeting . ' We have received your details successfully. Our team will review your request and get in touch with you shortly.';
+            $this->session->set_flashdata('contact_success', $successMsg);
+            // Cookieless fallback for cross-site iframes (third-party cookies are
+            // blocked there, so flashdata is lost between POST and redirect).
+            $notice_url .= '&contact_status=success'
+                . '&contact_first=' . rawurlencode($firstName)
+                . '&contact_action=' . rawurlencode($leadAction);
+        } else {
+            $this->session->set_flashdata('contact_errors', array(isset($result['msg']) ? (string) $result['msg'] : 'Could not submit form. Please try again.'));
+            $notice_url .= '&contact_status=error';
+        }
+
+        redirect($notice_url);
+    }
+
 }
 
 //end Class

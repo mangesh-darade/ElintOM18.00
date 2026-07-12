@@ -53,6 +53,36 @@ $route['default_controller'] = 'welcome';
 $route['404_override'] = 'errors/error_404';
 $route['translate_uri_dashes'] = FALSE;
 
+// CMS Admin Panel (standalone MVC under app/controllers/cms_admin/)
+$route['cms_admin'] = 'cms_admin/dashboard/index';
+$route['cms_admin_panel'] = 'cms_admin/dashboard/index';
+$route['cms_admin_panel/(:any)'] = 'cms_admin/dashboard/$1';
+
+// CMS pages AJAX (section toggle / reorder)
+$route['cms_admin/pages/toggle_section/(:num)/(:num)'] = 'cms_admin/pages/toggle_section/$1/$2';
+$route['cms_admin/pages/reorder_sections/(:num)'] = 'cms_admin/pages/reorder_sections/$1';
+$route['cms_admin/pages/reorder_nav'] = 'cms_admin/pages/reorder_nav';
+$route['cms_admin/pages/toggle_nav_visibility/(:num)'] = 'cms_admin/pages/toggle_nav_visibility/$1';
+
+// Catalog: /catalog/123 must map to index(123), not method "123"
+$route['cms_admin/catalog/ajax'] = 'cms_admin/catalog/ajax';
+$route['cms_admin/catalog/(:num)'] = 'cms_admin/catalog/index/$1';
+$route['cms_admin/catalog'] = 'cms_admin/catalog/index';
+
+// CMS admin catch-all (subdir controllers: pages, storefront, entity_tags, prices, …)
+$route['cms_admin/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'cms_admin/$1/$2/$3/$4/$5';
+$route['cms_admin/(:any)/(:any)/(:any)/(:any)'] = 'cms_admin/$1/$2/$3/$4';
+$route['cms_admin/(:any)/(:any)/(:any)'] = 'cms_admin/$1/$2/$3';
+$route['cms_admin/(:any)/(:any)'] = 'cms_admin/$1/$2';
+$route['cms_admin/(:any)'] = 'cms_admin/$1';
+
+// CMS storefront page routes (public)
+$route['cmspage'] = 'cmspage/index';
+$route['Cmspage'] = 'cmspage/index';
+$route['cmspage/(:any)'] = 'cmspage/index/$1';
+$route['Cmspage/(:any)'] = 'cmspage/index/$1';
+$route['product'] = 'cmspage/index/product';
+
 $route['users'] = 'auth/users';
 $route['users/create_user'] = 'auth/create_user';
 $route['users/profile/(:num)'] = 'auth/profile/$1';

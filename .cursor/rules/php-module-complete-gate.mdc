@@ -39,6 +39,7 @@ Test **only modules already started** in this upgrade (fixes + `upgrade/phase4_*
 | 22 Urban Piper / Omnichannel | **✅ Module complete** | `upgrade/phase4_urban_piper_links_test.php` + `upgrade/phase4_omnichannel_links_test.php` |
 | 23 APIs (JSON) | **✅ Module complete** | `upgrade/phase4_apis_links_test.php` |
 | 24 Other Modules | **✅ Module complete** | `upgrade/phase4_other_modules_links_test.php` |
+| 25 CMS Admin Panel | **✅ Module complete** | `upgrade/phase4_cms_admin_links_test.php` |
 
 When a **new module** is upgraded, add it to this table and create its `phase4_{name}_links_test.php` before claiming complete.
 

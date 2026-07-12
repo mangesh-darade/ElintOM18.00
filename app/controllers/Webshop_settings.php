@@ -31,6 +31,7 @@ class webshop_settings extends MY_Controller {
         $this->lang->load('settings', $this->Settings->user_language);
         $this->load->library('form_validation');
         $this->load->model('webshop_settings_model');
+        $this->load->model('cms_model');
 
         $this->webshop_settings = $this->webshop_settings_model->getWebshopSettings();
         if (!$this->webshop_settings) {
@@ -834,5 +835,783 @@ class webshop_settings extends MY_Controller {
     
     
     
+
+    public function cms_pages() {
+        $cms_pages = $this->cms_model->getAdminPages();
+
+        $bc = array(
+            array('link' => base_url(), 'page' => lang('Home')),
+            array('link' => '#', 'page' => lang('CMS Pages'))
+        );
+        $meta = array('page_title' => lang('CMS Pages'), 'bc' => $bc);
+
+        $this->data['cms_pages'] = $cms_pages;
+        $this->page_construct('webshop_settings/cms_pages', $meta, $this->data);
+    }
+
+    public function add_storefront_identity_REMOVED() {
+        if ($this->input->post('save_identity_row')) {
+            if (!$this->webshop_settings_model->header_footer_schema_ready()) {
+                $this->session->set_flashdata('error', 'Database tables are missing. Ensure <code>sma_cms_webshop_header_footer</code> exists, then retry.');
+                redirect('webshop_settings/add_storefront_identity');
+            }
+
+            $section_type = strtolower(trim((string) $this->input->post('section_type')));
+            $field_key    = strtolower(trim((string) $this->input->post('field_key')));
+            $label        = trim((string) $this->input->post('label'));
+            $value        = (string) $this->input->post('value');
+            $icons        = trim((string) $this->input->post('icons'));
+            $sort_order   = (int) $this->input->post('sort_order');
+            $is_active    = $this->input->post('is_active') ? 1 : 0;
+
+            if ($section_type !== 'header' && $section_type !== 'footer') {
+                $this->session->set_flashdata('error', 'Choose a valid section (Header or Footer).');
+                redirect('webshop_settings/add_storefront_identity');
+            }
+            if ($field_key === '' || !preg_match('/^[a-zA-Z0-9_]+$/', $field_key)) {
+                $this->session->set_flashdata('error', 'Field key is required (letters, numbers, underscore only).');
+                redirect('webshop_settings/add_storefront_identity');
+            }
+            if ($label === '') {
+                $this->session->set_flashdata('error', 'Label is required.');
+                redirect('webshop_settings/add_storefront_identity');
+            }
+            if ($this->webshop_settings_model->storefront_identity_field_key_exists($section_type, $field_key)) {
+                $this->session->set_flashdata('error', 'This section and field key already exists.');
+                redirect('webshop_settings/add_storefront_identity');
+            }
+
+            $stored_value = $value;
+            if (!empty($_FILES['media_file']['name'])) {
+                $up = $this->do_upload('media_file', '', true);
+                if ($up['status'] === 'success') {
+                    $stored_value = 'webshop/' . $up['upload_data']['file_name'];
+                } else {
+                    $this->session->set_flashdata('error', strip_tags($up['error']));
+                    redirect('webshop_settings/add_storefront_identity');
+                }
+            }
+
+            $insert = array(
+                'section_type' => $section_type,
+                'field_key'    => $field_key,
+                'label'        => $label,
+                'value'        => $stored_value,
+                'icons'        => $icons === '' ? null : $icons,
+                'sort_order'   => $sort_order,
+                'is_active'    => $is_active,
+            );
+
+            if ($this->webshop_settings_model->insert_storefront_identity($insert)) {
+                $this->session->set_flashdata('message', 'Storefront content row added.');
+                redirect('webshop_settings/storefront_identity');
+            }
+            $this->session->set_flashdata('error', 'Could not save row.');
+            redirect('webshop_settings/add_storefront_identity');
+        }
+
+        $bc = array(
+            array('link' => base_url(), 'page' => lang('Home')),
+            array('link' => site_url('webshop_settings/storefront_identity'), 'page' => 'Storefront header & footer'),
+            array('link' => '#', 'page' => 'Add row'),
+        );
+        $meta = array('page_title' => 'Add storefront row', 'bc' => $bc);
+        $this->data['identity_row'] = null;
+        $this->data['header_footer_schema_ready'] = $this->webshop_settings_model->header_footer_schema_ready();
+        $this->page_construct('webshop_settings/storefront_identity_form', $meta, $this->data);
+    }
+
+    public function edit_storefront_identity($id = null) {
+        $id = (int) $id;
+        if ($id <= 0) {
+            $this->session->set_flashdata('error', 'Invalid row.');
+            redirect('webshop_settings/storefront_identity');
+        }
+
+        $row = $this->webshop_settings_model->get_storefront_identity_by_id($id);
+        if (!$row) {
+            $this->session->set_flashdata('error', 'Row not found.');
+            redirect('webshop_settings/storefront_identity');
+        }
+
+        if ($this->input->post('save_identity_row')) {
+            if (!$this->webshop_settings_model->header_footer_schema_ready()) {
+                $this->session->set_flashdata('error', 'Database tables are missing. Ensure <code>sma_cms_webshop_header_footer</code> exists, then retry.');
+                redirect('webshop_settings/edit_storefront_identity/' . $id);
+            }
+
+            $section_type = strtolower(trim((string) $this->input->post('section_type')));
+            $field_key    = strtolower(trim((string) (isset($row['field_key']) ? $row['field_key'] : '')));
+            $label        = trim((string) $this->input->post('label'));
+            $value        = (string) $this->input->post('value');
+            $icons        = trim((string) $this->input->post('icons'));
+            $sort_order   = (int) $this->input->post('sort_order');
+            $is_active    = $this->input->post('is_active') ? 1 : 0;
+
+            if ($section_type !== 'header' && $section_type !== 'footer') {
+                $this->session->set_flashdata('error', 'Choose a valid section (Header or Footer).');
+                redirect('webshop_settings/edit_storefront_identity/' . $id);
+            }
+            if ($field_key === '' || !preg_match('/^[a-zA-Z0-9_]+$/', $field_key)) {
+                $this->session->set_flashdata('error', 'Field key is required (letters, numbers, underscore only).');
+                redirect('webshop_settings/edit_storefront_identity/' . $id);
+            }
+            if ($label === '') {
+                $this->session->set_flashdata('error', 'Label is required.');
+                redirect('webshop_settings/edit_storefront_identity/' . $id);
+            }
+            if ($this->webshop_settings_model->storefront_identity_field_key_exists($section_type, $field_key, $id)) {
+                $this->session->set_flashdata('error', 'This section and field key already exists.');
+                redirect('webshop_settings/edit_storefront_identity/' . $id);
+            }
+
+            $stored_value = $value;
+            if (!empty($_FILES['media_file']['name'])) {
+                $up = $this->do_upload('media_file', '', true);
+                if ($up['status'] === 'success') {
+                    $stored_value = 'webshop/' . $up['upload_data']['file_name'];
+                } else {
+                    $this->session->set_flashdata('error', strip_tags($up['error']));
+                    redirect('webshop_settings/edit_storefront_identity/' . $id);
+                }
+            }
+
+            $update = array(
+                'section_type' => $section_type,
+                'field_key'    => $field_key,
+                'label'        => $label,
+                'value'        => $stored_value,
+                'icons'        => $icons === '' ? null : $icons,
+                'sort_order'   => $sort_order,
+                'is_active'    => $is_active,
+            );
+
+            if ($this->webshop_settings_model->update_storefront_identity($id, $update)) {
+                $this->session->set_flashdata('message', 'Storefront content updated.');
+                redirect('webshop_settings/storefront_identity');
+            }
+            $this->session->set_flashdata('error', 'Could not update row.');
+            redirect('webshop_settings/edit_storefront_identity/' . $id);
+        }
+
+        $bc = array(
+            array('link' => base_url(), 'page' => lang('Home')),
+            array('link' => site_url('webshop_settings/storefront_identity'), 'page' => 'Storefront header & footer'),
+            array('link' => '#', 'page' => 'Edit row'),
+        );
+        $meta = array('page_title' => 'Edit storefront row', 'bc' => $bc);
+        $this->data['identity_row'] = $row;
+        $this->data['header_footer_schema_ready'] = $this->webshop_settings_model->header_footer_schema_ready();
+        $this->page_construct('webshop_settings/storefront_identity_form', $meta, $this->data);
+    }
+
+    public function delete_storefront_identity($id = null) {
+        $id = (int) $id;
+        if ($id <= 0) {
+            $this->session->set_flashdata('error', 'Invalid row.');
+            redirect('webshop_settings/storefront_identity');
+        }
+        if ($this->webshop_settings_model->delete_storefront_identity($id)) {
+            $this->session->set_flashdata('message', 'Row deleted.');
+        } else {
+            $this->session->set_flashdata('error', 'Could not delete row.');
+        }
+        redirect('webshop_settings/storefront_identity');
+    }
+
+    public function add_cms_page() {
+        if ($this->input->post('create_cms_page')) {
+            $name = trim((string) $this->input->post('page_name'));
+            $url = '/' . ltrim(trim((string) $this->input->post('url')), '/');
+            $status = trim((string) $this->input->post('status')) === 'published' ? 'published' : 'draft';
+
+            if ($name === '' || $url === '/') {
+                $this->session->set_flashdata('error', 'Please provide valid page details.');
+                redirect('webshop_settings/add_cms_page');
+            }
+
+            if (!$this->cms_model->ensurePageMediaColumns()) {
+                $this->session->set_flashdata('error', 'Failed to prepare CMS media columns in pages table.');
+                redirect('webshop_settings/add_cms_page');
+            }
+
+            $insert_data = array(
+                'page_name' => $name,
+                'page_type' => 'static',
+                'url'       => $url,
+                'status'    => $status,
+            );
+
+            if ($this->cms_model->hasPageColumn('banner_image') && !empty($_FILES['banner_image']['name'])) {
+                $banner_upload = $this->do_upload('banner_image', 'cms_pages');
+                if ($banner_upload['status'] === 'success') {
+                    $insert_data['banner_image'] = $banner_upload['upload_data']['file_name'];
+                } else {
+                    $this->session->set_flashdata('error', strip_tags($banner_upload['error']));
+                    redirect('webshop_settings/add_cms_page');
+                }
+            }
+            if ($this->cms_model->hasPageColumn('logo_image') && !empty($_FILES['logo_image']['name'])) {
+                $logo_upload = $this->do_upload('logo_image', 'cms_pages');
+                if ($logo_upload['status'] === 'success') {
+                    $insert_data['logo_image'] = $logo_upload['upload_data']['file_name'];
+                } else {
+                    $this->session->set_flashdata('error', strip_tags($logo_upload['error']));
+                    redirect('webshop_settings/add_cms_page');
+                }
+            }
+
+            $new_id = $this->cms_model->addPage($insert_data);
+            if ($new_id) {
+                $this->session->set_flashdata('message', 'CMS page created successfully.');
+                redirect('webshop_settings/edit_cms_page/' . (int) $new_id);
+            }
+            $this->session->set_flashdata('error', 'Failed to create CMS page.');
+            redirect('webshop_settings/add_cms_page');
+        }
+
+        $bc = array(
+            array('link' => base_url(), 'page' => lang('Home')),
+            array('link' => base_url('webshop_settings/cms_pages'), 'page' => lang('CMS Pages')),
+            array('link' => '#', 'page' => lang('Add CMS Page'))
+        );
+        $meta = array('page_title' => lang('Add CMS Page'), 'bc' => $bc);
+        $this->page_construct('webshop_settings/cms_page_add', $meta, $this->data);
+    }
+
+    public function delete_cms_page($page_id = null) {
+        $page_id = (int) $page_id;
+        if ($page_id <= 0) {
+            $this->session->set_flashdata('error', 'Invalid CMS page.');
+            redirect('webshop_settings/cms_pages');
+        }
+        $page_data = $this->cms_model->getPageById($page_id);
+        if (!$page_data) {
+            $this->session->set_flashdata('error', 'CMS page not found.');
+            redirect('webshop_settings/cms_pages');
+        }
+
+        $this->cms_model->deletePageSectionsByPageId($page_id);
+        if ($this->cms_model->deletePageById($page_id)) {
+            $this->session->set_flashdata('message', 'CMS page deleted successfully.');
+        } else {
+            $this->session->set_flashdata('error', 'Failed to delete CMS page.');
+        }
+        redirect('webshop_settings/cms_pages');
+    }
+
+    public function remove_cms_page_media($page_id = null, $media_type = '') {
+        $page_id = (int) $page_id;
+        $media_type = strtolower(trim((string) $media_type));
+        if ($page_id <= 0 || !in_array($media_type, array('banner', 'logo'), true)) {
+            $this->session->set_flashdata('error', 'Invalid media remove request.');
+            redirect('webshop_settings/cms_pages');
+        }
+        $page_data = $this->cms_model->getPageById($page_id);
+        if (!$page_data) {
+            $this->session->set_flashdata('error', 'CMS page not found.');
+            redirect('webshop_settings/cms_pages');
+        }
+        $column = $media_type === 'banner' ? 'banner_image' : 'logo_image';
+        if (!$this->cms_model->hasPageColumn($column)) {
+            $this->session->set_flashdata('error', 'Media column not available.');
+            redirect('webshop_settings/edit_cms_page/' . $page_id);
+        }
+        if ($this->cms_model->updatePageById($page_id, array($column => null))) {
+            $this->session->set_flashdata('message', ucfirst($media_type) . ' removed successfully.');
+        } else {
+            $this->session->set_flashdata('error', 'Failed to remove ' . $media_type . '.');
+        }
+        redirect('webshop_settings/edit_cms_page/' . $page_id);
+    }
+
+    /**
+     * Entity tag mapping screen (product/category -> tags).
+     */
+    public function entity_tags() {
+        redirect('entity_mapping');
+
+        $selected_entity_master_id = (int) $this->input->get('entity_master_id');
+        $selected_entity_id = (int) $this->input->get('entity_id');
+
+        if ($this->input->post('save_entity_tags')) {
+            $selected_entity_master_id = (int) $this->input->post('entity_master_id');
+            $selected_entity_id = (int) $this->input->post('entity_id');
+            $tag_values = (array) $this->input->post('tag_values');
+
+            if ($selected_entity_master_id <= 0 || $selected_entity_id <= 0) {
+                $this->session->set_flashdata('error', 'Please select Type and Entity.');
+                redirect('webshop_settings/entity_tags');
+            }
+
+            $entity_master = $this->cms_model->getEntityMasterById($selected_entity_master_id);
+            if (!$entity_master) {
+                $this->session->set_flashdata('error', 'Invalid entity type.');
+                redirect('webshop_settings/entity_tags');
+            }
+
+            $tags_master = $this->cms_model->getTagsMaster();
+            $master_by_id = array();
+            foreach ($tags_master as $tag) {
+                $master_by_id[(int) $tag['id']] = $tag;
+            }
+
+            $saved = 0;
+            foreach ($tag_values as $tag_id => $value) {
+                $tag_id = (int) $tag_id;
+                $value = trim((string) $value);
+                if ($tag_id <= 0 || $value === '' || !isset($master_by_id[$tag_id])) {
+                    continue;
+                }
+                $property_name = $master_by_id[$tag_id]['tag_name'];
+                if ($this->cms_model->upsertEntityTagValue($selected_entity_master_id, $selected_entity_id, $tag_id, $property_name, $value)) {
+                    $saved++;
+                }
+            }
+
+            if ($saved > 0) {
+                $this->session->set_flashdata('message', 'Entity tag values saved successfully.');
+            } else {
+                $this->session->set_flashdata('warning', 'No tag values were saved.');
+            }
+            redirect('webshop_settings/entity_tags?entity_master_id=' . $selected_entity_master_id . '&entity_id=' . $selected_entity_id);
+        }
+
+        $entity_masters = $this->cms_model->getEntityMasters();
+        $entity_master = null;
+        foreach ($entity_masters as $em) {
+            if ((int) $em['id'] === $selected_entity_master_id) {
+                $entity_master = $em;
+                break;
+            }
+        }
+
+        $entity_items = array();
+        if ($entity_master && !empty($entity_master['entity_code'])) {
+            $entity_items = $this->cms_model->getEntitiesByMasterCode($entity_master['entity_code']);
+        }
+
+        $entity_tags = array();
+        if ($selected_entity_master_id > 0 && $selected_entity_id > 0) {
+            $entity_tags = $this->cms_model->getEntityTagMappings($selected_entity_master_id, $selected_entity_id);
+        }
+
+        $bc = array(
+            array('link' => base_url(), 'page' => lang('Home')),
+            array('link' => '#', 'page' => 'Entity Tags')
+        );
+        $meta = array('page_title' => 'Entity Tags', 'bc' => $bc);
+
+        $this->data['entity_masters'] = $entity_masters;
+        $this->data['entity_items'] = $entity_items;
+        $this->data['selected_entity_master_id'] = $selected_entity_master_id;
+        $this->data['selected_entity_id'] = $selected_entity_id;
+        $this->data['tags_master'] = $this->cms_model->getTagsMaster();
+        $this->data['entity_tags'] = $entity_tags;
+        $this->page_construct('webshop_settings/entity_tags', $meta, $this->data);
+    }
+
+    /**
+     * AJAX: entity options by entity master id.
+     */
+    public function entity_items_by_master() {
+        $entity_master_id = (int) $this->input->get('entity_master_id');
+        $entity_master = $this->cms_model->getEntityMasterById($entity_master_id);
+        $items = array();
+        if ($entity_master && !empty($entity_master['entity_code'])) {
+            $items = $this->cms_model->getEntitiesByMasterCode($entity_master['entity_code']);
+        }
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode(array(
+                'status' => 'success',
+                'items' => $items,
+                'csrf_hash' => $this->security->get_csrf_hash(),
+            )));
+    }
+
+    public function edit_cms_page($page_id = null) {
+        $page_id = (int) $page_id;
+        if ($page_id <= 0) {
+            $this->session->set_flashdata('error', 'Invalid CMS page.');
+            redirect('webshop_settings/cms_pages');
+        }
+
+        if ($this->input->post('save_cms_tags')) {
+            $tag_values = $this->input->post('tag_values', false);
+            if (!is_array($tag_values)) {
+                $tag_values = array();
+            }
+            $tags_master = $this->cms_model->getTagsMaster();
+            $master_by_id = array();
+            foreach ($tags_master as $tag) {
+                $master_by_id[(int) $tag['id']] = $tag;
+            }
+
+            $saved = 0;
+            foreach ($tag_values as $tag_id => $value) {
+                $tag_id = (int) $tag_id;
+                $value = trim((string) $value);
+                if ($tag_id <= 0 || $value === '' || !isset($master_by_id[$tag_id])) {
+                    continue;
+                }
+
+                $property_name = $master_by_id[$tag_id]['tag_name'];
+                if ($this->cms_model->upsertPageTagValue($page_id, $tag_id, $property_name, $value)) {
+                    $saved++;
+                }
+            }
+
+            if ($saved > 0) {
+                $this->session->set_flashdata('message', 'Tag values saved successfully.');
+            } else {
+                $this->session->set_flashdata('warning', 'No tag values were saved.');
+            }
+            redirect('webshop_settings/edit_cms_page/' . $page_id);
+        }
+
+        if ($this->input->post('update_cms_page')) {
+            $name = trim($this->input->post('page_name'));
+            $url = '/' . ltrim(trim($this->input->post('url')), '/');
+            $status = trim($this->input->post('status')) === 'published' ? 'published' : 'draft';
+
+            if (!$this->cms_model->ensurePageMediaColumns()) {
+                $this->session->set_flashdata('error', 'Failed to prepare CMS media columns in pages table.');
+                redirect('webshop_settings/edit_cms_page/' . $page_id);
+            }
+
+            if ($name === '' || $url === '') {
+                $this->session->set_flashdata('error', 'Please provide valid page details.');
+                redirect('webshop_settings/edit_cms_page/' . $page_id);
+            }
+
+            $existing = $this->cms_model->getPageById($page_id);
+            $page_type = is_array($existing) && isset($existing['page_type'])
+                ? trim((string) $existing['page_type'])
+                : 'static';
+            if ($page_type === '') {
+                $page_type = 'static';
+            }
+
+            $update_data = array(
+                'page_name' => $name,
+                'page_type' => $page_type,
+                'url'       => $url,
+                'status'    => $status,
+            );
+
+            if ($this->cms_model->hasPageColumn('banner_image')) {
+                if (!empty($_FILES['banner_image']['name'])) {
+                    $banner_upload = $this->do_upload('banner_image', 'cms_pages');
+                    if ($banner_upload['status'] === 'success') {
+                        $update_data['banner_image'] = $banner_upload['upload_data']['file_name'];
+                    } else {
+                        $this->session->set_flashdata('error', strip_tags($banner_upload['error']));
+                        redirect('webshop_settings/edit_cms_page/' . $page_id);
+                    }
+                }
+            }
+
+            if ($this->cms_model->hasPageColumn('logo_image')) {
+                if (!empty($_FILES['logo_image']['name'])) {
+                    $logo_upload = $this->do_upload('logo_image', 'cms_pages');
+                    if ($logo_upload['status'] === 'success') {
+                        $update_data['logo_image'] = $logo_upload['upload_data']['file_name'];
+                    } else {
+                        $this->session->set_flashdata('error', strip_tags($logo_upload['error']));
+                        redirect('webshop_settings/edit_cms_page/' . $page_id);
+                    }
+                }
+            }
+
+            if ($this->cms_model->updatePageById($page_id, $update_data)) {
+                $this->session->set_flashdata('message', 'CMS page updated successfully.');
+                redirect('webshop_settings/cms_pages');
+            }
+
+            $this->session->set_flashdata('error', 'Failed to update CMS page.');
+            redirect('webshop_settings/edit_cms_page/' . $page_id);
+        }
+
+        $page_data = $this->cms_model->getPageById($page_id);
+        if (!$page_data) {
+            $this->session->set_flashdata('error', 'CMS page not found.');
+            redirect('webshop_settings/cms_pages');
+        }
+
+        $bc = array(
+            array('link' => base_url(), 'page' => lang('Home')),
+            array('link' => base_url('webshop_settings/cms_pages'), 'page' => lang('CMS Pages')),
+            array('link' => '#', 'page' => lang('Edit CMS Page'))
+        );
+        $meta = array('page_title' => lang('Edit CMS Page'), 'bc' => $bc);
+
+        $this->data['page_data'] = $page_data;
+        // Make sure the Header/Footer rows exist before reading the dropdown source;
+        // sections_master has UNIQUE(section_type) so this is a safe no-op when seeded.
+        $this->cms_model->ensureHeaderFooterSectionMasters();
+        $this->data['section_masters'] = $this->cms_model->getSectionMasters();
+        $this->data['page_sections'] = $this->cms_model->getAdminPageSections($page_id);
+        $this->data['tags_master'] = $this->cms_model->getTagsMaster();
+        $this->data['page_tags'] = $this->cms_model->getPageTagMappings($page_id);
+        $this->page_construct('webshop_settings/cms_page_edit', $meta, $this->data);
+    }
+
+    public function add_cms_page_section($page_id = null) {
+        $page_id = (int) $page_id;
+        if ($page_id <= 0) {
+            $this->session->set_flashdata('error', 'Invalid CMS page.');
+            redirect('webshop_settings/cms_pages');
+        }
+
+        $page_data = $this->cms_model->getPageById($page_id);
+        if (!$page_data) {
+            $this->session->set_flashdata('error', 'CMS page not found.');
+            redirect('webshop_settings/cms_pages');
+        }
+
+        $section_id = (int) $this->input->post('section_id');
+        $sort_order = (int) $this->input->post('sort_order');
+        $is_enabled = (int) $this->input->post('is_enabled') === 1 ? 1 : 0;
+        $section_heading = trim((string) $this->input->post('section_heading'));
+        $show_header = $section_heading !== '' ? 'yes' : 'no';
+        $this->load->helper('cms_layout');
+        $page_text = trim(cms_read_html_field_from_post('page_text', $this));
+
+        if ($section_id <= 0 || $sort_order <= 0) {
+            $this->session->set_flashdata('error', 'Section and sort order are required.');
+            redirect('webshop_settings/edit_cms_page/' . $page_id);
+        }
+
+        if ($this->cms_model->isPageSectionSortOrderExists($page_id, $sort_order)) {
+            $sort_order = $this->cms_model->getNextPageSectionSortOrder($page_id);
+        }
+        $config_data = array(
+            'show_header' => $show_header,
+            'show_footer' => 'no',
+            'show_banner' => 'no',
+            'show_logo'   => 'no',
+            'content'     => $page_text,
+        );
+        if ($section_heading !== '') {
+            $config_data['title'] = $section_heading;
+            $config_data['heading'] = $section_heading;
+        }
+
+        $section_contain = json_encode($config_data);
+
+        $insert_data = array(
+            'page_id'     => $page_id,
+            'section_id'  => $section_id,
+            'sort_order'  => $sort_order,
+            'is_enabled'  => $is_enabled,
+            'section_contain' => $section_contain,
+        );
+        $insert_data = array_merge($insert_data, $this->buildSectionVisibilityColumns($show_header, 'no', 'no', 'no'));
+
+        if ($this->cms_model->addPageSection($insert_data)) {
+            $this->session->set_flashdata('message', 'Dynamic section added successfully.');
+            redirect('webshop_settings/edit_cms_page/' . $page_id);
+        }
+
+        $this->session->set_flashdata('error', 'Failed to add section. Sort order may already exist.');
+        redirect('webshop_settings/edit_cms_page/' . $page_id);
+    }
+
+    public function update_cms_page_section($page_id = null, $mapping_id = null) {
+        $page_id = (int) $page_id;
+        $mapping_id = (int) $mapping_id;
+        if ($page_id <= 0 || $mapping_id <= 0) {
+            $this->session->set_flashdata('error', 'Invalid page section.');
+            redirect('webshop_settings/cms_pages');
+        }
+
+        $sort_order = (int) $this->input->post('sort_order');
+        $is_enabled = (int) $this->input->post('is_enabled') === 1 ? 1 : 0;
+        $section_heading = trim((string) $this->input->post('section_heading'));
+        $show_header = $section_heading !== '' ? 'yes' : 'no';
+        $this->load->helper('cms_layout');
+        $page_text = trim(cms_read_html_field_from_post('page_text', $this));
+        if ($sort_order <= 0) {
+            $this->session->set_flashdata('error', 'Sort order is required.');
+            redirect('webshop_settings/edit_cms_page/' . $page_id);
+        }
+
+        if ($this->cms_model->isPageSectionSortOrderExists($page_id, $sort_order, $mapping_id)) {
+            $sort_order = $this->cms_model->getNextPageSectionSortOrder($page_id);
+        }
+
+        $config_data = array(
+            'show_header' => $show_header,
+            'show_footer' => 'no',
+            'show_banner' => 'no',
+            'show_logo'   => 'no',
+            'content'     => $page_text,
+        );
+        if ($section_heading !== '') {
+            $config_data['title'] = $section_heading;
+            $config_data['heading'] = $section_heading;
+        }
+
+        $update_data = array(
+            'sort_order' => $sort_order,
+            'is_enabled' => $is_enabled,
+            'section_contain' => json_encode($config_data),
+        );
+        $update_data = array_merge($update_data, $this->buildSectionVisibilityColumns($show_header, 'no', 'no', 'no'));
+
+        if ($this->cms_model->updatePageSectionById($mapping_id, $page_id, $update_data)) {
+            $this->session->set_flashdata('message', 'Section updated successfully.');
+            redirect('webshop_settings/edit_cms_page/' . $page_id);
+        }
+
+        $this->session->set_flashdata('error', 'Failed to update section.');
+        redirect('webshop_settings/edit_cms_page/' . $page_id);
+    }
+
+    public function delete_cms_page_section($page_id = null, $mapping_id = null) {
+        $page_id = (int) $page_id;
+        $mapping_id = (int) $mapping_id;
+        if ($page_id <= 0 || $mapping_id <= 0) {
+            $this->session->set_flashdata('error', 'Invalid page section.');
+            redirect('webshop_settings/cms_pages');
+        }
+
+        if ($this->cms_model->deletePageSectionById($mapping_id, $page_id)) {
+            $this->session->set_flashdata('message', 'Section deleted successfully.');
+            redirect('webshop_settings/edit_cms_page/' . $page_id);
+        }
+
+        $this->session->set_flashdata('error', 'Failed to delete section.');
+        redirect('webshop_settings/edit_cms_page/' . $page_id);
+    }
+
+    private function normalizeYesNo($value) {
+        $value = strtolower(trim((string) $value));
+        return in_array($value, array('1', 'true', 'yes', 'on'), true) ? 'yes' : 'no';
+    }
+
+    private function buildSectionVisibilityColumns($show_header, $show_footer, $show_banner, $show_logo) {
+        $data = array();
+
+        if ($this->cms_model->hasPageSectionColumn('header')) {
+            $data['header'] = $show_header;
+        }
+        if ($this->cms_model->hasPageSectionColumn('footer')) {
+            $data['footer'] = $show_footer;
+        }
+        if ($this->cms_model->hasPageSectionColumn('banner')) {
+            $data['banner'] = $show_banner;
+        }
+        if ($this->cms_model->hasPageSectionColumn('logo')) {
+            $data['logo'] = $show_logo;
+        }
+
+        if ($this->cms_model->hasPageSectionColumn('show_header')) {
+            $data['show_header'] = $show_header;
+        }
+        if ($this->cms_model->hasPageSectionColumn('show_footer')) {
+            $data['show_footer'] = $show_footer;
+        }
+        if ($this->cms_model->hasPageSectionColumn('show_banner')) {
+            $data['show_banner'] = $show_banner;
+        }
+        if ($this->cms_model->hasPageSectionColumn('show_logo')) {
+            $data['show_logo'] = $show_logo;
+        }
+
+        return $data;
+    }
+
+    public function reorder_cms_page_sections($page_id = null) {
+        $this->output->set_content_type('application/json');
+
+        $page_id = (int) $page_id;
+        if ($page_id <= 0) {
+            echo json_encode(array(
+                'status'    => 'fail',
+                'message'   => 'Invalid page.',
+                'csrf_hash' => $this->security->get_csrf_hash(),
+            ));
+            return;
+        }
+
+        $raw_orders = $this->input->post('orders');
+
+        // The JS sends orders as JSON.stringify({}), so it arrives as a JSON string.
+        // Gracefully handle both a plain string and an already-decoded array.
+        if (is_string($raw_orders) && $raw_orders !== '') {
+            $decoded = json_decode($raw_orders, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                $raw_orders = $decoded;
+            }
+        }
+
+        if (!is_array($raw_orders) || empty($raw_orders)) {
+            echo json_encode(array(
+                'status'    => 'fail',
+                'message'   => 'No sort order data received.',
+                'csrf_hash' => $this->security->get_csrf_hash(),
+            ));
+            return;
+        }
+
+        $mapping_orders = array();
+        foreach ($raw_orders as $mapping_id => $sort_order) {
+            $mapping_id = (int) $mapping_id;
+            $sort_order = (int) $sort_order;
+            if ($mapping_id > 0 && $sort_order > 0) {
+                $mapping_orders[$mapping_id] = $sort_order;
+            }
+        }
+
+        if (empty($mapping_orders)) {
+            echo json_encode(array(
+                'status'    => 'fail',
+                'message'   => 'Invalid sort order data (all entries filtered).',
+                'csrf_hash' => $this->security->get_csrf_hash(),
+            ));
+            return;
+        }
+
+        $updated = $this->cms_model->updatePageSectionSortOrders($page_id, $mapping_orders);
+        echo json_encode(array(
+            'status'    => $updated ? 'success' : 'fail',
+            'message'   => $updated ? 'Sort order updated.' : 'Failed to update sort order in database.',
+            'csrf_hash' => $this->security->get_csrf_hash(),
+        ));
+    }
+
+    public function add_cms_page_tag($page_id = null) {
+        $page_id = (int) $page_id;
+        if ($page_id <= 0) {
+            $this->session->set_flashdata('error', 'Invalid CMS page.');
+            redirect('webshop_settings/cms_pages');
+        }
+
+        $page_data = $this->cms_model->getPageById($page_id);
+        if (!$page_data) {
+            $this->session->set_flashdata('error', 'CMS page not found.');
+            redirect('webshop_settings/cms_pages');
+        }
+
+        $tag_id = (int) $this->input->post('tag_id');
+        $property_name = trim((string) $this->input->post('property_name'));
+        $value = trim((string) $this->input->post('value'));
+
+        if ($tag_id <= 0 || $property_name === '' || $value === '') {
+            $this->session->set_flashdata('error', 'Tag, property name and value are required.');
+            redirect('webshop_settings/edit_cms_page/' . $page_id);
+        }
+
+        if ($this->cms_model->upsertPageTagValue($page_id, $tag_id, $property_name, $value)) {
+            $this->session->set_flashdata('message', 'Tag value saved successfully.');
+            redirect('webshop_settings/edit_cms_page/' . $page_id);
+        }
+
+        $this->session->set_flashdata('error', 'Failed to save tag value.');
+        redirect('webshop_settings/edit_cms_page/' . $page_id);
+    }
+
 }
 //End class

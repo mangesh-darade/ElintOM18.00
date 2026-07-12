@@ -809,7 +809,15 @@ if ($GP['Procurement_Orders']) {
     <?php } ?>
 <?php } ?>
 
-<?php
+<?php if (isset($Settings->active_cms_admin_panel) && $Settings->active_cms_admin_panel) { ?>
+        <li class="mm_cms_admin_panel main-item" id="cms_admin_panel_index">
+            <a href="<?= site_url('cms_admin/dashboard'); ?>">
+                <i class="fa fa-folder-open"></i>
+                <span class="text">CMS Admin Panel</span>
+            </a>
+        </li>
+<?php } ?>
+    <?php
         // Android-only visibility
         $ua_str = isset($this->agent) ? $this->agent->agent_string() : (isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '');
         $isAndroidUA = (stripos($ua_str, 'Android') !== false);
