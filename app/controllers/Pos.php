@@ -433,10 +433,10 @@ class Pos extends MY_Controller {
             $customer = ($customer_details->company != '' && $customer_details->company != '-') ? $customer_details->company : $customer_details->name;
         if ($payment_method == 'cash' && $this->pos_settings->display_coinage == 1) {
                 $pos_paid = preg_replace('/[^\d.]/', '', $this->input->post('deposited_amount'));
-                $selected_amounts = (int)preg_replace('/[^\d.]/', '', $this->input->post('selected_amounts'));
+                $selected_amounts = $this->sma->formatDecimal(preg_replace('/[^\d.]/', '', $this->input->post('selected_amounts')));
                 $collected_amount = $this->sma->formatDecimal(preg_replace('/[^\d.]/', '', $this->input->post('deposited_amount')));
                 $invoice_amounts = $this->sma->formatDecimal($this->input->post('invoice_amounts'));
-                $return_amount = (int) preg_replace('/[^\d.]/', '', $this->input->post('return_Amount'));
+                $return_amount = $this->sma->formatDecimal(preg_replace('/[^\d.]/', '', $this->input->post('return_Amount')));
                 // Signed balance: negative = due, positive = change (same as normal checkout balance_amount)
                 $pending_amount = $this->sma->formatDecimal($collected_amount - $invoice_amounts);
             }
@@ -518,8 +518,11 @@ class Pos extends MY_Controller {
                     $product_details = $item_type != 'manual' ? $this->pos_model->getProductByCode($item_code) : null;
                     $item_salesperson_name = $this->pos_model->getSalesPersonsNameById($itemsalesperson);
                     
-                    if($this->Settings->theme == 'newpos' || $this->Settings->theme == 'default'){
-                        $mrp = !empty($item_option) ? $this->pos_model->getProductOptionByID($item_option)->mrp : ($product_details->mrp);
+                    if (isset($_POST['mrp'][$r]) && $_POST['mrp'][$r] !== '' && $_POST['mrp'][$r] !== null) {
+                        $mrp = $this->sma->formatDecimal($_POST['mrp'][$r], 6);
+                    } elseif($this->Settings->theme == 'newpos' || $this->Settings->theme == 'default'){
+                        $item_option_row = !empty($item_option) ? $this->pos_model->getProductOptionByID($item_option) : false;
+                        $mrp = ($item_option_row && isset($item_option_row->mrp)) ? $item_option_row->mrp : (is_object($product_details) && isset($product_details->mrp) ? $product_details->mrp : 0);
                     }else{
                         $mrp = !empty($_POST['mrp'][$r]) ? $_POST['mrp'][$r] : 0;
                     }
@@ -7576,6 +7579,12 @@ window.MyHandler.setPrintRequest('<?php echo json_encode($print); ?>');
         $returnsDenominations = $this->input->post('ReturnsDwnominations');
         $collectedDenomination = json_decode($collectedDenomination, true);
         $returnsDenominations = json_decode($returnsDenominations, true);
+        if (!is_array($collectedDenomination)) {
+            $collectedDenomination = array();
+        }
+        if (!is_array($returnsDenominations)) {
+            $returnsDenominations = array();
+        }
         $has_return_denoms = false;
         if (is_array($returnsDenominations)) {
             foreach ($returnsDenominations as $denoms) {
