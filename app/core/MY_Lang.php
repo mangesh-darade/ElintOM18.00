@@ -7,6 +7,44 @@ class MY_Lang extends CI_Lang {
     }
 
     private $_in_line = false;
+    private $_pos_type_labels = null;
+    private $_pos_type_labels_loaded = false;
+    private $_pos_type_labels_pos_type = null;
+
+    private function _load_pos_type_labels($ci)
+    {
+        if (
+            !isset($ci->Settings) ||
+            !is_object($ci->Settings) ||
+            !isset($ci->Settings->pos_type) ||
+            $ci->Settings->pos_type === '' ||
+            !isset($ci->db) ||
+            !is_object($ci->db) ||
+            $ci->db->conn_id === false
+        ) {
+            $this->_pos_type_labels = array();
+            $this->_pos_type_labels_loaded = true;
+            $this->_pos_type_labels_pos_type = null;
+            return;
+        }
+
+        if ($this->_pos_type_labels_loaded && $this->_pos_type_labels_pos_type === $ci->Settings->pos_type) {
+            return;
+        }
+
+        if (!isset($ci->pos_type_labels_model)) {
+            $ci->load->model('pos_type_labels_model', 'pos_type_labels_model');
+        }
+
+        if (isset($ci->pos_type_labels_model)) {
+            $this->_pos_type_labels = $ci->pos_type_labels_model->get_all_by_pos_type($ci->Settings->pos_type);
+        } else {
+            $this->_pos_type_labels = array();
+        }
+
+        $this->_pos_type_labels_loaded = true;
+        $this->_pos_type_labels_pos_type = $ci->Settings->pos_type;
+    }
 
     function line($line, $params = null)
     {
@@ -27,12 +65,10 @@ class MY_Lang extends CI_Lang {
                 is_object($ci->db) &&
                 $ci->db->conn_id !== false  // DB connection is actually open
             ) {
-                if (!isset($ci->pos_type_labels_model)) {
-                    $ci->load->model('pos_type_labels_model', 'pos_type_labels_model');
-                }
+                $this->_load_pos_type_labels($ci);
 
-                if (isset($ci->pos_type_labels_model)) {
-                    $custom = $ci->pos_type_labels_model->get_label($ci->Settings->pos_type, $line);
+                if (is_array($this->_pos_type_labels) && isset($this->_pos_type_labels[$line])) {
+                    $custom = $this->_pos_type_labels[$line];
                     if ($custom !== null && $custom !== '') {
                         $custom = preg_replace('/^@\s*-[0-9,]+\s*\+[0-9,]+\s*@@\s*/', '', $custom);
                         if ($custom !== '') {
@@ -48,7 +84,7 @@ class MY_Lang extends CI_Lang {
 
         ///////////////////////////////////// POS type labels /////////////////////////////////////
 
-        $return = parent::line($line);
+        $return = parent::line($line, FALSE);
         if ($return === false) {
             return str_replace('_', ' ', $line);
         } else {

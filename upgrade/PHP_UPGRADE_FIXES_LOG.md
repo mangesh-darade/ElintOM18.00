@@ -2011,6 +2011,33 @@ redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('
 
 ---
 
+## Shared / Core — Performance
+
+| # | File | Old | New | Type |
+|---|------|-----|-----|------|
+| S.1 | `app/core/MY_Lang.php` | Per `lang()` call: new DB connection + `get_label()` query; missing keys logged as ERROR (~9k/day) | Cache `get_all_by_pos_type()` once per request; `parent::line($line, FALSE)` | `guard` |
+
+#### S.1 `app/core/MY_Lang.php` — lang() DB-per-call slowdown
+
+**Old code:**
+```php
+$custom = $ci->pos_type_labels_model->get_label($ci->Settings->pos_type, $line);
+// ...
+$return = parent::line($line);
+```
+
+**New code:**
+```php
+$this->_load_pos_type_labels($ci);
+if (is_array($this->_pos_type_labels) && isset($this->_pos_type_labels[$line])) {
+    $custom = $this->_pos_type_labels[$line];
+    // ...
+}
+$return = parent::line($line, FALSE);
+```
+
+---
+
 ## Changelog
 
 | Date | Module | Summary |
@@ -2046,6 +2073,7 @@ redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('
 | 2026-07-12 | 22 | Module 22 Urban Piper / Omnichannel **certified complete** — constructor/order guards, HTTP_REFERER, restore delivery views; UP **8/8** + **9/9**, OC **9/9** + **11/11** |
 | 2026-07-12 | 23 | Module 23 APIs (JSON) **certified complete** — ApiOwner json_op restore, constructor/decode guards, Restapi5 auth POST guards; screen **11/11**, links **14/14** |
 | 2026-07-12 | 24 | Module 24 Other Modules **certified complete** — Orders/Employees/Offline/SMS guards, Sales_Mobile `type` SELECT fix, restore mobile production views; screen **30/30**, links **17/17** |
+| 2026-07-12 | Shared | `MY_Lang.php` — cache pos_type labels per request; stop missing-key ERROR log spam on every page refresh |
 
 ---
 
