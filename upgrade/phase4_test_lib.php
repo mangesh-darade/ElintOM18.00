@@ -184,4 +184,93 @@ if (!function_exists('phase4_check')) {
         phase4_check("$label ($path)", $ok, "HTTP {$r['code']}" . $issue);
         return $ok ? $r : null;
     }
+
+    function phase4_actionsGetRedirect($base, $label, $actionsPath, $cookieFile, $expectFragment)
+    {
+        $r = phase4_httpRequest($base . $actionsPath, $cookieFile);
+        $loc = $r['location'] ?? '';
+        $ok = in_array($r['code'], [301, 302, 303, 307, 308], true)
+            && stripos($loc, $expectFragment) !== false
+            && !phase4_hasPhpIssue($r['body']);
+        phase4_check($label, $ok, 'HTTP ' . $r['code'] . ' loc=' . $loc);
+        return $ok;
+    }
+
+    function phase4_listHasTools($base, $label, $listPath, $cookieFile, $needles = [])
+    {
+        $r = phase4_httpGetFollow($base . $listPath, $cookieFile);
+        $ok = $r['code'] === 200 && !phase4_hasPhpIssue($r['body']);
+        foreach ($needles as $needle) {
+            if (stripos($r['body'], $needle) === false) {
+                $ok = false;
+            }
+        }
+        phase4_check($label, $ok, 'HTTP ' . $r['code'] . ' len=' . strlen($r['body']));
+        return $ok ? $r : null;
+    }
+
+    function phase4_actionPost($base, $actionsPath, $cookieFile, $token, $action, $ids, $refererPath)
+    {
+        $post = ['form_action' => $action, 'token' => $token ?? ''];
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+        foreach ($ids as $i => $id) {
+            $post['val[' . $i . ']'] = $id;
+        }
+        $ch = curl_init($base . $actionsPath);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => false,
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => http_build_query($post),
+            CURLOPT_COOKIEJAR => $cookieFile,
+            CURLOPT_COOKIEFILE => $cookieFile,
+            CURLOPT_HTTPHEADER => [
+                'Content-Type: application/x-www-form-urlencoded',
+                'Referer: ' . $base . $refererPath,
+            ],
+            CURLOPT_HEADER => true,
+            CURLOPT_TIMEOUT => 180,
+        ]);
+        $raw = curl_exec($ch);
+        $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $hs = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $headers = substr($raw, 0, $hs);
+        $body = substr($raw, $hs);
+        $ct = '';
+        if (preg_match('/Content-Type:\s*([^\r\n]+)/i', $headers, $m)) {
+            $ct = trim($m[1]);
+        }
+        $loc = '';
+        if (preg_match('/^Location:\s*([^\r\n]+)/im', $headers, $m)) {
+            $loc = trim($m[1]);
+        }
+        return [
+            'code' => $code,
+            'body' => $body,
+            'ct' => $ct,
+            'location' => $loc,
+            'issue' => phase4_hasPhpIssue($body),
+        ];
+    }
+
+    function phase4_checkActionPost($base, $label, $actionsPath, $cookieFile, $token, $action, $ids, $refererPath, $expectCodes = [200, 302, 303])
+    {
+        $r = phase4_actionPost($base, $actionsPath, $cookieFile, $token, $action, $ids, $refererPath);
+        $ok = in_array($r['code'], $expectCodes, true) && !$r['issue'];
+        if ($ok && $r['code'] === 200) {
+            $ok = strlen($r['body']) > 50;
+        }
+        $detail = 'HTTP ' . $r['code'];
+        if ($r['ct']) {
+            $detail .= ' CT=' . $r['ct'];
+        }
+        if ($r['location']) {
+            $detail .= ' loc=' . $r['location'];
+        }
+        $detail .= ' len=' . strlen($r['body']);
+        phase4_check($label, $ok, $detail);
+        return $ok ? $r : null;
+    }
 }
