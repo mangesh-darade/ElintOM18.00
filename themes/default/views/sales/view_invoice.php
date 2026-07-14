@@ -7,7 +7,7 @@ foreach ($rows as $key => $val)    {
     $Color = '';
     if (!empty($val->shade_id)) {
         $options_color = $this->sales_model->getProductOptionsByShapeId($val->shade_id, $val->product_id, '2');
-        $Color = $options_color[0]->name;
+        $Color = (!empty($options_color) && isset($options_color[0]->name)) ? $options_color[0]->name : '';
     }
     if(!empty($val->option_id)) {
         $item_note = (empty($val->note)) ? '' : ": " . $val->note;
@@ -25,7 +25,7 @@ if(is_array($return_rows)) {
     $Color = '';
     if (!empty($val->shade_id)) {
         $options_color = $this->sales_model->getProductOptionsByShapeId($val->shade_id, $val->product_id, 2);
-        $Color = $options_color[0]->name;
+        $Color = (!empty($options_color) && isset($options_color[0]->name)) ? $options_color[0]->name : '';
     }
     if (!empty($val->option_id)) {
         $item_note = (empty($val->note)) ? '' : ": " . $val->note;

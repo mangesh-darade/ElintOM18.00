@@ -4477,7 +4477,7 @@ class Sma {
     //     return $table;
     // }
 
-    public function posBillTableCSI($printer, $inv, $return_sale, $rows, $return_rows, $salestax, $class = null, $print = NULL) {
+    public function posBillTableCSI($printer, $inv, $return_sale, $rows, $return_rows, $salestax = null, $class = null, $print = NULL) {
         $itemTaxes = isset($inv->rows_tax) ? $inv->rows_tax : array();
         $column_id_str = isset($printer->column_id_str) && !empty($printer->column_id_str) ? $printer->column_id_str : '';
         $column_name_str = isset($printer->column_name_str) && !empty($printer->column_name_str) ? $printer->column_name_str : '';
