@@ -60,7 +60,7 @@ class Products_model extends CI_Model {
 
     public function getProductOptions($pid) {
         $user = $this->site->getUser();
-        if(!$user->warehouse_id)
+        if (!$user || !$user->warehouse_id)
         {
             $settings = $this->settings_model->getSettings();
             $warehouse_ids = $settings->default_warehouse;
@@ -390,7 +390,7 @@ class Products_model extends CI_Model {
             $this->sma->setUserActionLog($DataLog);
            // Urbanpiper
 
-           if ($data['up_items'] == '1' && $postype_data['pos_type'] == 'restaurant' || $data['up_items'] == '1' && $postype_data['pos_type'] == 'bakery') {
+           if (!empty($data['up_items']) && $data['up_items'] == '1' && is_array($postype_data) && (($postype_data['pos_type'] == 'restaurant' || $postype_data['pos_type'] == 'bakery'))) {
 
             $postype_data['product_id'] = $product_id;
             unset($postype_data['pos_type']);
@@ -1307,6 +1307,9 @@ class Products_model extends CI_Model {
     public function updateVariantPrice($data = array()) {
         foreach ($data as $varaintdata) {
             $getproductid = $this->db->select('id')->where(['code' => $varaintdata['product_code']])->get('products')->row();
+            if (!$getproductid) {
+                continue;
+            }
             $productid = $getproductid->id;
 
             $expvariant = explode(",", $varaintdata['Variants_Name']);
@@ -1315,7 +1318,7 @@ class Products_model extends CI_Model {
             $Variants_Discount_on_mrp = explode(",", $varaintdata['Variants_Discount_on_mrp']);
             if (is_array($expvariant)) {
                 foreach ($expvariant as $key => $expv) {
-                    $updatedata = ["price" => $extprice[$key],"mrp" => $Variants_Mrp[$key],"variant_discount_on_mrp" => $Variants_Discount_on_mrp[$key], "updated_at" => date('Y-m-d H:i:s')];
+                    $updatedata = ["price" => (isset($extprice[$key]) ? $extprice[$key] : 0),"mrp" => (isset($Variants_Mrp[$key]) ? $Variants_Mrp[$key] : 0),"variant_discount_on_mrp" => (isset($Variants_Discount_on_mrp[$key]) ? $Variants_Discount_on_mrp[$key] : 0), "updated_at" => date('Y-m-d H:i:s')];
                     $variantname = rtrim(ltrim($expv));
                     $this->db->where(["product_id" => $productid, "name" => $variantname])->update('product_variants', $updatedata);
                 }

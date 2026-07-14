@@ -1001,7 +1001,7 @@ class Products extends MY_Controller {
                 'eshop_price' => $this->sma->formatDecimal(round($eshop_price)),
 				'shelf_life' => $this->input->post('shelf_life'),
                 'storage_conditions' => $this->input->post('storage_conditions'),
-                'season_id' => $this->input->post('season'),
+                'season_id' => ($this->input->post('season') !== null && $this->input->post('season') !== '') ? $this->input->post('season') : 0,
                 'rank' => $this->input->post('rank'),
                 'flag_visible' => $this->input->post('flag_visible'),
                 'discount_on_mrp' => $this->input->post('discount_on_mrp'),
@@ -1010,6 +1010,7 @@ class Products extends MY_Controller {
                 'packing_size' => $this->sma->formatDecimal($this->input->post('packing_size')) ? $this->sma->formatDecimal($this->input->post('packing_size')) : 0,
             );
 
+            $postype_data = NULL;
             if ($this->input->post('pos_type') == 'restaurant' || $this->input->post('pos_type') == 'bakery') {
 
                 $data['up_items'] = ($this->input->post('up_items')) ? $this->input->post('up_items') : NULL;
@@ -1039,7 +1040,7 @@ class Products extends MY_Controller {
 
 
             $this->load->library('logs');
-            $this->logs->write('products', json_encode($data), $val);
+            $this->logs->write('products', json_encode($data), isset($val) ? $val : NULL);
             $this->load->library('upload');
             if ($this->input->post('type') == 'standard') {
                 $wh_total_quantity = 0;
@@ -1056,7 +1057,7 @@ class Products extends MY_Controller {
                   } */
 
                 if ($this->input->post('attributes')) {
-                    $a = sizeof($_POST['attr_name']);
+                    $a = isset($_POST['attr_name']) && is_array($_POST['attr_name']) ? sizeof($_POST['attr_name']) : 0;
                     for ($r = 0; $r <= $a; $r++) {
                         if (isset($_POST['attr_name'][$r])) {
 
@@ -1109,7 +1110,7 @@ class Products extends MY_Controller {
                 $data['track_quantity'] = 0;
             } elseif ($this->input->post('type') == 'combo') {
                 $total_price = 0;
-                $c = sizeof($_POST['combo_item_code']) - 1;
+                $c = (isset($_POST['combo_item_code']) && is_array($_POST['combo_item_code'])) ? sizeof($_POST['combo_item_code']) - 1 : -1;
                 for ($r = 0; $r <= $c; $r++) {
                     if (isset($_POST['combo_item_code'][$r]) && isset($_POST['combo_item_quantity'][$r]) && isset($_POST['combo_item_price'][$r])) {
                         $items[] = array('item_code' => $_POST['combo_item_code'][$r], 'quantity' => $_POST['combo_item_quantity'][$r], 'unit_price' => $_POST['combo_item_price'][$r],);
@@ -1123,7 +1124,7 @@ class Products extends MY_Controller {
                 $data['track_quantity'] = 0;
             } elseif ($this->input->post('type') == 'Bundle') {
                 $total_price = 0;
-                $c = sizeof($_POST['combo_item_code']) - 1;
+                $c = (isset($_POST['combo_item_code']) && is_array($_POST['combo_item_code'])) ? sizeof($_POST['combo_item_code']) - 1 : -1;
                 for ($r = 0; $r <= $c; $r++) {
                     if (isset($_POST['combo_item_code'][$r]) && isset($_POST['combo_item_quantity'][$r]) ) {
                         $items[] = array('item_code' => $_POST['combo_item_code'][$r], 'quantity' => $_POST['combo_item_quantity'][$r],'option_id' => $_POST['combo_item_variant_id'][$r],);
@@ -1136,7 +1137,7 @@ class Products extends MY_Controller {
                 }
                 $data['track_quantity'] = 0;
             } elseif ($this->input->post('type') == 'digital') {
-                if ($_FILES['digital_file']['size'] > 0) {
+                if (isset($_FILES['digital_file']['size']) && $_FILES['digital_file']['size'] > 0) {
                     $config['upload_path'] = $this->digital_upload_path;
                     $config['allowed_types'] = $this->digital_file_types;
                     $config['max_size'] = $this->allowed_file_size;
@@ -1160,7 +1161,7 @@ class Products extends MY_Controller {
             if (!isset($items)) {
                 $items = NULL;
             }
-            if ($_FILES['product_image']['size'] > 0) {
+            if (isset($_FILES['product_image']['size']) && $_FILES['product_image']['size'] > 0) {
 
                 $config['upload_path'] = $this->upload_path;
                 $config['allowed_types'] = $this->image_types;
@@ -1224,7 +1225,7 @@ class Products extends MY_Controller {
                 $config = NULL;
             }
 
-            if ($_FILES['userfile']['name'][0] != "") {
+            if (isset($_FILES['userfile']['name']) && is_array($_FILES['userfile']['name']) && isset($_FILES['userfile']['name'][0]) && $_FILES['userfile']['name'][0] != "") {
 
                 $config['upload_path'] = $this->upload_path;
                 $config['allowed_types'] = $this->image_types;
@@ -1340,7 +1341,7 @@ class Products extends MY_Controller {
                     }
                     if ($added) {
                         $this->session->set_flashdata('message', lang("product_added"));
-                        if ($_SESSION['lastRedirect'] == 'purchases/add') {
+                        if (isset($_SESSION['lastRedirect']) && $_SESSION['lastRedirect'] == 'purchases/add') {
                             redirect('purchases/add');
                         } else {
                             redirect('products');
@@ -1366,7 +1367,7 @@ class Products extends MY_Controller {
                             }
                         }
                         $this->session->set_flashdata('message', lang("product_added"));
-                        if ($_SESSION['lastRedirect'] == 'purchases/add') {
+                        if (isset($_SESSION['lastRedirect']) && $_SESSION['lastRedirect'] == 'purchases/add') {
                             redirect('purchases/add');
                         } else {
                             redirect('products');
@@ -1375,9 +1376,11 @@ class Products extends MY_Controller {
                 }
             } else {
 
+            if (isset($_SERVER['HTTP_REFERER']) && $_SERVER['HTTP_REFERER'] !== '') {
             $exppurl = explode('/', $_SERVER['HTTP_REFERER']);
             $lasturl = count($exppurl) - 1;
             $_SESSION['lastRedirect'] = $exppurl[$lasturl - 1] . '/' . $exppurl[$lasturl];
+            }
 
 
             $this->data['error'] = (validation_errors() ? validation_errors() : $this->session->flashdata('error'));
@@ -1391,13 +1394,13 @@ class Products extends MY_Controller {
             $this->data['warehouses_products'] = $id ? $this->products_model->getAllWarehousesWithPQ($id) : NULL;
             $this->data['product'] = $id ? $this->products_model->getProductByID($id) : NULL;
             $this->data['variants'] = $this->products_model->getAllVariants();
-            $this->data['combo_items'] = ($id && $this->data['product']->type == 'combo') ? $this->products_model->getProductComboItems($id) : NULL;
-            $this->data['combo_items'] = ($id && $this->data['product']->type == 'Bundle') ? $this->products_model->getProductComboItems($id) : NULL;
+            $this->data['combo_items'] = ($id && !empty($this->data['product']) && $this->data['product']->type == 'combo') ? $this->products_model->getProductComboItems($id) : NULL;
+            $this->data['combo_items'] = ($id && !empty($this->data['product']) && $this->data['product']->type == 'Bundle') ? $this->products_model->getProductComboItems($id) : NULL;
             $this->data['product_options'] = $id ? $this->products_model->getProductOptionsByGroupId($id, 1) : NULL;
             $this->data['product_color'] =  $id ? $this->products_model->getProductOptionsByGroupId($id, 2) : NULL;
             $this->data['variants_color'] = $this->products_model->getAllVariants1(2);
             $cfields = $this->site->getCustomeFieldsLabel('product');
-            $this->data['custome_fields'] = $cfields['product'];
+            $this->data['custome_fields'] = (is_array($cfields) && isset($cfields['product'])) ? $cfields['product'] : array();
             if ((int) $this->Settings->display_job_work === 1) {
                 $this->data['product_inward_type'] = $this->products_model->getAllProductInvertTypes();
                 $this->data['job_works'] = $this->products_model->getAllJobWorkitems();
@@ -2079,7 +2082,7 @@ class Products extends MY_Controller {
                 }
                 $data['track_quantity'] = 0;
             } elseif ($this->input->post('type') == 'digital') {
-                if ($_FILES['digital_file']['size'] > 0) {
+                if (isset($_FILES['digital_file']['size']) && $_FILES['digital_file']['size'] > 0) {
                     $config['upload_path'] = $this->digital_upload_path;
                     $config['allowed_types'] = $this->digital_file_types;
                     $config['max_size'] = $this->allowed_file_size;
@@ -3013,6 +3016,7 @@ class Products extends MY_Controller {
         $this->sma->checkPermissions('csv');
         $this->load->helper('security');
         $this->form_validation->set_rules('userfile', lang("upload_file"), 'xss_clean');
+        $final = array();
 
         if ($this->form_validation->run() == TRUE) {
             if (DEMO) {
@@ -3078,17 +3082,20 @@ class Products extends MY_Controller {
                 $final = $csvdata = array();
 
                 foreach ($arrResult as $key => $value) {
+                    if (!is_array($value) || count($keys) != count($value)) {
+                        continue;
+                    }
                     $csvdata[] = array_combine($keys, $value);
                 }
 
                 $rw = 2;
-                $flashError = '';
+                $flashError = array();
                 foreach ($csvdata as $csv_pr) {
                     $code = trim($csv_pr['code']);
                     $mrp = floatval(trim($csv_pr['mrp']));
                     $price = floatval(trim($csv_pr['price']));
-                    $variant_mrp = floatval(trim($csv_pr['Variants_Mrp']));
-                    $variant_price = floatval(trim($csv_pr['Variants_Price']));
+                    $variant_mrp = floatval(trim(isset($csv_pr['Variants_Mrp']) ? $csv_pr['Variants_Mrp'] : 0));
+                    $variant_price = floatval(trim(isset($csv_pr['Variants_Price']) ? $csv_pr['Variants_Price'] : 0));
 
                     if (!$this->products_model->getProductByCode(trim($csv_pr['code']))) {
                         $flashError[] = lang("check_product_code") . " (" . $csv_pr['code'] . "). " . lang("code_x_exist") . " " . lang("line_no") . " " . $rw;
@@ -4216,7 +4223,7 @@ class Products extends MY_Controller {
         }
         if (!$this->Owner && !$this->GP['bulk_actions']) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('products'));
         }
         $user = $this->site->getUser();
         $this->form_validation->set_rules('form_action', lang("form_action"), 'required');
@@ -4230,14 +4237,14 @@ class Products extends MY_Controller {
                         $this->site->syncQuantity(NULL, NULL, NULL, $id);
                     }
                     $this->session->set_flashdata('message', $this->lang->line("products_quantity_sync"));
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('products'));
                 } elseif ($this->input->post('form_action') == 'fav_products') {
                     if ($this->products_model->productsMarkFavourite($_POST['val'])) {
                         $this->session->set_flashdata('message', $this->lang->line("Product Mark as Favourite"));
                     } else {
                         $this->session->set_flashdata('error', $this->lang->line("Please try again"));
                     }
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('products'));
                 } elseif ($this->input->post('form_action') == 'delete') {
 
                     $this->sma->checkPermissions('delete');
@@ -4273,7 +4280,7 @@ class Products extends MY_Controller {
                         $this->session->set_flashdata('error', $this->lang->line("products_deleted"));
                     }
                 
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('products'));
                 } elseif ($this->input->post('form_action') == 'labels') {
 
                     // Build barcode items in the same format as print_barcodes(single product)
@@ -4773,15 +4780,15 @@ class Products extends MY_Controller {
                         return $objWriter->save('php://output');
                     }
 
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('products'));
                 }
             } else {
                 $this->session->set_flashdata('error', $this->lang->line("no_product_selected"));
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('products'));
             }
         } else {
             $this->session->set_flashdata('error', validation_errors());
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('products'));
         }
     }
 
@@ -4970,7 +4977,7 @@ class Products extends MY_Controller {
     function adjustment_actions() {
         if (!$this->Owner && !$this->GP['bulk_actions']) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('products/quantity_adjustments'));
         }
 
         $this->form_validation->set_rules('form_action', lang("form_action"), 'required');
@@ -4997,7 +5004,7 @@ class Products extends MY_Controller {
                         $this->products_model->deleteAdjustment($id);
                     }
                     $this->session->set_flashdata('message', $this->lang->line("adjustment_deleted"));
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('products/quantity_adjustments'));
                 } elseif ($this->input->post('form_action') == 'export_excel' || $this->input->post('form_action') == 'export_pdf') {
 
                     $this->load->library('excel');
@@ -5104,15 +5111,15 @@ class Products extends MY_Controller {
                         return $objWriter->save('php://output');
                     }
 
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('products/quantity_adjustments'));
                 }
             } else {
                 $this->session->set_flashdata('error', $this->lang->line("no_record_selected"));
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('products/quantity_adjustments'));
             }
         } else {
             $this->session->set_flashdata('error', validation_errors());
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('products/quantity_adjustments'));
         }
     }
 
@@ -5270,7 +5277,7 @@ class Products extends MY_Controller {
                 }
             }
             $this->session->set_flashdata('error', lang('nothing_found'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('products/quantity_adjustments'));
         }
     }
 
@@ -5327,7 +5334,7 @@ class Products extends MY_Controller {
                 fclose($csv_file);
             } else {
                 $this->session->set_flashdata('error', lang('no_product_found'));
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('products/quantity_adjustments'));
             }
 
             if ($this->Owner || $this->Admin) {
@@ -5417,7 +5424,7 @@ class Products extends MY_Controller {
                 if (!$this->upload->do_upload('csv_file')) {
                     $error = $this->upload->display_errors();
                     $this->session->set_flashdata('error', $error);
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('products/quantity_adjustments'));
                 }
 
                 $csv = $this->upload->file_name;
@@ -5604,6 +5611,9 @@ class Products extends MY_Controller {
      */
     public function exportcsvupdateprice() {
         $getproduct = $this->products_model->getAllProducts();
+        if (!$getproduct || !is_array($getproduct)) {
+            $getproduct = array();
+        }
 
         $this->load->library('excel');
         $this->excel->setActiveSheetIndex(0);
@@ -5616,7 +5626,8 @@ class Products extends MY_Controller {
         if ($this->Settings->pos_type == 'restaurant' || $this->Settings->pos_type=='bakery' || $this->Settings->pos_type=='sweets') {
             $this->excel->getActiveSheet()->SetCellValue('F1', 'UP_Price');
             $this->excel->getActiveSheet()->SetCellValue('G1', 'Variants_Name');
-            $this->excel->getActiveSheet()->SetCellValue('H1', 'Variants_Price');
+            $this->excel->getActiveSheet()->SetCellValue('H1', 'Variants_Mrp');
+            $this->excel->getActiveSheet()->SetCellValue('I1', 'Variants_Price');
         } else {
             $this->excel->getActiveSheet()->SetCellValue('F1', 'Variants_Name');
             $this->excel->getActiveSheet()->SetCellValue('G1', 'Variants_Mrp');
@@ -5651,7 +5662,7 @@ class Products extends MY_Controller {
                 $product_price = rtrim($product_price, ', ');
                 $variant_mrp = rtrim($variant_mrp, ', ');
             }
-            $this->excel->getActiveSheet()->getCellByColumnAndRow('A', $row)->setValueExplicit($product_val->code, PHPExcel_Cell_DataType::TYPE_STRING);
+            $this->excel->getActiveSheet()->getCellByColumnAndRow(0, $row)->setValueExplicit($product_val->code, PHPExcel_Cell_DataType::TYPE_STRING);
             $this->excel->getActiveSheet()->SetCellValue('B' . $row, $product_val->name);
             $this->excel->getActiveSheet()->SetCellValue('C' . $row, $product_val->article_code);
             $this->excel->getActiveSheet()->SetCellValue('D' . $row, $product_val->price);
@@ -5659,7 +5670,8 @@ class Products extends MY_Controller {
             if ($this->Settings->pos_type == 'restaurant' || $this->Settings->pos_type=='bakery' || $this->Settings->pos_type=='sweets') {
                 $this->excel->getActiveSheet()->SetCellValue('F' . $row, $product_val->up_price);
                 $this->excel->getActiveSheet()->SetCellValue('G' . $row, $product_variants);
-                $this->excel->getActiveSheet()->SetCellValue('H' . $row, $product_price);
+                $this->excel->getActiveSheet()->SetCellValue('H' . $row, $variant_mrp);
+                $this->excel->getActiveSheet()->SetCellValue('I' . $row, $product_price);
             } else {
                 $this->excel->getActiveSheet()->SetCellValue('F' . $row, $product_variants);
                 $this->excel->getActiveSheet()->SetCellValue('G' . $row, $variant_mrp);
@@ -5681,12 +5693,17 @@ class Products extends MY_Controller {
      * This method using bulk Product Images
      */
     public function bulk_images() {
+        if ($this->GP['products-import'] == 1):
+            $this->GP['products-csv'] = $this->GP['products-import'];
+        endif;
+        $this->sma->checkPermissions('csv');
+        $this->load->helper('security');
         $this->form_validation->set_rules('userxls', lang("upload_file"), 'xss_clean');
         $this->form_validation->set_rules('userfile', lang("upload_file"), 'xss_clean');
 
         if ($this->form_validation->run() == TRUE) {
 
-            if (isset($_FILES["userxls"])) {
+            if (isset($_FILES["userxls"]) && !empty($_FILES['userxls']['tmp_name'])) {
                 $this->load->library('upload');
                 $config['upload_path'] = $this->digital_upload_path;
                 $config['allowed_types'] = 'xls';
@@ -5716,11 +5733,14 @@ class Products extends MY_Controller {
                 $final = $csvdata = array();
 
                 foreach ($arrResult as $key => $value) {
-                    $csvdata[] = array_combine($keys, $value);
+                    if (!is_array($value) || count($value) < count($keys)) {
+                        continue;
+                    }
+                    $csvdata[] = array_combine($keys, array_slice($value, 0, count($keys)));
                 }
 
                 $rw = 2;
-                $flashError = '';
+                $flashError = array();
                 foreach ($csvdata as $csv_pr) {
 
                     if (!$this->products_model->getProductByCode(trim($csv_pr['code']))) {
@@ -5741,7 +5761,8 @@ class Products extends MY_Controller {
             /**
              * Bulk Product Images
              */
-            if ($_FILES['userfile']['name'][0] != "") {
+            $photos = array();
+            if (isset($_FILES['userfile']['name']) && is_array($_FILES['userfile']['name']) && isset($_FILES['userfile']['name'][0]) && $_FILES['userfile']['name'][0] != "") {
                 $this->load->library('upload');
 //                $this->upload_path = 'assets/uploads/products/';
 //                $this->thumbs_path = 'assets/uploads/products/thumbs/';
@@ -5817,7 +5838,9 @@ class Products extends MY_Controller {
             $this->session->set_flashdata('message', 'Bulk Images has been Uploaded successfully!');
             redirect('products/import_csv');
         } else {
-            $this->session->set_flashdata('error', (validation_errors() ? validation_errors() : $this->session->flashdata('error')));
+            if (validation_errors()) {
+                $this->session->set_flashdata('error', validation_errors());
+            }
             redirect('products/import_csv');
         }
     }

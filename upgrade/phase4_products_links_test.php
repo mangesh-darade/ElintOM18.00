@@ -72,5 +72,9 @@ phase4_linkGet($base, 'quantity_adjustments', '/products/quantity_adjustments', 
 phase4_linkGet($base, 'add_adjustment', '/products/add_adjustment', $cookieFile);
 phase4_linkGet($base, 'print_barcodes list', '/products/print_barcodes', $cookieFile);
 
+phase4_linkGet($base, 'update_price modal', '/products/update_price', $cookieFile);
+$exp = phase4_httpGetFollow("$base/products/exportcsvupdateprice", $cookieFile);
+phase4_check('exportcsvupdateprice sample XLS', $exp['code'] === 200 && strlen($exp['body']) > 1000 && !phase4_hasPhpIssue($exp['body']), 'HTTP ' . $exp['code'] . ' len=' . strlen($exp['body']));
+
 echo "\n=== Products deep-links | PHP " . PHP_VERSION . " | $phase4_pass passed, $phase4_fail failed ===\n";
 exit($phase4_fail > 0 ? 1 : 0);
