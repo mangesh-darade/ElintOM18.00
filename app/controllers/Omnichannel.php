@@ -7491,6 +7491,9 @@ exit;*/
     public function exportcsvschedule(){
         $this->load->model('orders_model'); // Make sure this is the model with getAllSchedules()
         $getSchedule = $this->orders_model->getAllSchedules(); // Fetches with joins to product & category
+        if (!$getSchedule || !is_array($getSchedule)) {
+            $getSchedule = array();
+        }
         $this->load->library('excel');
         $this->excel->setActiveSheetIndex(0);
         $sheet = $this->excel->getActiveSheet();
