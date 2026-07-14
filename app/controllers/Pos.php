@@ -1652,7 +1652,7 @@ class Pos extends MY_Controller {
             $this->data['post_theme'] = $this->site->getpostheme();
             $this->data['sms_limit'] = $this->sma->BalanceSMS();
 
-            if ($this->pos_settings->paynear == 1):
+            if (isset($this->pos_settings->paynear) && $this->pos_settings->paynear == 1):
                 $ci = get_instance();
                 $ci->config->load('payment_gateways', true);
                 $payment_config = $ci->config->item('payment_gateways');
@@ -2398,7 +2398,7 @@ class Pos extends MY_Controller {
         }
     }
 
-    public function ajaxproducts($category_id = null, $brand_id = null,$seasons_id) {
+    public function ajaxproducts($category_id = null, $brand_id = null, $seasons_id = null) {
         $this->sma->checkPermissions('index');
         $Settings = $this->Settings;
         $pos_screen_products = $this->pos_settings->pos_screen_products;
@@ -5088,7 +5088,7 @@ window.MyHandler.setTransactindata('<?php echo $PAYNEAR_APP_MERCHANT_ID; ?>',
             $this->data['brands'] = $this->site->getAllBrands();
             $this->data['subcategories'] = $this->site->getSubCategories($this->pos_settings->default_category);
 
-            if ($this->pos_settings->paynear == 1):
+            if (isset($this->pos_settings->paynear) && $this->pos_settings->paynear == 1):
                 $ci = get_instance();
                 $ci->config->load('payment_gateways', true);
                 $payment_config = $ci->config->item('payment_gateways');

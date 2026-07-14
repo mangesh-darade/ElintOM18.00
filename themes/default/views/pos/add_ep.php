@@ -20,7 +20,7 @@ if (is_array($GP)) {
         $permisions[str_replace("-", "_", $key)] = $val;
     }
 }
-if ($kot_tokan) {
+if (!empty($kot_tokan)) {
     $tokan = $kot_tokan;
 } else {
 
@@ -1368,11 +1368,11 @@ if ($pos_settings->select_season == 1 && $pos_settings->category_search == 1) {
 
                             <ul class="dropdown-menu pull-right padding0">
                                 <li><a style=" background: #000;color:#fff;"> <?= $active_offers_category ?></a></li>
-                                <?php foreach ($active_offers as $offers) { ?>
+                                <?php if (is_array($active_offers) || is_object($active_offers)) { foreach ($active_offers as $offers) { ?>
                                 <li onclick="change_offerdetails('<?= $offers->id; ?>')"> <a class="pointer"
                                         id="offer_detail" data-toggle="modal" data-target="#offer_modal">
                                         <?= ucfirst($offers->offer_name) ?></a></li>
-                                <?php } ?>
+                                <?php } } ?>
                             </ul>
                         </li>
                         <?php if ($pos_settings->display_coinage == 1 || $pos_settings->display_coinage == 2) { ?>
@@ -1635,9 +1635,9 @@ if ($pos_settings->select_season == 1 && $pos_settings->category_search == 1) {
                                             id="permission_owner" />
                                         <input type="hidden" value="<?= $Admin; ?>" name="per_admin"
                                             id="permission_admin" />
-                                        <input type="hidden" value="<?= $Settings->add_tax_in_cart_unit_price; ?>"
+                                        <input type="hidden" value="<?= isset($Settings->add_tax_in_cart_unit_price) ? $Settings->add_tax_in_cart_unit_price : ''; ?>"
                                             name="add_tax_in_cart_unit_price" id="add_tax_in_cart_unit_price" />
-                                        <input type="hidden" value="<?= $Settings->add_discount_in_cart_unit_price; ?>"
+                                        <input type="hidden" value="<?= isset($Settings->add_discount_in_cart_unit_price) ? $Settings->add_discount_in_cart_unit_price : ''; ?>"
                                             name="add_discount_in_cart_unit_price"
                                             id="add_discount_in_cart_unit_price" />
                                         <input type="hidden" value="<?= $pos_settings->change_qty_as_per_user_price; ?>"
@@ -1745,7 +1745,7 @@ if ($pos_settings->select_season == 1 && $pos_settings->category_search == 1) {
                                                 </div>
                                             </div>
 											<?php } ?>
-											<?php if (($pos_settings->display_description) || $GP['pos-discription']) { ?>
+											<?php if ((!empty($pos_settings->display_description)) || !empty(($GP ?? [])['pos-discription'])) { ?>
                                             <div class="row" style="margin-bottom:6px;">
                                                 <div class="col-xs-12" style="padding:0 10px 0 0; display:none;"
                                                     id="discription_input_block">
@@ -2065,12 +2065,12 @@ if ($pos_settings->select_season == 1 && $pos_settings->category_search == 1) {
                                                                 value="<?= $customer->customer_group_id; ?>">
                                                             <input type="hidden" class="nodisplay" name="customer"
                                                                 id="poscustomer"
-                                                                value="<?= ($_SESSION['quick_customerid'] ) ? $_SESSION['quick_customerid'] : $customer->id; ?>" />
+                                                                value="<?= (isset($_SESSION['quick_customerid']) && $_SESSION['quick_customerid']) ? $_SESSION['quick_customerid'] : $customer->id; ?>" />
                                                             <input type="text" placeholder="Customer Name"
                                                                 name="customer_name"
                                                                 class="form-control kb-text txt-box ui-keyboard-input ui-widget-content ui-corner-all ui-keyboard-autoaccepted"
                                                                 id="customer_name"
-                                                                value="<?= ($_SESSION['quick_customername'] ) ? $_SESSION['quick_customername'] . '(' . $_SESSION['quick_customerphone'] . ')' : $customer->name; ?>" />
+                                                                value="<?= (isset($_SESSION['quick_customername']) && $_SESSION['quick_customername']) ? $_SESSION['quick_customername'] . '(' . (isset($_SESSION['quick_customerphone']) ? $_SESSION['quick_customerphone'] : '') . ')' : $customer->name; ?>" />
                                                                 <!-- <div id="sales_icon" class="input-group-addon padding28">
                                                                     <a href="#" id="toogle-customer-read-attr" class="external">
                                                                         <i class="fa fa-pencil iconcolor" id="addIcon"></i>
@@ -2229,12 +2229,12 @@ if ($pos_settings->select_season == 1 && $pos_settings->category_search == 1) {
                                                             ?>  -->
                                                     <input type="hidden" class="nodisplay" name="customer"
                                                                 id="poscustomer"
-                                                                value="<?= ($_SESSION['quick_customerid'] ) ? $_SESSION['quick_customerid'] : $customer->id; ?>" />        
+                                                                value="<?= (isset($_SESSION['quick_customerid']) && $_SESSION['quick_customerid']) ? $_SESSION['quick_customerid'] : $customer->id; ?>" />        
                                                     <input type="text" placeholder="Customer Name"
                                                         name="customer_name"
                                                         class="form-control kb-text txt-box ui-keyboard-input ui-widget-content ui-corner-all ui-keyboard-autoaccepted"
                                                         id="customer_name"
-                                                        value="<?= ($_SESSION['quick_customername'] ) ? $_SESSION['quick_customername'] . '(' . $_SESSION['quick_customerphone'] . ')' : $customer->name; ?>" />
+                                                        value="<?= (isset($_SESSION['quick_customername']) && $_SESSION['quick_customername']) ? $_SESSION['quick_customername'] . '(' . (isset($_SESSION['quick_customerphone']) ? $_SESSION['quick_customerphone'] : '') . ')' : $customer->name; ?>" />
                                                     <div id="sales_icon" class="input-group-addon first_menu no-print">
                                                         <a href="#" id="toogle-customer-read-attr" class="external">
                                                             <i class="fa fa-pencil iconcolor" id="addIcon"></i>
@@ -2688,7 +2688,7 @@ if ($pos_settings->select_season == 1 && $pos_settings->category_search == 1) {
                                                                             border-bottom-left-radius: 1.4rem;\">
                                                                 <span id='text-category-" . $category->id . "' 
                                                                 title='" . htmlspecialchars($category->name, ENT_QUOTES) . "' 
-                                                                style='color: " . ($category->id == $defaultCategory ? '#000000' : '#FFFFFF') . ";'>
+                                                                style='color: " . ($category->id == ($defaultCategory ?? null) ? '#000000' : '#FFFFFF') . ";'>
                                                              " . (strlen($category->name) > 8 ? substr($category->name, 0, 9) . '...' : $category->name) . "
                                                                 </span>
                                                         </button>
@@ -2940,7 +2940,7 @@ if ($pos_settings->select_season == 1 && $pos_settings->category_search == 1) {
                                                                 <img src='$imgsrc' alt='{$category->name}' class='img-rounded img-thumbnail' />
                                                                <span id='text-category-" . $category->id . "' 
                                                                 title='" . htmlspecialchars($category->name, ENT_QUOTES) . "' 
-                                                                style='color: " . ($category->id == $defaultCategory ? '#000000' : '#FFFFFF') . ";'>
+                                                                style='color: " . ($category->id == ($defaultCategory ?? null) ? '#000000' : '#FFFFFF') . ";'>
                                                              " . (strlen($category->name) > 8 ? substr($category->name, 0, 9) . '...' : $category->name) . "
                                                                 </span>
                                                         </button>
@@ -4683,7 +4683,7 @@ if (!$Owner && !$Admin) {
             localStorage.setItem('poscustomer', <?= $this->input->get('customer'); ?>);
         }
         <?php } else {
-    if ($_SESSION['quick_customerid']) {
+    if (!empty($_SESSION['quick_customerid'])) {
         ?>
         localStorage.setItem('poscustomer', <?= ( $_SESSION['quick_customerid'] ) ?>);
         <?php } else { ?>
@@ -4693,7 +4693,7 @@ if (!$Owner && !$Admin) {
         <?php }
     ?>
         /* if (!localStorage.getItem('poscustomer')) {
-         localStorage.setItem('poscustomer', <?= (($_SESSION['quick_customerid'] ) ? $_SESSION['quick_customerid'] : $customer->id); ?>);
+         localStorage.setItem('poscustomer', <?= (isset($_SESSION['quick_customerid']) && $_SESSION['quick_customerid']) ? $_SESSION['quick_customerid'] : $customer->id; ?>);
          }*/
         <?php }
 ?>
@@ -8205,10 +8205,10 @@ foreach ($alertProd_Count['result'] as $alertprod) {
     <script type="text/javascript" src="<?= $assets ?>pos/js/dragscroll.js"></script>
     <script>
     <?php $login_controller1 = explode('/', $login_controller); ?>
-    var login_controller = '<?= $login_controller1[3]; ?>';
+    var login_controller = '<?= isset($login_controller1[3]) ? $login_controller1[3] : ''; ?>';
     $(window).on('load', function() {
         if (login_controller == 'login' && login_controller != '') {
-            <?php if (!($_SESSION['alert_modal'])) { ?>
+            <?php if (empty($_SESSION['alert_modal'])) { ?>
             $('#alert_qty_modal').modal('show');
             <?php
     $_SESSION['alert_modal'] = 1;
@@ -8325,7 +8325,7 @@ foreach ($alertProd_Count['result'] as $alertprod) {
     </script>
     <script>
     var defuatl_customer =
-        '<?= ($_SESSION['quick_customerid'] ) ? $_SESSION['quick_customerid'] : $default_customer_id ?>';
+        '<?= (isset($_SESSION['quick_customerid']) && $_SESSION['quick_customerid']) ? $_SESSION['quick_customerid'] : $default_customer_id ?>';
     getCustomer('id', defuatl_customer);
     // Prevent customer deposit for walk-in customers
     $(document).ready(function() {
@@ -8827,7 +8827,7 @@ if ($Settings->send_sales_excel) {
 
 
     <?php
-if ($_SESSION['Print_Deposite_Receipt']['status'] == '1') {
+if (isset($_SESSION['Print_Deposite_Receipt']['status']) && $_SESSION['Print_Deposite_Receipt']['status'] == '1') {
     $deposit_data = $_SESSION['Print_Deposite_Receipt']['last_deposit'];
     $customerData = $_SESSION['Print_Deposite_Receipt']['customer_Details'];
     $openingBalance = $_SESSION['Print_Deposite_Receipt']['openingBalance'];
@@ -9568,7 +9568,7 @@ if ($_SESSION['Print_Deposite_Receipt']['status'] == '1') {
 
 
 
-    <?php if ($_GET['checkout'] == '1') { ?>
+    <?php if (isset($_GET['checkout']) && $_GET['checkout'] == '1') { ?>
     setTimeout(function() {
         $('#payment').trigger('click');
     }, 1000);

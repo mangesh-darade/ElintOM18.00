@@ -391,7 +391,7 @@ button#clear-cash-notes{
                                                   
                                     
                                              
-                                    <?php if ($pos_settings->paynear == '1' && !empty($this->pos_settings->paynear_app)): ?>
+                                    <?php if (isset($pos_settings->paynear) && $pos_settings->paynear == '1' && !empty($this->pos_settings->paynear_app)): ?>
                                         <div class="row card-box" id="paynear_btn_app_holder" style="display:none;">
 
                                             <div class="col-md-3 col-sm-6 col-xs-6">  
