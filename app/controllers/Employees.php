@@ -263,7 +263,7 @@ class Employees extends MY_Controller
             $this->data['modal_js'] = $this->site->modal_js();
             $this->data['warehouses'] = $this->site->getAllWarehouses();
             $cfields = $this->site->getCustomeFieldsLabel('employee') ;
-            $this->data['custome_fields'] = $cfields['employee'];
+            $this->data['custome_fields'] = (is_array($cfields) && isset($cfields['employee'])) ? $cfields['employee'] : array();
             
             $this->load->view($this->theme . 'employees/edit', $this->data);
          }

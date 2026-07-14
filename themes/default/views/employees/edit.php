@@ -125,7 +125,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         </div>
                         <div class="form-group">
                             <?= lang("Date_OF_Birth", "DOB"); ?>
-                            <?php echo form_input('date', (isset($_POST['date']) ? $_POST['date'] : ($biller->dob == NULL ||$employee->dob == "0000-00-00") ? '' : date('d/m/Y', strtotime($biller->dob))), 'class="form-control input-tip date" id="date" '); ?> 
+                            <?php echo form_input('date', (isset($_POST['date']) ? $_POST['date'] : (($employee->dob == NULL || $employee->dob == "0000-00-00") ? '' : date('d/m/Y', strtotime($employee->dob)))), 'class="form-control input-tip date" id="date" '); ?> 
                         </div>
                         <div class="form-group">
                             <?= lang("address", "address"); ?>
