@@ -79,7 +79,7 @@ class Variant_bill_of_materials extends MY_Controller
                 $row->unit_weight = $row->weight;
                 $row->quantity = 1;
 
-                if (($location->price_group_id)) {
+                if (!empty($location) && !empty($location->price_group_id)) {
                     // if ($pr_group_price = $this->site->getProductGroupPrice($row->id, $location->price_group_id)) {
                     $row->unit_price = $row->c_price;
                     // }
@@ -132,7 +132,7 @@ class Variant_bill_of_materials extends MY_Controller
                 $row->base_unit_price = $row->price;
                 $row->unit_weight = $row->weight;
                 $row->quantity = 1;
-                if (($location->price_group_id)) {
+                if (!empty($location) && !empty($location->price_group_id)) {
                     $row->unit_price = $row->c_price;
                 }
                 if ($row->unit_price == 0) {

@@ -239,7 +239,7 @@ class Variant_bill_of_materials_model extends CI_Model
 
             $q = $this->db->get();
 
-            if ($q->num_rows() > 0) {
+            if ($q && $q->num_rows() > 0) {
                 $boms = $q->result();
                 foreach ($boms as &$bom) {
                     // Step 2: For each BOM, get its items
@@ -249,7 +249,7 @@ class Variant_bill_of_materials_model extends CI_Model
                     $this->db->where('i.bom_id', $bom->id);
                     $items_q = $this->db->get();
 
-                    if ($items_q->num_rows() > 0) {
+                    if ($items_q && $items_q->num_rows() > 0) {
                         $items = $items_q->result();
                         $unique_items = array();
 
@@ -285,7 +285,7 @@ class Variant_bill_of_materials_model extends CI_Model
             $this->db->where('id', $product_id);
             $p = $this->db->get();
 
-            if ($p->num_rows() > 0) {
+            if ($p && $p->num_rows() > 0) {
                 $product = $p->row();
 
                 // Build dummy BOM-like object with no BOM data
@@ -476,6 +476,9 @@ class Variant_bill_of_materials_model extends CI_Model
         $this->db->group_by('bom_items.id'); // Group by BOM item ID to prevent duplicates
 
         $query = $this->db->get();
+        if (!$query) {
+            return array();
+        }
         return $query->result();
     }
 
