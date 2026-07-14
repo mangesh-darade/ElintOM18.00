@@ -84,3 +84,7 @@ define('EXIT_USER_INPUT', 7); // invalid user input
 define('EXIT_DATABASE', 8); // database error
 define('EXIT__AUTO_MIN', 9); // lowest automatically-assigned error code
 define('EXIT__AUTO_MAX', 125); // highest automatically-assigned error code
+
+/* Variant attribute groups (sma_variants.group_id) — used by SIZE/COLOR product options */
+define('SIZE', 1);
+define('COLOR', 2);

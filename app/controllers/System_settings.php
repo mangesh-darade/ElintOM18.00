@@ -5109,13 +5109,14 @@ class system_settings extends MY_Controller {
         if ($action != '' && $id != '') {
             switch ($action) {
                 case 'delete':
+                    $ResultOffer = $this->db->where('id', $id)->get('sma_offers')->row();
                     $this->db->where('id', $id)->delete('sma_offers');
                     $DataLog = array(
                         'action_type' => 'Delete',
                         'product_id' => '',
                         'quantity' => '',
                         'action_reff_id' => $id,
-                        'action_affected_data' => json_encode($ResultOffer),
+                        'action_affected_data' => json_encode($ResultOffer ? $ResultOffer : array()),
                         'action_comment' => 'Delete offers',
                     );
 
