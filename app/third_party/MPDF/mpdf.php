@@ -137,6 +137,11 @@ class mPDF
         $this->mpdf->AddPage();
     }
 
+    public function _setPageSize($format, &$orientation)
+    {
+        return $this->mpdf->_setPageSize($format, $orientation);
+    }
+
     public function Output($name = '', $dest = '')
     {
         return $this->mpdf->Output($name, $dest);
