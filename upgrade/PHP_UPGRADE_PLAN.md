@@ -261,7 +261,8 @@ php phase4_suppliers_billers_links_test.php Admin "Admin@554"
 
 **Module 10 tests (certified 2026-07-11):** screen 6/6, deep-links 10/10 PASS
 
-**Module 11 fixes (Transfers):** — [`PHP_UPGRADE_FIXES_LOG.md`](PHP_UPGRADE_FIXES_LOG.md) §Module 11
+**Module 11 fixes (Transfers):** — [`PHP_UPGRADE_FIXES_LOG.md`](PHP_UPGRADE_FIXES_LOG.md) §Module 11  
+**2026-07-14 follow-up:** `suggestions()` `reset($options_color)` / `$exp[1]` / batch guards (11.15); `transfers.js` null name (11.16).
 
 **Module 11 tests (certified 2026-07-11):** screen 10/10, deep-links 12/12 PASS (`Transfersnew.php` deferred)
 
@@ -269,7 +270,8 @@ php phase4_suppliers_billers_links_test.php Admin "Admin@554"
 
 **Module 12 tests (certified 2026-07-11):** screen **10/10**, deep-links **10/10** — `restaurant_bootstrap_db.php` seeds `sma_res_*` for test DB
 
-**Module 13 fixes (Production Unit):** — [`PHP_UPGRADE_FIXES_LOG.md`](PHP_UPGRADE_FIXES_LOG.md) §Module 13
+**Module 13 fixes (Production Unit):** — [`PHP_UPGRADE_FIXES_LOG.md`](PHP_UPGRADE_FIXES_LOG.md) §Module 13  
+**2026-07-14 follow-up:** Variant BOM `job_works` column + `num_rows`/price_group guards (13.12–13.14).
 
 **Module 13 tests (certified 2026-07-11):** screen **21/21**, deep-links **8/8** (`Production_Unit_Demo.php` / mobile views deferred)
 
@@ -289,7 +291,8 @@ php phase4_suppliers_billers_links_test.php Admin "Admin@554"
 
 **Module 17 tests (certified 2026-07-12):** screen **10/10**, deep-links **9/9** (guest storefront T1/T2; `active_eshop` on test DB)
 
-**Module 18 fixes (System Settings):** — [`PHP_UPGRADE_FIXES_LOG.md`](PHP_UPGRADE_FIXES_LOG.md) §Module 18
+**Module 18 fixes (System Settings):** — [`PHP_UPGRADE_FIXES_LOG.md`](PHP_UPGRADE_FIXES_LOG.md) §Module 18  
+**2026-07-14 follow-up:** `SIZE`/`COLOR` constants (18.7); offer delete `$ResultOffer` (18.8).
 
 **Module 18 tests (certified 2026-07-12):** screen **15/15**, deep-links **18/18** (Owner login; P1 settings screens + edit_* / permissions / group_product_prices)
 

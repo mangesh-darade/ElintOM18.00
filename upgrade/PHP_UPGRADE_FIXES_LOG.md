@@ -1342,6 +1342,22 @@ if (!$this->Settings->overselling) {
 | 11.12 | `Transfers_model.php` | Implicit null from request/report/completed items | `return array();` (3 methods) | guard |
 | 11.13 | `transfers/index.php` | `$GP['bulk_actions']` unset | `!empty($GP['bulk_actions'])` | guard |
 | 11.14 | `phase4_transfers_*.php` | — | New screen + deep-link scripts | test |
+| 11.15 | `Transfers.php` | `suggestions()` `reset($options_color)` / `$exp[1]` / batch offset on false → 500 | `is_array` before `reset`; `isset($exp[1])`; init `supplier_id`; batch `isset` | guard |
+| 11.16 | `transfers.js` | `item.row.name.replace` when name null | `String(... \|\| '')` before `.replace` | guard |
+
+#### 11.15 `Transfers.php` — suggestions options_color reset
+
+**Old code:**
+```php
+$first_option = reset($options_color);
+$option = ($exp[1]) ? $exp[1] : false;
+```
+
+**New code:**
+```php
+$first_option = is_array($options_color) ? reset($options_color) : false;
+$option = (isset($exp[1]) && $exp[1]) ? $exp[1] : false;
+```
 
 #### 11.1 `Transfers.php` — HTTP_REFERER
 
@@ -1491,6 +1507,23 @@ $this->Restaurant_Order_Taking_model->update_order($order_id, ['guest_count' => 
 | 13.9 | `Bill_of_material.php` | `$location->price_group_id` unguarded | `$location &&` guard | guard |
 | 13.10 | `Variant_bill_of_materials.php` | bare `HTTP_REFERER` on export | P1 guard | guard |
 | 13.11 | `phase4_production_*.php` | — | Screen + deep-link scripts | test |
+| 13.12 | `sma_produnit_bill_of_materials` | Unknown column `job_works` → GetBomDetails 500 + save fail | `ALTER` add `job_works` (`upgrade/add_bom_job_works_column.php`) | db-env |
+| 13.13 | `Variant_bill_of_materials_model.php` | `num_rows()` on false after bad query | `$q && $q->num_rows()` (BOM + items + product) | guard |
+| 13.14 | `Variant_bill_of_materials.php` | `$location->price_group_id` on false | `!empty($location) && !empty($location->price_group_id)` | guard |
+
+#### 13.12 / 13.13 Variant BOM — job_works + query guard
+
+**Old code:**
+```php
+if ($q->num_rows() > 0) {
+```
+
+**New code:**
+```php
+if ($q && $q->num_rows() > 0) {
+```
+
+**db-env:** `ALTER TABLE sma_produnit_bill_of_materials ADD COLUMN job_works INT NULL ...` (script: `upgrade/add_bom_job_works_column.php`).
 
 #### 13.3 `Production_Unit.php` — productionUnit string append
 
@@ -1729,6 +1762,40 @@ if (isset($_SESSION['cart']) && is_array($_SESSION['cart']) && count($_SESSION['
 | 18.4 | `System_settings.php` | `import_expense_categories`/`import_brands` foreach on bad CSV rows | `is_array` continue before `count`/`array_combine` | guard |
 | 18.5 | `settings/manage_barcode.php` | `$manageB2`/`$manageBside` undefined → `in_array` TypeError | Init arrays; `!empty($managebarcode)` foreach guards | guard |
 | 18.6 | `phase4_system_settings_*.php` | — | Screen + deep-link scripts | test |
+| 18.7 | `constants.php` | Undefined `SIZE`/`COLOR` → `variant_manage` / POS options fatal | `define('SIZE', 1); define('COLOR', 2);` | syntax |
+| 18.8 | `System_settings.php` | Offer delete `json_encode($ResultOffer)` unset | Fetch row before delete; encode row or `array()` | guard |
+
+#### 18.7 `constants.php` — SIZE / COLOR
+
+**Old code:**
+```php
+// (missing)
+```
+
+**New code:**
+```php
+define('SIZE', 1);
+define('COLOR', 2);
+```
+
+#### 18.8 `System_settings.php` — offer delete ResultOffer
+
+**Old code:**
+```php
+case 'delete':
+    $this->db->where('id', $id)->delete('sma_offers');
+    ...
+    'action_affected_data' => json_encode($ResultOffer),
+```
+
+**New code:**
+```php
+case 'delete':
+    $ResultOffer = $this->db->where('id', $id)->get('sma_offers')->row();
+    $this->db->where('id', $id)->delete('sma_offers');
+    ...
+    'action_affected_data' => json_encode($ResultOffer ? $ResultOffer : array()),
+```
 
 #### 18.1 `System_settings.php` — HTTP_REFERER (representative)
 
@@ -2143,6 +2210,7 @@ $return = parent::line($line, FALSE);
 | 2026-07-12 | 3 | Module 3 POS return — `returnsale()` PHP 8.5 guards + scoped `remove_commas(..., 4)` in `returnsale()` only; `phase4_pos_return_deep_test.php` **8/8**, `phase4_pos_return_links_test.php` **14/14** |
 | 2026-07-12 | 25 | Module 25 CMS Admin Panel — schema tag-default tables, entity_faqs/leads/helpers restore; screen **7/7**, deep-links **43/43** |
 | 2026-07-12 | test | `phase4_auto_links_test.php` — accurate Real Fail detection (PHP/DB/syntax/CI error page/blank 500); AUTH/AJAX noise → Skip; hub **Real Fail** tab + stat |
+| 2026-07-14 | 11/13/18 | Issue re-fix (no Quotes selectors): Transfers `reset($options_color)` 500; Variant BOM `job_works` + `num_rows` guard; Settings `SIZE`/`COLOR` + offer `$ResultOffer`; `#biReportModal` `<script>`→`<style>`; quotes/transfers `name.replace` null-safe |
 
 ---
 
