@@ -31,7 +31,7 @@ class system_settings extends MY_Controller {
         // }
         $this->load->helper('settings_screens');
         $ss_flags = settings_screens_flags();
-        $user_printer = is_array($this->GP) && !empty($this->GP['printer-setting']);
+        $user_printer = isset($this->GP) && is_array($this->GP) && !empty($this->GP['printer-setting']);
         $show_settings_menu = settings_user_menu_has_any_visible_item($ss_flags, $user_printer, $this->Settings);
         if ($this->Owner || $this->Admin) {
             // full access
