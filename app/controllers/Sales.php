@@ -3945,7 +3945,7 @@ class Sales extends MY_Controller {
   public function sale_actions() {
         if (!$this->Owner && !$this->GP['bulk_actions']) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('sales'));
         }
 
         $this->form_validation->set_rules('form_action', lang("form_action"), 'required');
@@ -3961,7 +3961,7 @@ class Sales extends MY_Controller {
                         $this->sales_model->deleteSale($id);
                     }
                     $this->session->set_flashdata('message', lang("sales_deleted"));
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('sales'));
                 } elseif ($this->input->post('form_action') == 'combine') {
 
                     $html = $this->combine_pdf($_POST['val']);
@@ -4335,7 +4335,7 @@ class Sales extends MY_Controller {
                         return $objWriter->save('php://output');
                     }
 
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('sales'));
                 }elseif($this->input->post('form_action') == 'export_excel' || $this->input->post('form_action') == 'export_pdf' ){
                    $this->load->library('excel');
                     $this->excel->setActiveSheetIndex(0);
@@ -4418,23 +4418,23 @@ class Sales extends MY_Controller {
                         return $objWriter->save('php://output');
                     }
 
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('sales'));
                 }  
                 
             } else {
                 $this->session->set_flashdata('error', lang("no_sale_selected"));
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('sales'));
             }
         } else {
             $this->session->set_flashdata('error', validation_errors());
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('sales'));
         }
     }
 
     public function challan_actions() {
         if (!$this->Owner && !$this->GP['bulk_actions']) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('sales/challans'));
         }
 
         $this->form_validation->set_rules('form_action', lang("form_action"), 'required');
@@ -4450,7 +4450,7 @@ class Sales extends MY_Controller {
                         $this->challan_model->deleteChallan($id);
                     }
                     $this->session->set_flashdata('message', lang("challans_deleted"));
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('sales/challans'));
                 } elseif ($this->input->post('form_action') == 'combine') {
 
                     $html = $this->combine_challan_pdf($_POST['val']);
@@ -4522,15 +4522,15 @@ class Sales extends MY_Controller {
                         return $objWriter->save('php://output');
                     }
 
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('sales/challans'));
                 }
             } else {
                 $this->session->set_flashdata('error', lang("no_challan_selected"));
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('sales/challans'));
             }
         } else {
             $this->session->set_flashdata('error', validation_errors());
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('sales/challans'));
         }
     }
 
@@ -4739,14 +4739,14 @@ class Sales extends MY_Controller {
                     if (!$this->upload->do_upload('document')) {
                         $error = $this->upload->display_errors();
                         $this->session->set_flashdata('error', $error);
-                        redirect($_SERVER["HTTP_REFERER"]);
+                        redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('sales/challans'));
                     }
                     $photo = $this->upload->file_name;
                     $data['attachment'] = $photo;
                 }
             } elseif ($this->input->post('add_delivery')) {
                 $this->session->set_flashdata('error', validation_errors());
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('sales/challans'));
             }
 
             if ($this->form_validation->run() == true && $this->sales_model->addDelivery($dlDetails)) {
@@ -4756,7 +4756,7 @@ class Sales extends MY_Controller {
 
                 $this->session->set_flashdata('message', lang("delivery_added"));
                 // redirect("sales/deliveries");
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('sales/challans'));
             } else {
 
                 $this->data['error'] = (validation_errors() ? validation_errors() : $this->session->flashdata('error'));
@@ -4861,7 +4861,7 @@ class Sales extends MY_Controller {
                 if (!$this->upload->do_upload('document')) {
                     $error = $this->upload->display_errors();
                     $this->session->set_flashdata('error', $error);
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('sales/challans'));
                 }
                 $photo = $this->upload->file_name;
                 $data['attachment'] = $photo;
@@ -4873,7 +4873,7 @@ class Sales extends MY_Controller {
             }
         } elseif ($this->input->post('edit_delivery')) {
             $this->session->set_flashdata('error', validation_errors());
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('sales/challans'));
         }
 
         if ($this->form_validation->run() == true && $this->sales_model->updateDelivery($id, $dlDetails)) {
@@ -4911,7 +4911,7 @@ class Sales extends MY_Controller {
     public function delivery_actions() {
         if (!$this->Owner && !$this->GP['bulk_actions']) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('sales/deliveries'));
         }
 
         $this->form_validation->set_rules('form_action', lang("form_action"), 'required');
@@ -4925,7 +4925,7 @@ class Sales extends MY_Controller {
                         $this->sales_model->deleteDelivery($id);
                     }
                     $this->session->set_flashdata('message', lang("deliveries_deleted"));
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('sales/deliveries'));
                 }
 
                 if ($this->input->post('form_action') == 'export_excel' || $this->input->post('form_action') == 'export_pdf') {
@@ -4997,15 +4997,15 @@ class Sales extends MY_Controller {
                         return $objWriter->save('php://output');
                     }
 
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('sales/deliveries'));
                 }
             } else {
                 $this->session->set_flashdata('error', lang("no_delivery_selected"));
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('sales/deliveries'));
             }
         } else {
             $this->session->set_flashdata('error', validation_errors());
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('sales/deliveries'));
         }
     }
  
@@ -7073,7 +7073,7 @@ $c = str_replace(".", "", microtime(true));
     public function gift_card_actions() {
         if (!$this->Owner && !$this->GP['bulk_actions']) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('sales/gift_cards'));
         }
 
         $this->form_validation->set_rules('form_action', lang("form_action"), 'required');
@@ -7088,7 +7088,7 @@ $c = str_replace(".", "", microtime(true));
                         $this->sales_model->deleteGiftCard($id);
                     }
                     $this->session->set_flashdata('message', lang("gift_cards_deleted"));
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('sales/gift_cards'));
                 }
 
                 if ($this->input->post('form_action') == 'export_excel' || $this->input->post('form_action') == 'export_pdf') {
@@ -7160,15 +7160,15 @@ $c = str_replace(".", "", microtime(true));
                         return $objWriter->save('php://output');
                     }
 
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('sales/gift_cards'));
                 }
             } else {
                 $this->session->set_flashdata('error', lang("no_gift_card_selected"));
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('sales/gift_cards'));
             }
         } else {
             $this->session->set_flashdata('error', validation_errors());
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('sales/gift_cards'));
         }
     }
 
@@ -9634,7 +9634,7 @@ window.MyHandler.setPrintRequest('<?php echo json_encode($print); ?>');
         
         if ($challan->return_id) {
             $this->session->set_flashdata('error', lang("challan_already_returned"));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER["HTTP_REFERER"]) && $_SERVER["HTTP_REFERER"] !== '' ? $_SERVER["HTTP_REFERER"] : site_url('sales/challans'));
         }
 
         if (!empty($challan->invoice_no)) {
@@ -9645,7 +9645,7 @@ window.MyHandler.setPrintRequest('<?php echo json_encode($print); ?>');
         $customer_details = $this->site->getCompanyByID($challan->customer_id);
         $biller_details = $this->site->getCompanyByID($challan->biller_id);
 
-        if ((!empty($customer_details->state_code) && !empty($biller_details->state_code)) && $customer_details->state_code != $biller_details->state_code) {
+        if ((!empty($customer_details) && !empty($customer_details->state_code) && !empty($biller_details) && !empty($biller_details->state_code)) && $customer_details->state_code != $biller_details->state_code) {
             $interStateTax = true;
         } else {
             $interStateTax = false;
@@ -10072,15 +10072,16 @@ window.MyHandler.setPrintRequest('<?php echo json_encode($print); ?>');
             $this->data['error'] = (validation_errors() ? validation_errors() : $this->session->flashdata('error'));
             if ($challan->date <= date('Y-m-d', strtotime('-3 months'))) {
                 $this->session->set_flashdata('error', lang("sale_x_edited_older_than_3_months"));
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER['HTTP_REFERER']) && $_SERVER['HTTP_REFERER'] !== '' ? $_SERVER['HTTP_REFERER'] : site_url('sales/challans'));
             }
             $inv_items = $this->challan_model->getAllChallanItems($id);
-            krsort($inv_items);
             $pos_settings = $this->site->get_pos_setting();
             $item_order = isset($pos_settings->item_order) ? (int)$pos_settings->item_order : 0;
             $order_multiplier = ($item_order == 0) ? -1 : 1;
             
             $c = rand(100000, 9999999); $pr = array();
+            if (!empty($inv_items) && is_array($inv_items)) {
+            krsort($inv_items);
             foreach ($inv_items as $key => $item) {
                 $row = $this->site->getProductByID($item->product_id);
                 if (!$row) {
@@ -10119,16 +10120,17 @@ window.MyHandler.setPrintRequest('<?php echo json_encode($print); ?>');
                 $row->seller = $item->seller;
                 $row->packing_size = $item->packing_size;
                 
-                $options = $this->sales_model->getProductOptions($row->id, $item->warehouse_id, true, SIZE);
+                $options = $this->sales_model->getProductOptions($row->id, $item->warehouse_id, true);
                 $units = $this->site->getUnitsByBUID($row->base_unit);
                 $tax_rate = $this->site->getTaxRateByID($row->tax_rate);
                 
                 $row_id = $row->id . ($item->option_id ? $item->option_id : '');
                 $ri = $this->Settings->item_addition ? $row_id : $c;
                 
-                $options_color = $this->sales_model->getProductOptionsByAttr($row->id, $item->warehouse_id, COLOR);
+                $options_color = $this->sales_model->getProductOptionsByAttr($row->id, $item->warehouse_id, 2);
                 $pr[$ri.$key] = array('id' => $ri.$key, 'item_id' => $row_id, 'label' => $row->name . " (" . $row->code . ")", 'row' => $row, 'units' => $units, 'tax_rate' => $tax_rate, 'options' => $options, 'options_color' => $options_color, 'order' => $order_multiplier * (int) $item->id);
                 $c++;
+            }
             }
             $this->data['inv'] = $challan;
             $this->data['inv_items'] = json_encode($pr);
@@ -10141,7 +10143,7 @@ window.MyHandler.setPrintRequest('<?php echo json_encode($print); ?>');
             // Load sales persons for sales person functionality
             try {
                 $user = $this->site->getUser();
-                $user_warehouses = $user->warehouse_id ? explode(',', $user->warehouse_id) : array();
+                $user_warehouses = ($user && $user->warehouse_id) ? explode(',', $user->warehouse_id) : array();
                 if (method_exists($this->site, 'getSalesPersonsByWarehouse')) {
                     $this->data['salesperson_details'] = $this->site->getSalesPersonsByWarehouse($user_warehouses);
                 } else {
@@ -10656,7 +10658,7 @@ window.MyHandler.setPrintRequest('<?php echo json_encode($print); ?>');
     public function credit_note_actions() {
         if (!$this->Owner && !$this->GP['bulk_actions']) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('sales/credit_note'));
         }
 
         $this->form_validation->set_rules('form_action', lang("form_action"), 'required');
@@ -10671,7 +10673,7 @@ window.MyHandler.setPrintRequest('<?php echo json_encode($print); ?>');
                         $this->sales_model->deleteCreditNote($id);
                     }
                     $this->session->set_flashdata('message', lang("Credit_Note_deleted"));
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('sales/credit_note'));
                 }
 
                 if ($this->input->post('form_action') == 'export_excel' || $this->input->post('form_action') == 'export_pdf') {
@@ -10743,15 +10745,15 @@ window.MyHandler.setPrintRequest('<?php echo json_encode($print); ?>');
                         return $objWriter->save('php://output');
                     }
 
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('sales/credit_note'));
                 }
             } else {
                 $this->session->set_flashdata('error', lang("no_credit_note_selected"));
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('sales/credit_note'));
             }
         } else {
             $this->session->set_flashdata('error', validation_errors());
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('sales/credit_note'));
         }
     }
 

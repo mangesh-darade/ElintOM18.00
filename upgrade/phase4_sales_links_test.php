@@ -39,11 +39,14 @@ if ($saleId) {
         'email' => "/sales/email/$saleId",
         'add_delivery' => "/sales/add_delivery/$saleId",
         'duplicate add' => "/sales/add?sale_id=$saleId",
+        'sale_by_csv import' => '/sales/sale_by_csv',
     ];
     foreach ($links as $label => $path) {
         $codes = ($label === 'pdf') ? [200, 302] : [200];
         phase4_linkGet($base, "Sale $label", $path, $cookieFile, $codes);
     }
+    phase4_actionsGetRedirect($base, 'Sale GET sale_actions redirects list', '/sales/sale_actions', $cookieFile, '/sales');
+    phase4_checkActionPost($base, 'Sale POST sale_actions export_pdf', '/sales/sale_actions', $cookieFile, $token, 'export_pdf', $saleId, '/sales');
 } else {
     phase4_check('Sale deep links', false, 'no sale id from getSales');
 }
