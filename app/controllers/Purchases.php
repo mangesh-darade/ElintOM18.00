@@ -2384,7 +2384,7 @@ class Purchases extends MY_Controller {
       public function purchase_actions() {
         if (!$this->Owner && !$this->GP['bulk_actions']) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('purchases'));
         }
 
         $this->form_validation->set_rules('form_action', lang("form_action"), 'required');
@@ -2400,7 +2400,7 @@ class Purchases extends MY_Controller {
                         $this->purchases_model->deletePurchase($id);
                     }
                     $this->session->set_flashdata('message', $this->lang->line("purchases_deleted"));
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('purchases'));
                 } elseif ($this->input->post('form_action') == 'combine') {
 
                     $html = $this->combine_pdf($_POST['val']);
@@ -2468,7 +2468,7 @@ class Purchases extends MY_Controller {
                         return $objWriter->save('php://output');
                     }
 
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('purchases'));
                 }elseif ($this->input->post('form_action') == 'export_invoice_to_excel') {
                       $this->load->library('excel');
                     $this->excel->setActiveSheetIndex(0);
@@ -2610,11 +2610,11 @@ class Purchases extends MY_Controller {
                 }
             } else {
                 $this->session->set_flashdata('error', $this->lang->line("no_purchase_selected"));
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('purchases'));
             }
         } else {
             $this->session->set_flashdata('error', validation_errors());
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('purchases'));
         }
     }
 
@@ -2694,7 +2694,7 @@ class Purchases extends MY_Controller {
                 if (!$this->upload->do_upload()) {
                     $error = $this->upload->display_errors();
                     $this->session->set_flashdata('error', $error);
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('purchases'));
                 }
                 $photo = $this->upload->file_name;
                 $payment['attachment'] = $photo;
@@ -2703,12 +2703,12 @@ class Purchases extends MY_Controller {
             //$this->sma->print_arrays($payment);
         } elseif ($this->input->post('add_payment')) {
             $this->session->set_flashdata('error', validation_errors());
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('purchases'));
         }
 
         if ($this->form_validation->run() == true && $this->purchases_model->addPayment($payment)) {
             $this->session->set_flashdata('message', lang("payment_added"));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('purchases'));
         } else {
 
             $this->data['error'] = (validation_errors() ? validation_errors() : $this->session->flashdata('error'));
@@ -2763,7 +2763,7 @@ class Purchases extends MY_Controller {
                 if (!$this->upload->do_upload()) {
                     $error = $this->upload->display_errors();
                     $this->session->set_flashdata('error', $error);
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('purchases'));
                 }
                 $photo = $this->upload->file_name;
                 $payment['attachment'] = $photo;
@@ -2772,7 +2772,7 @@ class Purchases extends MY_Controller {
             //$this->sma->print_arrays($payment);
         } elseif ($this->input->post('edit_payment')) {
             $this->session->set_flashdata('error', validation_errors());
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('purchases'));
         }
 
         if ($this->form_validation->run() == true && $this->purchases_model->updatePayment($id, $payment)) {
@@ -2800,7 +2800,7 @@ class Purchases extends MY_Controller {
         if ($this->purchases_model->deletePayment($id)) {
             //echo lang("payment_deleted");
             $this->session->set_flashdata('message', lang("payment_deleted"));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('purchases'));
         }
     }
 
@@ -2909,7 +2909,7 @@ class Purchases extends MY_Controller {
                 if (!$this->upload->do_upload()) {
                     $error = $this->upload->display_errors();
                     $this->session->set_flashdata('error', $error);
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('purchases'));
                 }
                 $photo = $this->upload->file_name;
                 $data['attachment'] = $photo;
@@ -2970,7 +2970,7 @@ class Purchases extends MY_Controller {
                 if (!$this->upload->do_upload()) {
                     $error = $this->upload->display_errors();
                     $this->session->set_flashdata('error', $error);
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('purchases'));
                 }
                 $photo = $this->upload->file_name;
                 $data['attachment'] = $photo;
@@ -2979,7 +2979,7 @@ class Purchases extends MY_Controller {
             //$this->sma->print_arrays($data);
         } elseif ($this->input->post('edit_expense')) {
             $this->session->set_flashdata('error', validation_errors());
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('purchases'));
         }
 
         if ($this->form_validation->run() == true && $this->purchases_model->updateExpense($id, $data)) {
@@ -3031,7 +3031,7 @@ class Purchases extends MY_Controller {
     public function expense_actions() {
         if (!$this->Owner && !$this->GP['bulk_actions']) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('purchases/expenses'));
         }
 
         $this->form_validation->set_rules('form_action', lang("form_action"), 'required');
@@ -3044,7 +3044,7 @@ class Purchases extends MY_Controller {
                         $this->purchases_model->deleteExpense($id);
                     }
                     $this->session->set_flashdata('message', $this->lang->line("expenses_deleted"));
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('purchases/expenses'));
                 }
 
                 if ($this->input->post('form_action') == 'export_excel' || $this->input->post('form_action') == 'export_pdf') {
@@ -3126,15 +3126,15 @@ class Purchases extends MY_Controller {
                         return $objWriter->save('php://output');
                     }
 
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('purchases/expenses'));
                 }
             } else {
                 $this->session->set_flashdata('error', $this->lang->line("no_expense_selected"));
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('purchases/expenses'));
             }
         } else {
             $this->session->set_flashdata('error', validation_errors());
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('purchases/expenses'));
         }
     }
 
