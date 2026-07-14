@@ -805,7 +805,7 @@ function loadItems() {
                 item_option = item.row.option, 
                 item_code = item.row.code, 
                 item_serial = item.row.serial, 
-                item_name = item.row.name.replace(/"/g, "&#034;").replace(/'/g, "&#039;");
+                item_name = String(item.row.name != null ? item.row.name : '').replace(/"/g, "&#034;").replace(/'/g, "&#039;");
             var product_img = item.row.image;
             var hsn_code = item.row.hsn_code;
             var unit_price = item.row.real_unit_price;
