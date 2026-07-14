@@ -1467,6 +1467,7 @@ class Transfers extends MY_Controller
         $term = $this->input->get('term', TRUE);
         $warehouse_id = $this->input->get('warehouse_id', TRUE);
         $warehouse2 = $this->input->get('warehouse_2', TRUE);
+        $supplier_id = $this->input->get('supplier_id', TRUE);
 
         if (strlen($term) < 3 || !$term) {
             die("<script type='text/javascript'>setTimeout(function(){ window.top.location.href = '" . site_url('welcome') . "'; }, 10);</script>");
@@ -1486,7 +1487,7 @@ class Transfers extends MY_Controller
             $r = 0;
             foreach ($rows as $row) {
 
-                $option = ($exp[1]) ? $exp[1] : false; // Using Barcode Scan time
+                $option = (isset($exp[1]) && $exp[1]) ? $exp[1] : false; // Using Barcode Scan time
                 $row->quantity = $row->quantity ? $row->quantity : 0;
                 $row->item_tax_method = $row->tax_method;
                 $row->base_quantity = 1;
@@ -1611,7 +1612,7 @@ class Transfers extends MY_Controller
                     $pis = $this->site->getPurchasedItems($row->id, $warehouse_id);
                     if ($pis) {
                         foreach ($pis as $pi) {
-                            if ($pi->batch_number && is_array($productbatches[$pi->option_id])) {
+                            if ($pi->batch_number && is_array($productbatches) && isset($productbatches[$pi->option_id]) && is_array($productbatches[$pi->option_id])) {
                                 foreach ($productbatches[$pi->option_id] as $pioption => $piobatches) {
                                     if ($pi->batch_number == $piobatches->batch_no) {
                                         $productbatches[$pi->option_id][$piobatches->id]->quantity += $pi->quantity_balance;
@@ -1621,7 +1622,7 @@ class Transfers extends MY_Controller
                         }
                     }
 
-                    $batch = $productbatches[$batch_option];
+                    $batch = (is_array($productbatches) && isset($productbatches[$batch_option])) ? $productbatches[$batch_option] : null;
 
                     if ($batch) {
                         $firstKey = key($batch);
@@ -1650,7 +1651,7 @@ class Transfers extends MY_Controller
                 }
                 $options_color = $this->products_model->getProductOptionswithbatchAndWarehous($row->id, $warehouse_id, 2);
                 if ($options_color) {
-				    $opt_color = $option_color_id && $r == 0 ? $this->transfers_model->getProductOptionByID($option_color_id) : reset($options_color);
+				    $opt_color = $option_color_id && $r == 0 ? $this->transfers_model->getProductOptionByID($option_color_id) : (is_array($options_color) ? reset($options_color) : false);
 					if ($opt_color && (!$option_color_id || $r > 0)) {
 						$option_color_id = $opt_color->id;
                         $row->option_color = $option_color_id;
@@ -1676,7 +1677,7 @@ class Transfers extends MY_Controller
                 if ($row->batch) {
                     $row_id = $row_id . $row->batch;
                 }
-                $first_option = reset($options_color); 
+                $first_option = is_array($options_color) ? reset($options_color) : false;
                 $color = (!empty($first_option) && isset($first_option->name)) ? $first_option->name : '';
                 $label = $row->name . ' ' . $color . " (" . $row->code . ")";
                 $ri = $this->Settings->item_addition ? $row_id : ($c + $r);

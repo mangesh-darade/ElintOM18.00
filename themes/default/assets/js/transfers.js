@@ -551,7 +551,7 @@ function loadItems() {
             var item_id = site.settings.item_addition == 1 ? item.item_id : item.id;
             item.order = item.order ? item.order : order_no++;
             var from_warehouse = localStorage.getItem('from_warehouse'), check = false;
-            var product_id = item.row.id, item_type = item.row.type, item_cost = item.row.cost, item_qty = item.row.qty, item_bqty = item.row.quantity_balance, item_oqty = item.row.ordered_quantity, item_expiry = item.row.expiry, item_aqty = item.row.quantity, item_tax_method = item.row.tax_method, item_ds = item.row.discount, item_discount = 0, item_option = item.row.option,item_option_color = item.row.option_color,item_option_color_name = item.row.option_color_name, item_code = item.row.code, item_serial = item.row.serial, item_name = item.row.name.replace(/"/g, "&#034;").replace(/'/g, "&#039;");
+            var product_id = item.row.id, item_type = item.row.type, item_cost = item.row.cost, item_qty = item.row.qty, item_bqty = item.row.quantity_balance, item_oqty = item.row.ordered_quantity, item_expiry = item.row.expiry, item_aqty = item.row.quantity, item_tax_method = item.row.tax_method, item_ds = item.row.discount, item_discount = 0, item_option = item.row.option,item_option_color = item.row.option_color,item_option_color_name = item.row.option_color_name, item_code = item.row.code, item_serial = item.row.serial, item_name = String(item.row.name != null ? item.row.name : '').replace(/"/g, "&#034;").replace(/'/g, "&#039;");
 
             // var unit_cost = item.row.real_unit_cost;
             var product_unit = item.row.unit, base_quantity = item.row.base_quantity;

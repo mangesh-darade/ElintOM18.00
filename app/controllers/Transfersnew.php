@@ -1339,7 +1339,7 @@ class Transfersnew extends MY_Controller {
     function transfer_actions() {
         if (!$this->Owner) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('transfersnew'));
         }
 
         $this->form_validation->set_rules('form_action', lang("form_action"), 'required');
@@ -1353,7 +1353,7 @@ class Transfersnew extends MY_Controller {
                         $this->transfers_model->deleteTransfer($id);
                     }
                     $this->session->set_flashdata('message', lang("transfers_deleted"));
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('transfersnew'));
                 } elseif ($this->input->post('form_action') == 'combine') {
 
                     $html = $this->combine_pdf($_POST['val']);
@@ -1424,15 +1424,15 @@ class Transfersnew extends MY_Controller {
                         return $objWriter->save('php://output');
                     }
 
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('transfersnew'));
                 }
             } else {
                 $this->session->set_flashdata('error', lang("no_transfer_selected"));
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('transfersnew'));
             }
         } else {
             $this->session->set_flashdata('error', validation_errors());
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('transfersnew'));
         }
     }
 
