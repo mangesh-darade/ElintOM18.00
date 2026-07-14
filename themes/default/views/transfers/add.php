@@ -1082,7 +1082,7 @@ overflow-y: auto;
                                             <?php 
                                                 $list_product =array( 'search_product'=>'Search Product','warehouse_product' =>'Warehouse Product');
                                                      
-                                                  echo form_dropdown('product_list', $list_product,$list_product['warehouse_product'] , 'id="display_product" class="form-control input-tip select" data-placeholder="' . lang("select") . ' ' . lang("warehouse") . '" required="required" '.($warehouse_id ? 'readonly' : '').' style="width:100%;"');
+                                                  echo form_dropdown('product_list', $list_product,$list_product['warehouse_product'] , 'id="display_product" class="form-control input-tip select" data-placeholder="' . lang("select") . ' ' . lang("warehouse") . '" required="required" '.(!empty($warehouse_id) ? 'readonly' : '').' style="width:100%;"');
                                             ?>
                                         </div>
                                     </div>
@@ -1206,7 +1206,7 @@ overflow-y: auto;
                                                         <th><?= lang("subtotal"); ?> (<span
                                                                 class="currency"><?= $default_currency->code ?></span>)
                                                         </th>
-                                                        <?php if ($GP['product_remove'] || $Owner) { ?>
+                                                        <?php if ($Owner || !empty($GP['product_remove'])) { ?>
                                                         <th style="width: 30px !important; text-align: center;"><i class="fa fa-trash-o"  style="opacity:0.5; filter:alpha(opacity=50);"></i></th>
                                                         
                                                     <?php } ?>
@@ -1684,7 +1684,7 @@ $(document).on('ifUnchecked', '.multi-select', function(event) {
         <!-- End Barcode Scan Using Camera -->
 <script>
     var adminData = <?php echo json_encode($UsersDatas); ?>;
-    var product_remove = <?php echo json_encode($GP['product_remove']); ?>;
+    var product_remove = <?php echo json_encode(isset($GP['product_remove']) ? $GP['product_remove'] : null); ?>;
 
 </script>
 <!-- Modal Variant -->

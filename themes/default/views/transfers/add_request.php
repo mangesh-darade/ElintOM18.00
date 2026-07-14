@@ -912,7 +912,7 @@
                                            <?php 
                                                 $list_product =array( 'search_product'=>'Search Product','warehouse_product' =>'Warehouse Product');
                                                      
-                                                  echo form_dropdown('product_list', $list_product,$list_product['warehouse_product'] , 'id="display_product" class="form-control input-tip select" data-placeholder="' . lang("select") . ' ' . lang("warehouse") . '" required="required" '.($warehouse_id ? 'readonly' : '').' style="width:100%;"');
+                                                  echo form_dropdown('product_list', $list_product,$list_product['warehouse_product'] , 'id="display_product" class="form-control input-tip select" data-placeholder="' . lang("select") . ' ' . lang("warehouse") . '" required="required" '.(!empty($warehouse_id) ? 'readonly' : '').' style="width:100%;"');
                                             ?>
                                         </div>
                                     </div>
