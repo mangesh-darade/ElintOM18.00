@@ -367,7 +367,7 @@ $s2_file_date = $this->parser->parse_string($s2_lang_file, $s2_data, true);
 
       <?php 
         if($Settings->synced_data_sales){
-           if($_SESSION['Send_customer']['status']==1){
+           if(isset($_SESSION['Send_customer']) && is_array($_SESSION['Send_customer']) && isset($_SESSION['Send_customer']['status']) && $_SESSION['Send_customer']['status']==1){
     ?>    
             $.ajax({
                 type:'ajax',

@@ -1,3 +1,11 @@
+<?php
+$CI = &get_instance();
+if (!isset($GP) || !is_array($GP)) {
+    $GP = (isset($CI->GP) && is_array($CI->GP)) ? $CI->GP : array();
+}
+if (!isset($active_dropdown)) { $active_dropdown = ''; }
+if (!isset($active_item)) { $active_item = ''; }
+?>
 <?php if($Settings->active_omnichannel) { ?>
     <!--  Urbanpiper -->
     <li class="mm_urban_piper">
@@ -684,7 +692,7 @@ $show_attendance_menu_adm = $attendance_module_enabled_adm && (!empty($Owner) ||
                     <i class="fa fa-exchange item"></i><span class="text item"> Vendors Stock Report </span>
                 </a>
             </li>
-            <?php if ($GP['raw_materials']) { ?>
+            <?php if (!empty($GP['raw_materials'])) { ?>
                 <li id="raw_materials_job_works" class="list-item">
                     <a href="<?= site_url('products/rawMaterials') ?>">
                         <i class="fa fa-database"></i><span class="text"> <?= lang('List_Raw_Material_Products'); ?></span> 
