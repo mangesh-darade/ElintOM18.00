@@ -1251,7 +1251,7 @@ if ($has_report_permission) {
         });
         </script>
 
-           <script>
+           <style>
             #biReportModal .modal-content {
                 height: 100%;
                 border: 0;
@@ -1261,7 +1261,7 @@ if ($has_report_permission) {
                 padding: 0;
                 height: calc(100% - 60px) !important;
             }
-            </script> 
+            </style> 
         
 
             <?php if ($GP['reports-challan-reports']) { ?>

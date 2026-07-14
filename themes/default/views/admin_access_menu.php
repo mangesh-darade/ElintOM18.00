@@ -1288,7 +1288,7 @@ $show_attendance_menu_adm = $attendance_module_enabled_adm && (!empty($Owner) ||
         });
         </script>
 
-           <script>
+           <style>
             #biReportModal .modal-content {
                 height: 100%;
                 border: 0;
@@ -1298,7 +1298,7 @@ $show_attendance_menu_adm = $attendance_module_enabled_adm && (!empty($Owner) ||
                 padding: 0;
                 height: calc(100% - 60px) !important;
             }
-            </script> 
+            </style> 
 
         <li id="Challan" class="mm_Challan inner-list-item">
             <a class="dropmenu" href="#">
