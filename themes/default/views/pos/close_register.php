@@ -48,7 +48,7 @@
                 <tr>
                     <td width="300px;" style="font-weight:bold; border-bottom: 1px solid #DDD;""><h4><strong><?= lang('Total Paid'); ?>:</strong></h4></td>
                     <td width=" 200px;" style="font-weight:bold;text-align:right; border-bottom: 1px solid #DDD;""><h4>
-                            <span><strong><?= $this->sma->formatMoney($totalsales->paid ? $totalsales->paid : '0.00') ?></strong> </span>
+                            <span><strong><?= $this->sma->formatMoney((isset($totalsales->paid) && $totalsales->paid) ? $totalsales->paid : '0.00') ?></strong> </span>
                           
                         </h4></td>
                 </tr>    
@@ -56,16 +56,16 @@
                 <tr>
                     <td width=" 300px;" style="font-weight:bold;border-bottom: 1px solid #DDD;""><h4><strong><?= lang('total_sales'); ?>:</strong></h4></td>
                     <td width=" 200px;" style="font-weight:bold;text-align:right; border-bottom: 1px solid #DDD;""><h4>
-                          <!--<span><strong><?= $this->sma->formatMoney($totalsales->total ? $totalsales->total + $duesales->duetotal + str_replace("-", '', $refunds->returned) : '0.00') ?></strong> </span>-->
-                          <span><strong><?= $this->sma->formatMoney($totalsales->paid ? $totalsales->paid + $duesales->duetotal  : '0.00') ?></strong> </span>
-                            <!--<span><?= $this->sma->formatMoney($totalsales->paid ? $totalsales->paid : '0.00') . ' (' . $this->sma->formatMoney($totalsales->total ? $totalsales->total : '0.00') . ')'; ?></span>-->
+                          <?php /* legacy totalsales row — was totalsales+duesales+refunds combined */ ?>
+                          <span><strong><?= $this->sma->formatMoney((isset($totalsales->paid) && $totalsales->paid) ? $totalsales->paid + (isset($duesales->duetotal) ? $duesales->duetotal : 0) : '0.00') ?></strong> </span>
+                            <?php /* legacy paid/total display comment */ ?>
                         </h4></td>
                 </tr>
                 
                 <tr>
                     <td width=" 300px;" style="font-weight:bold; border-bottom: 1px solid #DDD;""><h4><strong><?= lang('Total Due'); ?>: </strong></h4></td>
                     <td width=" 200px;" style="font-weight:bold;text-align:right; border-bottom: 1px solid #DDD;""><h4>
-                            <span><strong><?= $this->sma->formatMoney($duesales->duetotal + $duepartial->partial_due) ?> </strong></span>
+                            <span><strong><?= $this->sma->formatMoney((isset($duesales->duetotal) ? $duesales->duetotal : 0) + (isset($duepartial->partial_due) ? $duepartial->partial_due : 0)) ?> </strong></span>
                           
                         </h4></td>
                 </tr>   
@@ -76,8 +76,8 @@
                     </td>
                     <td style="text-align:right;border-top: 1px solid #DDD;">
                         <h4>
-                            <span><?= $this->sma->formatMoney($refunds->returned ? $refunds->returned : '0.00')?></span>
-                            <!--<span><?= $this->sma->formatMoney($refunds->returned ? $refunds->returned : '0.00') . ' (' . $this->sma->formatMoney($refunds->total ? $refunds->total : '0.00') . ')'; ?></span>-->
+                            <span><?= $this->sma->formatMoney(isset($refunds->returned) && $refunds->returned ? $refunds->returned : '0.00')?></span>
+                            <?php /* legacy refunds total comment */ ?>
                         </h4>
                     </td>
                 </tr>
@@ -87,8 +87,8 @@
                     </td>
                     <td style="text-align:right;border-top: 1px solid #DDD;">
                         <h4>
-                            <span><?= $this->sma->formatMoney($returned_other->returned ? $returned_other->returned : '0.00') ?></span>
-                            <!--<span><?= $this->sma->formatMoney($refunds->returned_other ? $refunds->returned_other : '0.00') . ' (' . $this->sma->formatMoney($refunds->total ? $refunds->total : '0.00') . ')'; ?></span>-->
+                            <span><?= $this->sma->formatMoney(isset($returned_other->returned) && $returned_other->returned ? $returned_other->returned : '0.00') ?></span>
+                            <?php /* legacy refunds other total comment */ ?>
                         </h4>
                     </td>
                 </tr>
@@ -142,9 +142,9 @@
                             <?php 
                                 $bank_deposit = !empty($bank_details->bank_deposit) ? $bank_details->bank_deposit : 0;
                                 $withdrawal   = !empty($bank_details->withdrawal) ? $bank_details->withdrawal : 0;
-                                $total_cash_amount = $cashsales->paid 
+                                $total_cash_amount = (isset($cashsales->paid) && $cashsales->paid)
                                     ? (($cashsales->paid + ($this->session->userdata('cash_in_hand'))) 
-                                        + ($refunds->returned ? $refunds->returned : 0) 
+                                        + (isset($refunds->returned) && $refunds->returned ? $refunds->returned : 0) 
                                         - $expense)
                                     : ($this->session->userdata('cash_in_hand') - $expense);
                                 $total_cash_amount = $total_cash_amount - $bank_deposit - $withdrawal;
@@ -154,16 +154,16 @@
                     </td>
                 </tr>
                 <!--  show deposite recived and paid by only when add_deposit_btn_show = enable -->
-                <?php if ($pos_settings->add_deposit_btn_show == 1) { ?>
+                <?php if ($pos_settings->add_deposit_btn_show == 1 && !empty($deposit_received)) { ?>
                 <tr>
                     <td width="300px;" style="font-weight:bold;">
                         <h4><strong><?= lang('Deposit Received'); ?></strong>:</h4>
                         <span style="font-size:12px; font-weight: normal;">Paid By :
-                            <?= $deposit_received->paid_by ?></span>
+                            <?= isset($deposit_received->paid_by) ? $deposit_received->paid_by : '' ?></span>
                     </td>
                     <td style="text-align:right;">
                         <h4>
-                            <span><strong><?= $this->sma->formatMoney($deposit_received->deposit_amount); ?></strong></span>
+                            <span><strong><?= $this->sma->formatMoney(isset($deposit_received->deposit_amount) ? $deposit_received->deposit_amount : 0); ?></strong></span>
                         </h4>
                     </td>
                 </tr>

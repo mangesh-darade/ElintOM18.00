@@ -1616,6 +1616,7 @@ class Pos extends MY_Controller {
             $this->data["tables_groups"] = $this->pos_model->getTableGroup($this->data['user']->table_assign);
             $this->data['order_types'] = $this->site->getOrderTypes();
 
+            $id = isset($this->data['customer']->id) ? $this->data['customer']->id : $this->pos_settings->default_customer;
             $company_details = $this->companies_model->getCompanyByID($id);
             $this->data['relations']       = $this->pos_model->get_relations();
             $this->data['events']              = $this->pos_model->get_events();
@@ -2451,6 +2452,7 @@ class Pos extends MY_Controller {
         $prcount = $config["total_rows"];
         $i = 1;
         $prods = '<div>';
+        $image_class = '';
 
         if (!empty($products)) {
             $i = 0; // Initialize index for alternating background color
