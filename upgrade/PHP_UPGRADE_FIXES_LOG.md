@@ -404,6 +404,36 @@ public function getEvents() {
 | 3.18 | `Pos.php` `today_sale()` | Undefined `$date` / `$register_open_time` → SQL 1064 | Init before `getTodayDepSales` | guard |
 | 3.19 | `Pos.php` `opened_bills()` | `fetch_bills()` 3 args, needs 4 | Add `null` customerId arg | syntax |
 | 3.20 | `today_sale.php` | `$refunds`/`$duepayment` false → property fatal | `!empty()` / ternary guards | guard |
+| 3.26 | `Pos.php` | `$pos_settings->paynear` undefined | `isset($this->pos_settings->paynear) &&` (2×) | guard |
+| 3.27 | `pos/add_ep.php` | `$kot_tokan`, foreach false `$active_offers`, Settings/GP/`$_SESSION`/`$_GET` notices | `!empty`/`isset`/`is_array`/`??` guards (log cleanup) | guard |
+| 3.28 | `checkout_model_theme_four.php` | `$pos_settings->paynear` undefined | `isset($pos_settings->paynear) &&` | guard |
+| 3.29 | `Pos.php`, `Pos_elite.php` | `ajaxproducts()` required `$seasons_id` → category click HTTP 500 (`ArgumentCountError`) | `$seasons_id = null` default (all themes use `/pos/ajaxcategorydata`) | syntax |
+
+#### 3.29 `Pos.php` / `Pos_elite.php` — ajaxproducts seasons_id default
+
+**Old code:**
+```php
+public function ajaxproducts($category_id = null, $brand_id = null,$seasons_id) {
+```
+
+**New code:**
+```php
+public function ajaxproducts($category_id = null, $brand_id = null, $seasons_id = null) {
+```
+
+*(Fixes `ajaxcategorydata` / `ajaxbranddata` 1–2 arg calls used by default, newpos, theme_three–seven.)*
+
+#### 3.26 `Pos.php` — paynear isset
+
+**Old code:**
+```php
+if ($this->pos_settings->paynear == 1):
+```
+
+**New code:**
+```php
+if (isset($this->pos_settings->paynear) && $this->pos_settings->paynear == 1):
+```
 
 #### 3.21 `Pos.php` `returnsale()` — POST-only guard
 
@@ -496,6 +526,20 @@ $right_section = end($parts);
 | 4.9 | `Sales.php` | `pos_settings` null for order type | Null guard | guard |
 | 4.10 | `Sales.php` | `add()` `customer_pu` null | Guard before use | guard |
 | 4.11 | `sales/index.php` | `$_SESSION['Send_Excel']` undefined | `isset()` on session keys | guard |
+| 4.12 | `Sma.php` | `posBillTableCSI()` required `$salestax` → Combine Invoice PDF 500 | `$salestax = null` default | syntax |
+| 4.13 | `sales/view_invoice.php` | `$options_color[0]` when empty | `!empty` + `isset` before `->name` | guard |
+
+#### 4.12 `Sma.php` — posBillTableCSI salestax default
+
+**Old code:**
+```php
+public function posBillTableCSI($printer, $inv, $return_sale, $rows, $return_rows, $salestax, $class = null, $print = NULL) {
+```
+
+**New code:**
+```php
+public function posBillTableCSI($printer, $inv, $return_sale, $rows, $return_rows, $salestax = null, $class = null, $print = NULL) {
+```
 
 #### 4.1 `Sales.php` — HTTP_REFERER (79×)
 
@@ -1344,6 +1388,7 @@ if (!$this->Settings->overselling) {
 | 11.14 | `phase4_transfers_*.php` | — | New screen + deep-link scripts | test |
 | 11.15 | `Transfers.php` | `suggestions()` `reset($options_color)` / `$exp[1]` / batch offset on false → 500 | `is_array` before `reset`; `isset($exp[1])`; init `supplier_id`; batch `isset` | guard |
 | 11.16 | `transfers.js` | `item.row.name.replace` when name null | `String(... \|\| '')` before `.replace` | guard |
+| 11.17 | `transfers/add.php`, `add_request.php` | undefined `$warehouse_id`; `$GP['product_remove']` on null | `!empty($warehouse_id)`; `$Owner \|\| !empty($GP[...])`; `isset` json_encode | guard |
 
 #### 11.15 `Transfers.php` — suggestions options_color reset
 
@@ -1764,6 +1809,7 @@ if (isset($_SESSION['cart']) && is_array($_SESSION['cart']) && count($_SESSION['
 | 18.6 | `phase4_system_settings_*.php` | — | Screen + deep-link scripts | test |
 | 18.7 | `constants.php` | Undefined `SIZE`/`COLOR` → `variant_manage` / POS options fatal | `define('SIZE', 1); define('COLOR', 2);` | syntax |
 | 18.8 | `System_settings.php` | Offer delete `json_encode($ResultOffer)` unset | Fetch row before delete; encode row or `array()` | guard |
+| 18.9 | `System_settings.php` | Owner/Admin `$this->GP` unset → property warning | `isset($this->GP) && is_array(...) && !empty(...)` | guard |
 
 #### 18.7 `constants.php` — SIZE / COLOR
 
@@ -2211,6 +2257,9 @@ $return = parent::line($line, FALSE);
 | 2026-07-12 | 25 | Module 25 CMS Admin Panel — schema tag-default tables, entity_faqs/leads/helpers restore; screen **7/7**, deep-links **43/43** |
 | 2026-07-12 | test | `phase4_auto_links_test.php` — accurate Real Fail detection (PHP/DB/syntax/CI error page/blank 500); AUTH/AJAX noise → Skip; hub **Real Fail** tab + stat |
 | 2026-07-14 | 11/13/18 | Issue re-fix (no Quotes selectors): Transfers `reset($options_color)` 500; Variant BOM `job_works` + `num_rows` guard; Settings `SIZE`/`COLOR` + offer `$ResultOffer`; `#biReportModal` `<script>`→`<style>`; quotes/transfers `name.replace` null-safe |
+| 2026-07-14 | 3/11/18 | POS `add_ep`/paynear + menu `$GP`/`$active_*` + footer `Send_customer` + Settings `$this->GP` + transfers `$warehouse_id` — log warning cleanup; screens HTTP 200, new log needles clean |
+| 2026-07-14 | 3 | POS category click 500 — `ajaxproducts()` required `$seasons_id`; default `null` in `Pos.php` + `Pos_elite.php` (covers all `sma_themes`) |
+| 2026-07-14 | test | Sheet RED screens probe — GET **71/71**, deep actions **19/19**; only PHP fatal was Sales Combine Invoice → `posBillTableCSI($salestax = null)` + view_invoice color guard |
 
 ---
 

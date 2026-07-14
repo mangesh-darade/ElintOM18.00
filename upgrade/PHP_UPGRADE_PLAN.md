@@ -231,9 +231,11 @@ php phase4_suppliers_billers_links_test.php Admin "Admin@554"
 
 **Module 2 fixes (Welcome scan):** — details in [`PHP_UPGRADE_FIXES_LOG.md`](PHP_UPGRADE_FIXES_LOG.md) §Module 2
 
-**Module 3 fixes (POS scan):** — details in [`PHP_UPGRADE_FIXES_LOG.md`](PHP_UPGRADE_FIXES_LOG.md) §Module 3
+**Module 3 fixes (POS scan):** — details in [`PHP_UPGRADE_FIXES_LOG.md`](PHP_UPGRADE_FIXES_LOG.md) §Module 3  
+**2026-07-14 follow-up:** `ajaxproducts($seasons_id = null)` — category/subcategory AJAX 500 fix for all `sma_themes` via `/pos/ajaxcategorydata` (3.29).
 
-**Module 4 fixes (Sales scan):** — [`PHP_UPGRADE_FIXES_LOG.md`](PHP_UPGRADE_FIXES_LOG.md) §Module 4
+**Module 4 fixes (Sales scan):** — [`PHP_UPGRADE_FIXES_LOG.md`](PHP_UPGRADE_FIXES_LOG.md) §Module 4  
+**2026-07-14 follow-up:** Combine Invoice PDF — `Sma::posBillTableCSI($salestax = null)` + `view_invoice` color guard (4.12–4.13). Sheet RED probe: `upgrade/phase4_red_screens_probe.php`.
 
 **Module 4 deep test (last run — not certified):** `phase4_sales_deep_test.php` — 6/6 PASS (suggestions → pending sale submit → view)
 
