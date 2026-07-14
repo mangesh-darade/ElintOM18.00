@@ -1103,7 +1103,7 @@ function restandlogout(){
     {
         if (!$this->loggedIn) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('auth/users'));
         }
 
         $this->form_validation->set_rules('form_action', lang("form_action"), 'required');
@@ -1115,7 +1115,7 @@ function restandlogout(){
                     $can_users_delete = !empty($this->Owner) || !empty($this->Admin) || $this->sma->actionPermissions('delete', 'users');
                     if (!$can_users_delete) {
                         $this->session->set_flashdata('warning', lang('access_denied'));
-                        redirect($_SERVER["HTTP_REFERER"]);
+                        redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('auth/users'));
                     }
                     foreach ($_POST['val'] as $id) {
                         if ($id != $this->session->userdata('user_id')) {
@@ -1123,14 +1123,14 @@ function restandlogout(){
                         }
                     }
                     $this->session->set_flashdata('message', lang("users_deleted"));
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('auth/users'));
                 }
 
                 if ($this->input->post('form_action') == 'export_excel' || $this->input->post('form_action') == 'export_pdf') {
                     $can_users_index = !empty($this->Owner) || !empty($this->Admin) || $this->sma->actionPermissions('index', 'users');
                     if (!$can_users_index) {
                         $this->session->set_flashdata('warning', lang('access_denied'));
-                        redirect($_SERVER["HTTP_REFERER"]);
+                        redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('auth/users'));
                     }
 
                     $this->load->library('excel');
@@ -1193,15 +1193,15 @@ function restandlogout(){
                         return $objWriter->save('php://output');
                     }
 
-                    redirect($_SERVER["HTTP_REFERER"]);
+                    redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('auth/users'));
                 }
             } else {
                 $this->session->set_flashdata('error', lang("no_user_selected"));
-                redirect($_SERVER["HTTP_REFERER"]);
+                redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('auth/users'));
             }
         } else {
             $this->session->set_flashdata('error', validation_errors());
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : site_url('auth/users'));
         }
     }
 
