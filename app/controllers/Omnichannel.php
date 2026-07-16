@@ -2717,7 +2717,7 @@ exit;*/
 
             $getdata = $this->UPM->check_dependancy('sma_companies', array('phone' => $customer_details->phone), 'id'); // check Mobile Number 
 
-            if ($getdata->id) {
+            if ($getdata && isset($getdata->id) && $getdata->id) {
                 $customer_id = $getdata->id;
             } else {
                 $customer_address = $customer_details->address;
@@ -2743,14 +2743,20 @@ exit;*/
 
                 $result = $this->UPM->action_database('Insert', 'sma_companies', '', $customer_field);
 
-                $response = ($result) ? $customer_id = $this->db->insert_id() : 'Try Again';
+                if ($result) {
+                    $customer_id = $this->db->insert_id();
+                } else {
+                    $response = array('status' => 'error', 'msg' => 'Try Again');
+                    echo json_encode($response);
+                    return;
+                }
             }
 
             // order add
             //Optional Condtition check Order avalible or not
             $getorder_data = $this->UPM->check_dependancy('sma_sales', array('up_order_id' => $phpObject->order->details->id), 'id'); // check order id 
 
-            if ($getorder_data->id) {
+            if ($getorder_data && isset($getorder_data->id) && $getorder_data->id) {
                 $order_id = $getorder_data->id;
                 $response['status'] = "success";
                 $response['msg'] = "order already exists";
@@ -2783,6 +2789,12 @@ exit;*/
                 //$warehouse = explode("_",$phpObject->order->store->merchant_ref_id);
                 $warehouse = $this->UPM->getStoreByReffId($phpObject->order->store->merchant_ref_id);
 
+                if (!$warehouse || !isset($warehouse->warehouse_id)) {
+                    $response = array('status' => 'error', 'msg' => 'Store not found for merchant_ref_id');
+                    echo json_encode($response);
+                    return;
+                }
+
                 $order_field = array(
                     'date' => date('Y-m-d H:i:s', $order_details->created / 1000),
                     'reference_no' => $reference,
@@ -2804,20 +2816,20 @@ exit;*/
                     'total_items' => count($phpObject->order->items),
                     'delivery_status' => 'pending',
                     'sale_status' => $order_details->order_state,
-                    'payment_status' => $phpObject->payment->option,
-                    'paid' => $phpObject->payment->amount,
+                    'payment_status' => isset($phpObject->payment->option) ? $phpObject->payment->option : '',
+                    'paid' => isset($phpObject->payment->amount) ? $phpObject->payment->amount : 0,
                     'up_sales_notification' => '1',
                     'up_channel' => $order_details->channel,
                     'up_response' => serialize($phpObject),
                     'up_sales' => '1',
                     'up_status' => $order_details->order_state,
-                    'up_next_status' => $phpObject->order->next_state,
-                    'up_item_level_total_charges' => $order_details->item_level_total_charges,
-                    'up_order_level_total_charges' => $order_details->order_level_total_charges,
+                    'up_next_status' => isset($phpObject->order->next_state) ? $phpObject->order->next_state : '',
+                    'up_item_level_total_charges' => isset($order_details->item_level_total_charges) ? $order_details->item_level_total_charges : 0,
+                    'up_order_level_total_charges' => isset($order_details->order_level_total_charges) ? $order_details->order_level_total_charges : 0,
                     'up_order_id' => $order_details->id,
-                    'up_delivery_datetime' => date('Y-m-d H:i:s', $order_details->delivery_datetime / 1000),
+                    'up_delivery_datetime' => !empty($order_details->delivery_datetime) ? date('Y-m-d H:i:s', $order_details->delivery_datetime / 1000) : date('Y-m-d H:i:s'),
                     'up_state_timestamp' => date('Y-m-d H:i:s', $order_details->created / 1000),
-                    'up_coupon' => ($order_details->coupon) ? $order_details->coupon : NULL,
+                    'up_coupon' => (!empty($order_details->coupon)) ? $order_details->coupon : NULL,
                 );
 
                 $resultorder = $this->UPM->action_database('Insert', 'sma_sales', '', $order_field);
@@ -2835,7 +2847,16 @@ exit;*/
 
                     $product_details = $this->UPM->check_dependancy('sma_products', array('code' => $item->merchant_id), '*');
 
+                    if (!$product_details || !isset($product_details->id)) {
+                        $response = array('status' => 'error', 'msg' => 'Product not found for merchant_id ' . $item->merchant_id);
+                        echo json_encode($response);
+                        return;
+                    }
+
                     $getproduct_unit = $this->UPM->check_dependancy('sma_units', array('id' => $product_details->unit), 'name');
+                    if (!$getproduct_unit) {
+                        $getproduct_unit = (object) array('name' => '');
+                    }
 
                    // $price = $item->price;
                     $price = 0;
@@ -2905,7 +2926,7 @@ exit;*/
 
                     $invoice_total_net_unit_price = $this->sma->formatDecimal(($invoice_net_unit_price * $item->quantity), 4);
 
-                    if($item->options_to_add[0]->merchant_id){
+                    if (!empty($item->options_to_add) && isset($item->options_to_add[0]->merchant_id) && $item->options_to_add[0]->merchant_id) {
                         $oprtionData =  $this->UPM->product_variants_Details($item->options_to_add[0]->merchant_id);
                         if($oprtionData){
                             $unitQty  = ($item->quantity * $oprtionData->unit_quantity );
@@ -2923,7 +2944,7 @@ exit;*/
                         'article_code' => $product_details->article_code,
                         'product_name' => $product_details->name,
                         'product_type' => $product_details->type,
-                        'option_id' => $item->options_to_add[0]->merchant_id,
+                        'option_id' => (!empty($item->options_to_add) && isset($item->options_to_add[0]->merchant_id)) ? $item->options_to_add[0]->merchant_id : Null,
                         'tax' => $taxrate,
                         'tax_method' => $tax_method,
                         'mrp' => $product_details->mrp + $price,
@@ -2957,6 +2978,7 @@ exit;*/
 
                     $resultorder = $this->UPM->action_database('Insert', 'sma_sale_items', '', $item_feild);
                     $item_id = $this->db->insert_id();
+                    if (!empty($tax_attrs) && is_array($tax_attrs)) {
                     foreach ($tax_attrs as $taxattr) {
                         $taxes_field = array(
                             'item_id' => $item_id,
@@ -2967,6 +2989,7 @@ exit;*/
                             'tax_amount' => $taxattr['value'],
                         );
                         $this->UPM->action_database('Insert', 'sma_sales_items_tax', '', $taxes_field);
+                    }
                     }
                 }//end foreach.
                 // Setting Order Manage
@@ -4420,12 +4443,13 @@ exit;*/
 
         $category = $this->UPM->importNotStoreCategory($store_id);
 
-        if ($this->db->insert_batch('sma_up_stores_categories', $category)) {
+        if (!empty($category) && $this->db->insert_batch('sma_up_stores_categories', $category)) {
             $response['status'] = 'success';
             $response['messages'] = 'Category Add Successfully.';
         } else {
             $response['status'] = 'error';
-            $response['messages'] = $this->db->_error_message();
+            $dbErr = $this->db->error();
+            $response['messages'] = (!empty($category) && isset($dbErr['message']) && $dbErr['message'] !== '') ? $dbErr['message'] : 'No categories to import or insert failed.';
         }
 
         echo json_encode($response);
@@ -4496,7 +4520,8 @@ exit;*/
                 }
             } else {
                 $data['status'] = 'error';
-                $data['msg'] = $this->db->_error_message();
+                $dbErr = $this->db->error();
+                $data['msg'] = isset($dbErr['message']) ? $dbErr['message'] : '';
             }
         } else {
             $data['status'] = 'error';
@@ -4563,7 +4588,8 @@ exit;*/
                     $data['categories'][$category->ref_id]['massage'] = "category updated successfully";
                 } else {
                     $data['categories'][$category->ref_id]['status'] = "error";
-                    $data['categories'][$category->ref_id]['massage'] = $this->db->_error_message();
+                    $dbErr = $this->db->error();
+                    $data['categories'][$category->ref_id]['massage'] = isset($dbErr['message']) ? $dbErr['message'] : '';
                 }
             }
         } else {
@@ -4587,7 +4613,8 @@ exit;*/
                     $data['items'][$item->ref_id]['massage'] = "Items updated successfully";
                     $data['items'][$item->ref_id]['status'] = ($rec[$item->ref_id]) ? 'success' : 'failed';
                 } else {
-                    $data['items'][[$item->ref_id]]['massage'] = $this->db->_error_message();
+                    $dbErr = $this->db->error();
+                    $data['items'][[$item->ref_id]]['massage'] = isset($dbErr['message']) ? $dbErr['message'] : '';
                     $data['items'][[$item->ref_id]]['status'] = "error";
                 }
             }

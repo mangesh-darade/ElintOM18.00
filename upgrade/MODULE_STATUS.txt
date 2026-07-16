@@ -24,7 +24,7 @@ MODULES 1–21 — COMPLETE
 2   Dashboard/Welcome   Welcome.php                COMPLETE — deep-links 4/4 + dashboard via auth test (2026-07-11)
 3   POS                 Pos, Pos_elite, Pos2,      COMPLETE — screen 9/9 + deep 7/7 + deep-links 11/11 (2026-07-11)
                         Pos_sun
-4   Sales               Sales.php                  COMPLETE — screen 8/8 + deep 6/6 + deep-links 12/12 (2026-07-11)
+4   Sales               Sales.php, Eshop_sales.php COMPLETE — screen 8/8 + deep 6/6 + deep-links 12/12; Eshop Sales links 12/12 (2026-07-15)
 5   Products            Products.php               COMPLETE — screen 10/10 + deep 8/8 + stock 11/11 + links 17/17 (2026-07-11)
 6   Purchases           Purchases.php              COMPLETE — screen 13/13 + deep 6/6 + return 7/7 + links 20/20 (2026-07-11)
 7   Reports             Reports.php                COMPLETE — screen 71/71 + deep 50/50 + links 24/24 (2026-07-11)

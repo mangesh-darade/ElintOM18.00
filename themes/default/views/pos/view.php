@@ -113,10 +113,12 @@ if ($modal) {
             <link rel="stylesheet" href="<?= $assets ?>styles/theme.css" type="text/css"/>
             <style type="text/css" media="all">
                 body { color: #000; }
-                #wrapper { max-width: <?php echo $default_printer->width ?>px; margin: 0 auto; padding-top: 20px; }
+                /* Screen: floor width so tiny printer Width (px) does not crush receipt UI; print below keeps printer width + min-width */
+                #wrapper { max-width: <?php echo max((int) $default_printer->width, 280); ?>px; min-width: 250px; margin: 0 auto; padding-top: 20px; }
                 @media (min-width: 1024px) and (max-width: 1366px) {
                 #wrapper {
-                    max-width: <?php echo $default_printer->width ?>px;
+                    max-width: <?php echo max((int) $default_printer->width, 280); ?>px;
+                    min-width: 250px;
                     margin: 0 auto;
                     padding-top: 30px;
                 }
@@ -125,7 +127,8 @@ if ($modal) {
                 /* Medium Laptops */
                 @media (min-width: 1367px) and (max-width: 1600px) {
                 #wrapper {
-                    max-width: <?php echo $default_printer->width ?>px;
+                    max-width: <?php echo max((int) $default_printer->width, 280); ?>px;
+                    min-width: 250px;
                     margin: 0 auto;
                     padding-top: 30px;
                 }
@@ -134,7 +137,8 @@ if ($modal) {
                 /* Large Laptops */
                 @media (min-width: 1601px) and (max-width: 1920px) {
                 #wrapper {
-                    max-width: <?php echo $default_printer->width ?>px;
+                    max-width: <?php echo max((int) $default_printer->width, 280); ?>px;
+                    min-width: 250px;
                     margin: 0 auto;
                     padding-top: 30px!important; 
                 }

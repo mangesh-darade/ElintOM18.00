@@ -235,9 +235,11 @@ php phase4_suppliers_billers_links_test.php Admin "Admin@554"
 **2026-07-14 follow-up:** `ajaxproducts($seasons_id = null)` — category/subcategory AJAX 500 fix for all `sma_themes` via `/pos/ajaxcategorydata` (3.29).
 
 **Module 4 fixes (Sales scan):** — [`PHP_UPGRADE_FIXES_LOG.md`](PHP_UPGRADE_FIXES_LOG.md) §Module 4  
-**2026-07-14 follow-up:** Combine Invoice PDF — `Sma::posBillTableCSI($salestax = null)` + `view_invoice` color guard (4.12–4.13). Sheet RED probe: `upgrade/phase4_red_screens_probe.php`.
+**2026-07-14 follow-up:** Combine Invoice PDF — `Sma::posBillTableCSI($salestax = null)` + `view_invoice` color guard (4.12–4.13). Sheet RED probe: `upgrade/phase4_red_screens_probe.php`.  
+**2026-07-15 follow-up:** Eshop Sales (`eshop_sales/sales`) deep-links — `Eshop_sales.php` + `Sales::add_delivery` eshop_order guards (4.14–4.15); `phase4_eshop_sales_links_test.php` **12/12**.
 
-**Module 4 deep test (last run — not certified):** `phase4_sales_deep_test.php` — 6/6 PASS (suggestions → pending sale submit → view)
+**Module 4 deep test (last run — not certified):** `phase4_sales_deep_test.php` — 6/6 PASS (suggestions → pending sale submit → view)  
+**Eshop Sales deep-links (2026-07-15):** `phase4_eshop_sales_links_test.php` — **12/12** PASS (list, AJAX, receipt popup, receipt, details, payments, add payment/delivery, edit, PDF, return)
 
 **Module 5 fixes (Products scan):** — [`PHP_UPGRADE_FIXES_LOG.md`](PHP_UPGRADE_FIXES_LOG.md) §Module 5
 
@@ -462,7 +464,7 @@ php phase4_suppliers_billers_links_test.php Admin "Admin@554"
 | 33 | Challans | Edit Challan | Sales | `sales/edit_challan.php` | P2 | Edit challan |
 | 34 | Challans | Return Challan | Sales | `sales/return_challan.php` | P2 | Challan return |
 | 35 | Challans | PDF Challan | Sales | `sales/pdf_challan.php` | P2 | Challan PDF |
-| 36 | Eshop/Offline | Eshop Sales | Sales | `sales/eshop.php` | P2 | Online orders |
+| 36 | Eshop/Offline | Eshop Sales | Sales | `eshop/sales.php` (`eshop_sales/sales`) | P2 | ✅ Deep-links 12/12 (2026-07-15) |
 | 37 | Eshop/Offline | Offline Sales | Sales | `sales/offline.php` | P2 | Offline sync sales |
 | 38 | Eshop/Offline | Update Status | Sales | `sales/update_status.php` | P2 | Status change |
 

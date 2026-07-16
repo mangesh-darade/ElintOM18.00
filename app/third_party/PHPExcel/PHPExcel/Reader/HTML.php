@@ -426,7 +426,7 @@ class PHPExcel_Reader_HTML extends PHPExcel_Reader_Abstract implements PHPExcel_
 		//	Reload the HTML file into the DOM object
 		$loaded = $dom->loadHTMLFile($pFilename, PHPExcel_Settings::getLibXmlLoaderOptions());
 		if ($loaded === FALSE) {
-			throw new PHPExcel_Reader_Exception('Failed to load ',$pFilename,' as a DOM Document');
+			throw new PHPExcel_Reader_Exception('Failed to load ' . $pFilename . ' as a DOM Document');
 		}
 
 		//	Discard white space

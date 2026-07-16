@@ -408,6 +408,19 @@ public function getEvents() {
 | 3.27 | `pos/add_ep.php` | `$kot_tokan`, foreach false `$active_offers`, Settings/GP/`$_SESSION`/`$_GET` notices | `!empty`/`isset`/`is_array`/`??` guards (log cleanup) | guard |
 | 3.28 | `checkout_model_theme_four.php` | `$pos_settings->paynear` undefined | `isset($pos_settings->paynear) &&` | guard |
 | 3.29 | `Pos.php`, `Pos_elite.php` | `ajaxproducts()` required `$seasons_id` → category click HTTP 500 (`ArgumentCountError`) | `$seasons_id = null` default (all themes use `/pos/ajaxcategorydata`) | syntax |
+| 3.30 | `pos/view.php` | Screen `#wrapper` crushed by tiny printer Width (no floor) | Screen `max(width, 280)` + `min-width: 250px`; print CSS unchanged | restore |
+
+#### 3.30 `pos/view.php` — receipt screen width floor (UI only)
+
+**Old code:**
+```php
+#wrapper { max-width: <?php echo $default_printer->width ?>px; margin: 0 auto; padding-top: 20px; }
+```
+
+**New code:**
+```php
+#wrapper { max-width: <?php echo max((int) $default_printer->width, 280); ?>px; min-width: 250px; margin: 0 auto; padding-top: 20px; }
+```
 
 #### 3.29 `Pos.php` / `Pos_elite.php` — ajaxproducts seasons_id default
 
@@ -511,6 +524,7 @@ $right_section = end($parts);
 ## Module 4 — Sales
 
 **Tests:** `phase4_sales_test.php` **8/8**; `phase4_sales_deep_test.php` **6/6**; `phase4_sales_links_test.php` **12/12** PASS (2026-07-11 ElintOM18.00 retest)  
+**Eshop Sales (back-office):** `phase4_eshop_sales_links_test.php` **12/12** PASS (2026-07-15) — list + `getSales` + 9 row actions on `eshop_sale=1`  
 **Status:** ✅ Module complete
 
 | # | File | Old | New | Type |
@@ -528,6 +542,9 @@ $right_section = end($parts);
 | 4.11 | `sales/index.php` | `$_SESSION['Send_Excel']` undefined | `isset()` on session keys | guard |
 | 4.12 | `Sma.php` | `posBillTableCSI()` required `$salestax` → Combine Invoice PDF 500 | `$salestax = null` default | syntax |
 | 4.13 | `sales/view_invoice.php` | `$options_color[0]` when empty | `!empty` + `isset` before `->name` | guard |
+| 4.14 | `Eshop_sales.php` | Bare `HTTP_REFERER`; `$_GET['status']`; undefined `$duplicate_link`; `getInvoiceByID` false; `foreach($print['rows'])`; bare `$_SESSION['print*']` | P1 + isset/empty/`!$inv` guards | guard |
+| 4.15 | `Sales.php` `add_delivery` | `getOrderDetails` false → `$billing_details[0]` | `!empty` + `isset($billing_details[0])` before index | guard |
+| 4.16 | `phase4_eshop_sales_links_test.php` + seed | — | Eshop Sales deep-links + `seed_eshop_sale_for_tests.php` | test |
 
 #### 4.12 `Sma.php` — posBillTableCSI salestax default
 
@@ -583,6 +600,52 @@ if (!empty($return_rows)) {
     foreach ($return_rows as $row) {
 ```
 
+#### 4.14 `Eshop_sales.php` — PHP 8.5 guards (Eshop Sales list/AJAX/view)
+
+**Old code:**
+```php
+redirect($_SERVER["HTTP_REFERER"]);
+if($_GET['status'])
+if($_GET['status']!=''){
+//$duplicate_link = anchor(...);
+<li>' . $duplicate_link . '</li>
+$inv = $this->pos_model->getInvoiceByID($sale_id);
+// uses $inv->... with no guard
+foreach($print['rows'] as $key => $row){
+if($sale_id != $_SESSION['print'] && $_SESSION['print_type']==NULL){
+```
+
+**New code:**
+```php
+redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('eshop_sales/sales'));
+if(isset($_GET['status']) && $_GET['status'])
+if(isset($_GET['status']) && $_GET['status']!=''){
+$duplicate_link = '';
+//$duplicate_link = anchor(...);
+$inv = $this->pos_model->getInvoiceByID($sale_id);
+if (!$inv) {
+    $this->session->set_flashdata('error', lang('sale_not_found'));
+    redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('eshop_sales/sales'));
+}
+if (!empty($print['rows'])) { foreach($print['rows'] as $key => $row){ ... } }
+if($sale_id != (isset($_SESSION['print']) ? $_SESSION['print'] : null) && (isset($_SESSION['print_type']) ? $_SESSION['print_type'] : null)==NULL){
+```
+
+#### 4.15 `Sales.php` — add_delivery eshop_order address
+
+**Old code:**
+```php
+$billing_details = $this->eshop_model->getOrderDetails(array('sale_id' => $sale->id));
+$this->data['shipping_addr'] = 'Name:' . $billing_details[0]['shipping_name'] .
+```
+
+**New code:**
+```php
+$billing_details = $this->eshop_model->getOrderDetails(array('sale_id' => $sale->id));
+if (!empty($billing_details) && is_array($billing_details) && isset($billing_details[0])) {
+$this->data['shipping_addr'] = 'Name:' . $billing_details[0]['shipping_name'] .
+```
+
 ---
 
 ## Module 5 — Products & Inventory
@@ -610,6 +673,60 @@ if (!empty($return_rows)) {
 | 5.12 | `Products_model.php` | `serial_no` undefined in `addAdjustment()` | `isset($_POST['serial_no'])` | guard |
 | 5.13 | `Products.php` | `array_values(false)` TypeError | `is_array` ? array_values : `[]` | guard |
 | 5.14 | `add_adjustment.php` | Bare `HTTP_REFERER` in view | P1 | guard |
+| 5.19 | `PHPExcel/Reader/HTML.php` | `bulk_images` 500 — Exception `$code` got filename string | concat `.` for message (not comma args) | lib |
+| 5.20 | `Products.php` | Owner/Admin `$this->GP` unset on sample_product_csv / import_csv / bulk_images | `isset($this->GP) && is_array(...) && !empty(...)` (×3) | guard |
+| 5.21 | `Products.php` `bulk_images()` | `identify()` on `.tmp` misreads as HTML → uncaught Reader Exception 500 | Force `Excel5` reader (+ try/catch redirect) for `.xls` upload | guard |
+
+#### 5.21 `Products.php` — bulk_images Excel5 reader (avoid HTML mis-detect)
+
+**Old code:**
+```php
+$inputFileType = PHPExcel_IOFactory::identify($File);
+$reader = PHPExcel_IOFactory::createReader($inputFileType);
+$reader->setReadDataOnly(true);
+$path = $File;
+$excel = $reader->load($path);
+```
+
+**New code:**
+```php
+try {
+    $reader = PHPExcel_IOFactory::createReader('Excel5');
+    $reader->setReadDataOnly(true);
+    $excel = $reader->load($File);
+} catch (Exception $e) {
+    $this->session->set_flashdata('error', 'Invalid Excel file. Please upload a valid .xls file.');
+    redirect('products/import_csv');
+}
+```
+
+#### 5.19 `PHPExcel/Reader/HTML.php` — Exception constructor TypeError on bulk_images
+
+**Old code:**
+```php
+throw new PHPExcel_Reader_Exception('Failed to load ',$pFilename,' as a DOM Document');
+```
+
+**New code:**
+```php
+throw new PHPExcel_Reader_Exception('Failed to load ' . $pFilename . ' as a DOM Document');
+```
+
+#### 5.20 `Products.php` — GP guard on import/bulk_images (Owner/Admin)
+
+**Old code:**
+```php
+if ($this->GP['products-import'] == 1):
+    $this->GP['products-csv'] = $this->GP['products-import'];
+endif;
+```
+
+**New code:**
+```php
+if (isset($this->GP) && is_array($this->GP) && !empty($this->GP['products-import']) && $this->GP['products-import'] == 1):
+    $this->GP['products-csv'] = $this->GP['products-import'];
+endif;
+```
 
 #### 5.15 `Products_model.php` — getProductOptionsWithWH ArgumentCountError
 
@@ -1966,8 +2083,8 @@ $this->data['leads_type'] =  $this->Leads_model->getLeadTypes();
 
 ## Module 22 — Urban Piper / Omnichannel
 
-**Tests:** `phase4_urban_piper_test.php` (**8/8**), `phase4_urban_piper_links_test.php` (**9/9**), `phase4_omnichannel_test.php` (**9/9**), `phase4_omnichannel_links_test.php` (**11/11**) PASS  
-**Status:** ✅ Module complete — fixes applied + retest 2026-07-12  
+**Tests:** `phase4_urban_piper_test.php` (**8/8**), `phase4_urban_piper_links_test.php` (**11/11** after add_order sale), `phase4_omnichannel_test.php`, `phase4_omnichannel_links_test.php`, `phase4_urban_piper_catalogue_api_test.php` (**21/21**)  
+**Status:** ✅ Module complete — retest + extra catalogue/API fixes 2026-07-15  
 **Controllers:** `Urban_piper.php`, `Omnichannel.php` — `Urban_piper_model.php` — restored `urbanpiper/add_delivery.php`, `urbanpiper/edit_delivery.php`
 
 | # | File | Old | New | Type |
@@ -1984,6 +2101,10 @@ $this->data['leads_type'] =  $this->Leads_model->getLeadTypes();
 | 22.10 | `Urban_piper_model.php` | `redirect($_SERVER["HTTP_REFERER"])` | `isset` + fallback `urban_piper/orders` | guard |
 | 22.11 | `urbanpiper/add_delivery.php`, `edit_delivery.php` | Missing — controller 500 | Restored from sales views; form → `Omnichannel/...` | restore |
 | 22.12 | `phase4_urban_piper_*.php`, `phase4_omnichannel_*.php` | — | Screen + deep-link test scripts | test |
+| 22.13 | `Urban_piper.php` / `Omnichannel.php` | `importStoreCategory` `$this->db->_error_message()` → 500 | `!empty($category)` + `$this->db->error()` | syntax |
+| 22.14 | `Urban_piper.php` / `Omnichannel.php` | `add_order` `$response` scalar; `$getdata->id` on false | customer/order/store/product/options/tax guards | guard |
+| 22.15 | `config.php` | CSRF blocked `catalogueingestioncallback` (403) | Added to `csrf_exclude_uris` (sibling UP webhooks) | config |
+| 22.16 | `phase4_urban_piper_catalogue_api_test.php` | — | Catalogue screens + UP API smoke | test |
 
 #### 22.1 `Urban_piper.php` — constructor API key guard
 
@@ -2026,6 +2147,55 @@ $upOrdersItems = $this->UPM->getOrderItems($saleid);
 **New code:**
 ```php
 echo form_open_multipart("Omnichannel/add_delivery/" . $inv->id, $attrib);
+```
+
+#### 22.13 `Urban_piper.php` — importStoreCategory `_error_message` 500
+
+**Old code:**
+```php
+if ($this->db->insert_batch('sma_up_stores_categories', $category)) {
+    ...
+} else {
+    $response['messages'] = $this->db->_error_message();
+}
+```
+
+**New code:**
+```php
+if (!empty($category) && $this->db->insert_batch('sma_up_stores_categories', $category)) {
+    ...
+} else {
+    $dbErr = $this->db->error();
+    $response['messages'] = (!empty($category) && isset($dbErr['message']) && $dbErr['message'] !== '') ? $dbErr['message'] : 'No categories to import or insert failed.';
+}
+```
+
+#### 22.14 `Urban_piper.php` — add_order customer `$response` scalar
+
+**Old code:**
+```php
+if ($getdata->id) {
+    $customer_id = $getdata->id;
+} else {
+    ...
+    $response = ($result) ? $customer_id = $this->db->insert_id() : 'Try Again';
+}
+```
+
+**New code:**
+```php
+if ($getdata && isset($getdata->id) && $getdata->id) {
+    $customer_id = $getdata->id;
+} else {
+    ...
+    if ($result) {
+        $customer_id = $this->db->insert_id();
+    } else {
+        $response = array('status' => 'error', 'msg' => 'Try Again');
+        echo json_encode($response);
+        return;
+    }
+}
 ```
 
 ---
@@ -2260,6 +2430,11 @@ $return = parent::line($line, FALSE);
 | 2026-07-14 | 3/11/18 | POS `add_ep`/paynear + menu `$GP`/`$active_*` + footer `Send_customer` + Settings `$this->GP` + transfers `$warehouse_id` — log warning cleanup; screens HTTP 200, new log needles clean |
 | 2026-07-14 | 3 | POS category click 500 — `ajaxproducts()` required `$seasons_id`; default `null` in `Pos.php` + `Pos_elite.php` (covers all `sma_themes`) |
 | 2026-07-14 | test | Sheet RED screens probe — GET **71/71**, deep actions **19/19**; only PHP fatal was Sales Combine Invoice → `posBillTableCSI($salestax = null)` + view_invoice color guard |
+| 2026-07-15 | 5 | Products `bulk_images` HTTP 500 — PHPExcel HTML.php Exception concat + `$this->GP` guard on import/bulk_images (×3) |
+| 2026-07-15 | 3 | POS `view.php` screen receipt UI — floor `#wrapper` max-width to 280px / min-width 250px (print CSS unchanged) |
+| 2026-07-15 | 5 | Products `bulk_images` — force Excel5 reader + try/catch (tmp path HTML mis-detect still 500 after 5.19) |
+| 2026-07-15 | 4 | Eshop Sales back-office — seed `eshop_sale=1`, `Eshop_sales.php` + `add_delivery` guards; `phase4_eshop_sales_links_test.php` **12/12** |
+| 2026-07-15 | 22 | Urban Piper catalogue/API retest — Import `_error_message` 500, `add_order` scalar `$response`, CSRF `catalogueingestioncallback`; catalogue API smoke **21/21** |
 
 ---
 

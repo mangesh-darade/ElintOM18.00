@@ -4768,10 +4768,12 @@ class Sales extends MY_Controller {
                 if ($sale->eshop_sale == 1) {
                     $this->load->model('eshop_model');
                     $billing_details = $this->eshop_model->getOrderDetails(array('sale_id' => $sale->id));
+                    if (!empty($billing_details) && is_array($billing_details) && isset($billing_details[0])) {
                     $this->data['shipping_addr'] = 'Name:' . $billing_details[0]['shipping_name'] .
                             '   Address:' . $billing_details[0]['shipping_addr'] .
                             '   Email:' . $billing_details[0]['shipping_email'] .
                             '   Phone:' . $billing_details[0]['shipping_phone'];
+                    }
                 }
                 $this->data['modal_js'] = $this->site->modal_js();
 

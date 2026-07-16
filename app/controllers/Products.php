@@ -2388,7 +2388,7 @@ class Products extends MY_Controller {
     }
 
     public function sample_product_csv() {
-        if ($this->GP['products-import'] == 1):
+        if (isset($this->GP) && is_array($this->GP) && !empty($this->GP['products-import']) && $this->GP['products-import'] == 1):
             $this->GP['products-csv'] = $this->GP['products-import'];
         endif;
         $this->sma->checkPermissions('csv');
@@ -2472,7 +2472,7 @@ class Products extends MY_Controller {
 
     function import_csv() {
 
-        if ($this->GP['products-import'] == 1):
+        if (isset($this->GP) && is_array($this->GP) && !empty($this->GP['products-import']) && $this->GP['products-import'] == 1):
             $this->GP['products-csv'] = $this->GP['products-import'];
         endif;
 
@@ -5693,7 +5693,7 @@ class Products extends MY_Controller {
      * This method using bulk Product Images
      */
     public function bulk_images() {
-        if ($this->GP['products-import'] == 1):
+        if (isset($this->GP) && is_array($this->GP) && !empty($this->GP['products-import']) && $this->GP['products-import'] == 1):
             $this->GP['products-csv'] = $this->GP['products-import'];
         endif;
         $this->sma->checkPermissions('csv');
@@ -5714,11 +5714,15 @@ class Products extends MY_Controller {
 
                 $this->load->library('excel');
                 $File = $_FILES['userxls']['tmp_name'];
-                $inputFileType = PHPExcel_IOFactory::identify($File);
-                $reader = PHPExcel_IOFactory::createReader($inputFileType);
-                $reader->setReadDataOnly(true);
-                $path = $File;
-                $excel = $reader->load($path);
+                // Upload accepts .xls only; identify() on Windows tmp path can mis-detect as HTML and fatal on load
+                try {
+                    $reader = PHPExcel_IOFactory::createReader('Excel5');
+                    $reader->setReadDataOnly(true);
+                    $excel = $reader->load($File);
+                } catch (Exception $e) {
+                    $this->session->set_flashdata('error', 'Invalid Excel file. Please upload a valid .xls file.');
+                    redirect('products/import_csv');
+                }
 
                 $sheet = $excel->getActiveSheet()->toArray(null, true, true, true);
                 $arrayCount = count($sheet);

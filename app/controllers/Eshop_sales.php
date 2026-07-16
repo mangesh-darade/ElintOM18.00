@@ -13,7 +13,7 @@ class Eshop_sales extends MY_Controller
         }
         if ($this->Customer || $this->Supplier) {
             $this->session->set_flashdata('warning', lang('access_denied'));
-            redirect($_SERVER["HTTP_REFERER"]);
+            redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('eshop_sales/sales'));
         }
 
         $this->load->model('pos_model');
@@ -36,7 +36,7 @@ class Eshop_sales extends MY_Controller
     public function sales($warehouse_id = NULL)
     {        
         $this->sma->checkPermissions();
-        if($_GET['status'])
+        if(isset($_GET['status']) && $_GET['status'])
 	 $this->data['status']  = $_GET['status'];
         $this->data['error'] = (validation_errors()) ? validation_errors() : $this->session->flashdata('error');
         
@@ -71,6 +71,7 @@ class Eshop_sales extends MY_Controller
         }
         $recept_link = anchor('pos/view/$1', '<i class="fa fa-file-text-o"></i> ' . lang('view_receipt'));
         $detail_link = anchor('sales/view/$1', '<i class="fa fa-file-text-o"></i> ' . lang('sale_details'));
+        $duplicate_link = '';
         //$duplicate_link = anchor('sales/add?sale_id=$1', '<i class="fa fa-plus-circle"></i> ' . lang('duplicate_sale'));
         $payments_link = anchor('sales/payments/$1', '<i class="fa fa-money"></i> ' . lang('view_payments'), 'data-toggle="modal" data-target="#myModal"');
         $add_payment_link = anchor('sales/add_payment/$1', '<i class="fa fa-money"></i> ' . lang('add_payment'), 'data-toggle="modal" data-target="#myModal"');
@@ -118,7 +119,7 @@ class Eshop_sales extends MY_Controller
                 ->where('eshop_sale', 1);
         }
         
-        if($_GET['status']!=''){
+        if(isset($_GET['status']) && $_GET['status']!=''){
             $this->datatables->where('payment_status', $_GET['status']);
         }
         if (!$this->Customer && !$this->Supplier && !$this->Owner && !$this->Admin ) {
@@ -321,6 +322,10 @@ class Eshop_sales extends MY_Controller
         $this->data['error'] = (validation_errors() ? validation_errors() : $this->session->flashdata('error'));
         $this->data['message'] = $this->session->flashdata('message');
         $inv = $this->pos_model->getInvoiceByID($sale_id);
+        if (!$inv) {
+            $this->session->set_flashdata('error', lang('sale_not_found'));
+            redirect(isset($_SERVER["HTTP_REFERER"]) ? $_SERVER["HTTP_REFERER"] : site_url('eshop_sales/sales'));
+        }
         if (!$this->session->userdata('view_right')) {
             $this->sma->view_rights($inv->created_by, true);
         }
@@ -378,6 +383,7 @@ class Eshop_sales extends MY_Controller
 		$qrr = explode("'",$print['qrcode']);
 		$print['qrcode'] = $qrr[1];
 		//echo $print['rows'][0]->net_unit_price;
+		if (!empty($print['rows'])) {
 		foreach($print['rows'] as $key => $row){
 			foreach($row as $key2 => $value){
 				if($key2 == 'quantity'){
@@ -387,6 +393,7 @@ class Eshop_sales extends MY_Controller
 					$print['rows'][$key]->quantity = round($value, 2);
 				}
 			}
+		}
 		}/*
 		foreach($print['payments'] as $key => $row){
 			foreach($row as $key2 => $value){
@@ -397,7 +404,7 @@ class Eshop_sales extends MY_Controller
 			$print['inv']->$key = round($row, 2);
 		}*/
 		 
-		if($sale_id != $_SESSION['print'] && $_SESSION['print_type']==NULL){
+		if($sale_id != (isset($_SESSION['print']) ? $_SESSION['print'] : null) && (isset($_SESSION['print_type']) ? $_SESSION['print_type'] : null)==NULL){
 		 	
 			?>
 			<script>
